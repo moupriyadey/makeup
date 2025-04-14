@@ -1,0 +1,34 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Admin Dashboard</title>
+</head>
+<body>
+    <h1>Admin Dashboard</h1>
+    <form method="GET" action="/admin">
+        <label>Date:</label>
+        <input type="date" name="date">
+        <label>Service:</label>
+        <input type="text" name="service">
+        <label>Payment Status:</label>
+        <select name="payment_status">
+            <option value="">All</option>
+            <option value="Paid">Paid</option>
+            <option value="Unpaid">Unpaid</option>
+        </select>
+        <button type="submit">Filter</button>
+    </form>
+
+    <h2>Appointments</h2>
+    <ul>
+        {% for appt in appointments %}
+            <li>
+                {{ appt.name }} | {{ appt.service }} | {{ appt.date }} {{ appt.time }} | {{ appt.payment_status }}
+                {% if appt.payment_status != 'Paid' %}
+                    - <a href="{{ url_for('mark_paid', appt_id=appt.id) }}">Mark as Paid</a>
+                {% endif %}
+            </li>
+        {% endfor %}
+    </ul>
+</body>
+</html>
