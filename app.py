@@ -1,62 +1,105 @@
-from flask import Flask, render_template, request, redirect, flash
-from flask_sqlalchemy import SQLAlchemy
-import smtplib, ssl
-from email.message import EmailMessage
+from flask import Flask, render_template, request, redirect, url_for, session, flash, jsonify
+import os
+import json
 
 app = Flask(__name__)
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///appointments.db'
-app.config['SECRET_KEY'] = 'secret'
-db = SQLAlchemy(app)
+app.secret_key = 'your_secret_key'
 
-class Appointment(db.Model):
-    id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100))
-    email = db.Column(db.String(100))
-    date = db.Column(db.String(20))
-    time = db.Column(db.String(10))
-
+# Home route
 @app.route('/')
-def index():
+def home():
     return render_template('index.html')
 
-@app.route('/book', methods=['POST'])
-def book():
-    name = request.form['name']
-    email = request.form['email']
-    date = request.form['date']
-    time = request.form['time']
+# Booking form submission route
+@app.route('/submit', methods=['POST'])
+def submit_form():
+    # Getting data from the form
+    name = request.form.get('name')
+    email = request.form.get('email')
+    service = request.form.get('service')
+    date = request.form.get('date')
+    time = request.form.get('time')
 
-    # Check if slot is already booked
-    existing = Appointment.query.filter_by(date=date, time=time).first()
-    if existing:
-        flash('Selected time slot is already booked. Please choose another.', 'danger')
-        return redirect('/')
+    # Debugging output
+    print("Form Data Received:", name, email, service, date, time)
 
-    # Book the slot
-    appt = Appointment(name=name, email=email, date=date, time=time)
-    db.session.add(appt)
-    db.session.commit()
+    # Validating data
+    if not all([name, email, service, date, time]):
+        return "Missing form fields", 400  # Return a helpful error message
 
-    send_email(name, email, date, time)
-    flash('Appointment booked and confirmation email sent!', 'success')
-    return redirect('/')
+    # Creating a new booking entry
+    new_booking = {
+        "name": name,
+        "email": email,
+        "service": service,
+        "date": date,
+        "time": time
+    }
 
-def send_email(name, email, date, time):
-    msg = EmailMessage()
-    msg['Subject'] = 'Appointment Confirmation'
-    msg['From'] = 'your-email@example.com'  # Replace with your email
-    msg['To'] = email
-    msg.set_content(f'Hi {name},\n\nYour appointment for {date} at {time} has been confirmed.\n\nThank you!')
-
+    # Saving the booking to a JSON file
     try:
-        context = ssl.create_default_context()
-        with smtplib.SMTP_SSL('smtp.gmail.com', 465, context=context) as server:
-            server.login('covcorres@gmail.com', 'mpvx cbqu lgsd khsb')  # Replace with your credentials
-            server.send_message(msg)
-    except Exception as e:
-        print('Email failed:', e)
+        with open('bookings.json', 'r+') as f:
+            data = json.load(f)
+            data.append(new_booking)
+            f.seek(0)
+            json.dump(data, f, indent=2)
+    except FileNotFoundError:
+        with open('bookings.json', 'w') as f:
+            json.dump([new_booking], f, indent=2)
+
+    # Redirecting to thank you page with the name passed as context
+    return render_template('thank_you.html', name=name)
+
+# Admin login route
+@app.route('/admin/login', methods=['GET', 'POST'])
+def admin_login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+
+        # Check credentials
+        if username == 'admin' and password == 'admin123':
+            session['admin_logged_in'] = True
+            return redirect(url_for('admin_panel'))
+        else:
+            flash('Invalid username or password')
+
+    return render_template('admin_login.html')
+
+# Admin panel route
+@app.route('/admin/panel')
+def admin_panel():
+    if not session.get('admin_logged_in'):
+        return redirect(url_for('admin_login'))
+
+    # Fetching booking data from JSON file
+    try:
+        with open('bookings.json', 'r') as f:
+            bookings = json.load(f)
+    except FileNotFoundError:
+        bookings = []
+
+    return render_template('admin_panel.html', bookings=bookings)
+
+# Admin logout route
+@app.route('/admin/logout')
+def admin_logout():
+    session.pop('admin_logged_in', None)
+    return redirect(url_for('home'))
+
+# Temporary data for demo purposes (optional, for getting booked slots)
+sample_bookings = [
+    {"date": "2025-04-15", "time": "10:00"},
+    {"date": "2025-04-15", "time": "14:00"},
+    {"date": "2025-04-16", "time": "18:00"},
+]
+
+# Get booked slots based on date
+@app.route('/get_booked_slots', methods=['GET'])
+def get_booked_slots():
+    selected_date = request.args.get('date')
+    booked_times = [b["time"] for b in sample_bookings if b["date"] == selected_date]
+    return jsonify(booked_times)
 
 if __name__ == '__main__':
-    with app.app_context():
-        db.create_all()
     app.run(debug=True)

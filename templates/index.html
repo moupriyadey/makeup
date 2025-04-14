@@ -1,36 +1,115 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Makeup Appointment Booking</title>
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mou's Nail & Makeup</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <style>
+    .banner {
+      max-height: 500px;
+      object-fit: cover;
+    }
+    .form-section {
+      background-color: #fff;
+      padding: 2rem;
+      border-radius: 12px;
+      box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+    }
+    .testimonial {
+      font-style: italic;
+      font-size: 1.1rem;
+    }
+    footer {
+      background-color: #f8f9fa;
+      padding: 1rem;
+      text-align: center;
+      margin-top: 2rem;
+      font-size: 0.9rem;
+    }
+  </style>
 </head>
 <body class="bg-light">
-<div class="container mt-5">
-    <h2 class="text-center mb-4">Book a Makeup Appointment</h2>
-    <form action="/book" method="post">
-        <div class="mb-3">
-            <label for="name" class="form-label">Name</label>
-            <input type="text" class="form-control" id="name" name="name" required>
-        </div>
-        <div class="mb-3">
-            <label for="email" class="form-label">Email</label>
-            <input type="email" class="form-control" id="email" name="email" required>
-        </div>
-        <div class="mb-3">
-            <label for="date" class="form-label">Date</label>
-            <input type="date" class="form-control" id="date" name="date" required>
-        </div>
-        <div class="mb-3">
+
+  <!-- Carousel -->
+  <div id="carouselExampleIndicators" class="carousel slide mb-4" data-bs-ride="carousel">
+    <div class="carousel-inner">
+      <div class="carousel-item active">
+        <img src="{{ url_for('static', filename='service1.jpg') }}" class="d-block w-100 banner" alt="Makeup Style 1">
+      </div>
+      <div class="carousel-item">
+        <img src="{{ url_for('static', filename='service2.jpg') }}" class="d-block w-100 banner" alt="Makeup Style 2">
+      </div>
+      <div class="carousel-item">
+        <img src="{{ url_for('static', filename='service3.jpg') }}" class="d-block w-100 banner" alt="Makeup Style 3">
+      </div>
+    </div>
+    <button class="carousel-control-prev" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="prev">
+      <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+    </button>
+    <button class="carousel-control-next" type="button" data-bs-target="#carouselExampleIndicators" data-bs-slide="next">
+      <span class="carousel-control-next-icon" aria-hidden="true"></span>
+    </button>
+  </div>
+
+  <!-- Main Content -->
+  <div class="container">
+    <div class="row justify-content-center">
+      <div class="col-lg-8 form-section">
+        <h2 class="text-center mb-4 text-primary">Book Your Glam Session</h2>
+        <form action="/submit" method="post">
+          <div class="mb-3">
+            <label for="name" class="form-label">Full Name</label>
+            <input type="text" class="form-control" id="name" name="name" required/>
+          </div>
+          <div class="mb-3">
+            <label for="email" class="form-label">Email Address</label>
+            <input type="email" class="form-control" id="email" name="email" required/>
+          </div>
+          <div class="mb-3">
+            <label for="service" class="form-label">Select Service</label>
+            <select class="form-control" id="service" name="service" required>
+              <option value="">Choose a service</option>
+              <option value="Bridal Makeup">Bridal Makeup</option>
+              <option value="Party Makeup">Party Makeup</option>
+              <option value="Nail Art">Nail Art</option>
+              <option value="Hair Styling">Hair Styling</option>
+            </select>
+          </div>
+          <div class="mb-3">
+            <label for="date" class="form-label">Select Date</label>
+            <input type="date" class="form-control" id="date" name="date" required/>
+          </div>
+          <div class="mb-3">
             <label for="time" class="form-label">Time Slot</label>
             <select class="form-control" id="time" name="time" required>
-                <option value="08:00">08:00 AM</option>
-                <option value="12:00">12:00 PM</option>
-                <option value="16:00">04:00 PM</option>
-                <option value="20:00">08:00 PM</option>
+              <option value="08:00">08:00 AM</option>
+              <option value="12:00">12:00 PM</option>
+              <option value="16:00">04:00 PM</option>
+              <option value="20:00">08:00 PM</option>
             </select>
-        </div>
-        <button type="submit" class="btn btn-primary">Book Appointment</button>
-    </form>
-</div>
+          </div>
+          <div class="text-center">
+            <button type="submit" class="btn btn-primary px-4">Book Now</button>
+          </div>
+        </form>
+      </div>
+    </div>
+
+    <!-- Testimonials -->
+    <div class="row mt-5">
+      <div class="col-md-12 text-center">
+        <h4 class="text-muted mb-3">💬 What Our Clients Say</h4>
+        <p class="testimonial">"Mou made my special day even more perfect! Her talent is unmatched!" – Priya S.</p>
+      </div>
+    </div>
+  </div>
+
+  <!-- Footer -->
+  <footer>
+    &copy; 2025 Mou's Nail & Makeup | Crafted with ❤️
+  </footer>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
