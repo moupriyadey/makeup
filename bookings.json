@@ -19,5 +19,12 @@
     "service": "Hair Styling",
     "date": "2025-04-17",
     "time": "20:00"
+  },
+  {
+    "name": "asdf",
+    "email": "sdfsd@gmail.com",
+    "service": "Bridal Makeup",
+    "date": "2025-04-24",
+    "time": "16:00"
   }
 ]

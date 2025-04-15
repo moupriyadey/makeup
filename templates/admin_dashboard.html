@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Admin Dashboard</title>
+    <!-- Include Bootstrap CSS (you can link your CSS here) -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+</head>
+<body>
+
+    <div class="container">
+        <h1 class="my-4">Admin Dashboard</h1>
+
+        <!-- Table for appointments -->
+        <table class="table table-striped">
+            <thead>
+                <tr>
+                    <th>Appointment ID</th>
+                    <th>Client Name</th>
+                    <th>Service</th>
+                    <th>Appointment Time</th>
+                    <th>Status</th>
+                    <th>Actions</th>
+                </tr>
+            </thead>
+            <tbody>
+                <!-- Example Row -->
+                <tr>
+                    <td>1</td>
+                    <td>John Doe</td>
+                    <td>Makeup</td>
+                    <td>2025-04-15 10:00</td>
+                    <td><span id="status-1">Pending</span></td>
+                    <td>
+                        <button onclick="updateStatus(1, 'Confirmed')" class="btn btn-success">Confirm</button>
+                        <button onclick="updateStatus(1, 'Cancelled')" class="btn btn-danger">Cancel</button>
+                    </td>
+                </tr>
+                <!-- More rows can be added dynamically -->
+            </tbody>
+        </table>
+    </div>
+
+    <!-- Modal for status update confirmation (Optional) -->
+    <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="statusModalLabel">Confirm Status Change</h5>
+                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                        <span aria-hidden="true">&times;</span>
+                    </button>
+                </div>
+                <div class="modal-body">
+                    Are you sure you want to update the status of this appointment?
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+                    <button type="button" class="btn btn-primary" id="confirmStatusBtn">Confirm</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Include jQuery and Bootstrap JS (needed for modal and Bootstrap functionality) -->
+    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
+
+    <!-- JavaScript for handling status update -->
+    <script>
+        function updateStatus(appointmentId, status) {
+            // Update the status in the table
+            document.getElementById('status-' + appointmentId).textContent = status;
+
+            // Example of sending the update to the server (adjust URL based on your backend)
+            fetch(`/update_status/${appointmentId}/${status}`, {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({ status: status })
+            })
+            .then(function(response) {
+                if (response.ok) {
+                    // Successfully updated, reload page or show success message
+                    alert('Status updated successfully!');
+                } else {
+                    alert('Error updating status.');
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+                alert('There was an issue updating the status.');
+            });
+        }
+    </script>
+
+</body>
+</html>

@@ -1,0 +1,41 @@
+body {
+    background-color: #f8f9fa;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+  }
+  
+  .banner {
+    max-height: 500px;
+    object-fit: cover;
+  }
+  
+  .form-section {
+    background-color: #fff;
+    padding: 2rem;
+    border-radius: 12px;
+    box-shadow: 0 2px 12px rgba(0,0,0,0.1);
+  }
+  
+  .testimonial {
+    font-style: italic;
+    font-size: 1.1rem;
+    color: #6c757d;
+  }
+  
+  footer {
+    background-color: #f8f9fa;
+    padding: 1rem;
+    text-align: center;
+    margin-top: 2rem;
+    font-size: 0.9rem;
+    color: #6c757d;
+  }
+  
+  .btn-primary {
+    background-color: #d63384;
+    border: none;
+  }
+  
+  .btn-primary:hover {
+    background-color: #c2185b;
+  }
+  

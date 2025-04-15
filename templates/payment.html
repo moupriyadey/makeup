@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Payment - Mou's Nail & Makeup</title>
+</head>
+<body class="text-center">
+
+  <h1 class="mt-5">Please Make Your Payment</h1>
+  <p>Your appointment has been booked. Scan the QR code below to make the payment.</p>
+
+  <img src="{{ url_for('payment', appointment_id=appointment_id) }}" alt="UPI QR Code" width="300"/>
+
+  <p>Once payment is done, please click the button below.</p>
+
+  <a href="/confirm_payment/{{ appointment_id }}" class="btn btn-success">Payment Done</a>
+
+</body>
+</html>
