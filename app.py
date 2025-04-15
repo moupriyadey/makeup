@@ -209,3 +209,9 @@ def update_status(appointment_id, status):
 
 if __name__ == '__main__':
     app.run(debug=True)
+
+from dotenv import load_dotenv
+load_dotenv()
+
+app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
+app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')
