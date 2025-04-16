@@ -1,20 +1,18 @@
+<!-- templates/payment.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Payment - Mou's Nail & Makeup</title>
+    <meta charset="UTF-8">
+    <title>Payment | Mou's Nail & Makeup</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 </head>
-<body class="text-center">
-
-  <h1 class="mt-5">Please Make Your Payment</h1>
-  <p>Your appointment has been booked. Scan the QR code below to make the payment.</p>
-
-  <img src="{{ url_for('payment', appointment_id=appointment_id) }}" alt="UPI QR Code" width="300"/>
-
-  <p>Once payment is done, please click the button below.</p>
-
-  <a href="/confirm_payment/{{ appointment_id }}" class="btn btn-success">Payment Done</a>
-
+<body class="bg-light text-center p-5">
+    <div class="container">
+        <h2 class="mb-4">Scan to Pay ₹500</h2>
+        <p class="mb-3">Please scan the QR code below using your UPI app:</p>
+        <img src="{{ url_for('payment_qr', appointment_id=appointment_id) }}" alt="UPI QR Code" width="300">
+        <br><br>
+        <a href="{{ url_for('confirm_payment', appointment_id=appointment_id) }}" class="btn btn-success btn-lg mt-4">I Have Paid</a>
+    </div>
 </body>
 </html>

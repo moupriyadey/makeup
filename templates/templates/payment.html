@@ -1,0 +1,12 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Make a Payment</title>
+</head>
+<body>
+    <h2>Scan the QR Code to Pay ₹500</h2>
+    <img src="{{ url_for('payment_qr', appointment_id=appointment_id) }}" alt="UPI QR Code" width="300">
+    <p>Once payment is done, click below:</p>
+    <a href="{{ url_for('confirm_payment', appointment_id=appointment_id) }}">Confirm Payment</a>
+</body>
+</html>

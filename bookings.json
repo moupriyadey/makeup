@@ -26,5 +26,23 @@
     "service": "Bridal Makeup",
     "date": "2025-04-24",
     "time": "16:00"
+  },
+  {
+    "id": "ae2e2eea-90a8-45c9-ae48-ba447045f877",
+    "name": "mam",
+    "email": "mam@hh.com",
+    "service": "Hair Styling",
+    "date": "2025-04-23",
+    "time": "08:00",
+    "status": "Pending"
+  },
+  {
+    "id": "e7ad426b-032d-4b97-a223-6bf7b1d5f17e",
+    "name": "ganesha",
+    "email": "g@gg.com",
+    "service": "Party Makeup",
+    "date": "2025-04-25",
+    "time": "08:00",
+    "status": "Pending"
   }
 ]
