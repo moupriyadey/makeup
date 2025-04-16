@@ -1,4 +1,4 @@
-from flask import current_app, request, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
 from markupsafe import Markup
 
 from flask_mail import Mail, Message
@@ -8,6 +8,7 @@ import os
 import uuid
 from io import BytesIO
 import qrcode
+from dotenv import load_dotenv
 
 app = Flask(__name__)
 app.secret_key = 'your_secret_key'
@@ -20,6 +21,9 @@ app.config['MAIL_USERNAME'] = 'covcorresl@gmail.com'  # Your Gmail address
 app.config['MAIL_PASSWORD'] = 'cmam wswb irws bjor'  # App password generated from Google
 
 mail = Mail(app)
+
+# Load environment variables from .env file
+load_dotenv()
 
 # ===== Routes =====
 
@@ -212,8 +216,3 @@ def update_status(appointment_id, status):
 if __name__ == '__main__':
     app.run(debug=True)
 
-from dotenv import load_dotenv
-load_dotenv()
-
-app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
-app.config['MAIL_PASSWORD'] = os.getenv('MAIL_PASSWORD')

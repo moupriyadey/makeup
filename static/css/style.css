@@ -9,8 +9,8 @@ body {
 
 /* Banner (Carousel Images) */
 .banner {
-  max-height:5cm;
-  width: 6cm
+  max-height: 6cm;
+  width: 5cm; /* Fixed missing semicolon */
   margin-right: 15px;
   object-fit: cover;
   border-radius: 10px;
