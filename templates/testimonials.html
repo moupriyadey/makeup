@@ -1,0 +1,76 @@
+<!-- templates/testimonials.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Client Testimonials - Mou's Nail & Makeup</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: #fff0f5;
+      padding-top: 40px;
+    }
+    .testimonial-card {
+      background: white;
+      border-radius: 20px;
+      padding: 30px;
+      box-shadow: 0 0 10px rgba(0,0,0,0.05);
+      transition: transform 0.3s ease;
+    }
+    .testimonial-card:hover {
+      transform: scale(1.02);
+    }
+    .testimonial-text {
+      font-style: italic;
+      color: #555;
+    }
+    .client-name {
+      margin-top: 15px;
+      font-weight: bold;
+      color: #d63384;
+    }
+    .heading {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="heading">
+      <h1 class="text-danger fw-bold">Client Testimonials</h1>
+      <p class="text-muted">What our happy clients say about us</p>
+    </div>
+
+    <div class="row g-4">
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Absolutely loved my bridal look! The team was professional, punctual, and so talented."</p>
+          <div class="client-name">— Priya Sharma</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"They transformed me for my big day! Everyone complimented my hair and makeup."</p>
+          <div class="client-name">— Riya Dey</div>
+        </div>
+      </div>
+      <div class="col-md-4">
+        <div class="testimonial-card">
+          <p class="testimonial-text">"Such a relaxing experience. Great service, beautiful nail art, and amazing styling!"</p>
+          <div class="client-name">— Ananya Gupta</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="text-center mt-5">
+      <a href="/" class="btn btn-outline-secondary">Back to Home</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

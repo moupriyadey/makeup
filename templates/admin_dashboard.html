@@ -1,101 +1,109 @@
+<!-- templates/admin_dashboard.html -->
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
+    <title>Admin Dashboard - Mou's Nail & Makeup</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Admin Dashboard</title>
-    <!-- Include Bootstrap CSS (you can link your CSS here) -->
-    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/css/bootstrap.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <style>
+        body {
+            background-color: #fff0f5;
+            padding: 20px;
+        }
+        .dashboard-header {
+            margin-bottom: 30px;
+        }
+        .table th, .table td {
+            vertical-align: middle;
+        }
+        .filter-form {
+            margin-bottom: 20px;
+        }
+        .btn-confirm {
+            background-color: #28a745;
+            color: white;
+        }
+        .btn-confirm:hover {
+            background-color: #218838;
+        }
+    </style>
 </head>
 <body>
 
-    <div class="container">
-        <h1 class="my-4">Admin Dashboard</h1>
+<div class="container">
+    <div class="dashboard-header text-center">
+        <h1 class="text-danger fw-bold">Admin Dashboard</h1>
+        <p class="text-muted">Manage and track appointments</p>
+    </div>
 
-        <!-- Table for appointments -->
-        <table class="table table-striped">
-            <thead>
+    <!-- Filter Form -->
+    <form method="GET" action="/admin" class="row g-3 filter-form">
+        <div class="col-md-4">
+            <label for="status" class="form-label">Filter by Status</label>
+            <select class="form-select" id="status" name="status">
+                <option value="">All</option>
+                <option value="Pending">Pending</option>
+                <option value="Confirmed">Confirmed</option>
+            </select>
+        </div>
+        <div class="col-md-4">
+            <label for="date" class="form-label">Filter by Date</label>
+            <input type="date" class="form-control" id="date" name="date">
+        </div>
+        <div class="col-md-4 align-self-end">
+            <button type="submit" class="btn btn-dark w-100">Apply Filters</button>
+        </div>
+    </form>
+
+    <!-- Booking Table -->
+    <div class="table-responsive">
+        <table class="table table-bordered table-hover shadow-sm bg-white">
+            <thead class="table-danger">
                 <tr>
-                    <th>Appointment ID</th>
-                    <th>Client Name</th>
+                    <th>Name</th>
+                    <th>Email</th>
                     <th>Service</th>
-                    <th>Appointment Time</th>
+                    <th>Date</th>
+                    <th>Time</th>
                     <th>Status</th>
-                    <th>Actions</th>
+                    <th>Action</th>
                 </tr>
             </thead>
             <tbody>
-                <!-- Example Row -->
+                {% for booking in bookings %}
                 <tr>
-                    <td>1</td>
-                    <td>John Doe</td>
-                    <td>Makeup</td>
-                    <td>2025-04-15 10:00</td>
-                    <td><span id="status-1">Pending</span></td>
+                    <td>{{ booking.name }}</td>
+                    <td>{{ booking.email }}</td>
+                    <td>{{ booking.service }}</td>
+                    <td>{{ booking.date }}</td>
+                    <td>{{ booking.time }}</td>
+                    <td>{{ booking.status }}</td>
                     <td>
-                        <button onclick="updateStatus(1, 'Confirmed')" class="btn btn-success">Confirm</button>
-                        <button onclick="updateStatus(1, 'Cancelled')" class="btn btn-danger">Cancel</button>
+                        {% if booking.status != 'Confirmed' %}
+                        <form method="POST" action="/confirm_payment/{{ booking.id }}">
+                            <button type="submit" class="btn btn-confirm btn-sm">Confirm</button>
+                        </form>
+                        {% else %}
+                        <span class="badge bg-success">Confirmed</span>
+                        {% endif %}
                     </td>
                 </tr>
-                <!-- More rows can be added dynamically -->
+                {% else %}
+                <tr>
+                    <td colspan="7" class="text-center text-muted">No bookings found.</td>
+                </tr>
+                {% endfor %}
             </tbody>
         </table>
     </div>
 
-    <!-- Modal for status update confirmation (Optional) -->
-    <div class="modal fade" id="statusModal" tabindex="-1" role="dialog" aria-labelledby="statusModalLabel" aria-hidden="true">
-        <div class="modal-dialog" role="document">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h5 class="modal-title" id="statusModalLabel">Confirm Status Change</h5>
-                    <button type="button" class="close" data-dismiss="modal" aria-label="Close">
-                        <span aria-hidden="true">&times;</span>
-                    </button>
-                </div>
-                <div class="modal-body">
-                    Are you sure you want to update the status of this appointment?
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
-                    <button type="button" class="btn btn-primary" id="confirmStatusBtn">Confirm</button>
-                </div>
-            </div>
-        </div>
+    <div class="text-center mt-4">
+        <a href="/" class="btn btn-outline-secondary">Back to Home</a>
     </div>
+</div>
 
-    <!-- Include jQuery and Bootstrap JS (needed for modal and Bootstrap functionality) -->
-    <script src="https://code.jquery.com/jquery-3.5.1.slim.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.3/dist/umd/popper.min.js"></script>
-    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.5.2/js/bootstrap.min.js"></script>
-
-    <!-- JavaScript for handling status update -->
-    <script>
-        function updateStatus(appointmentId, status) {
-            // Update the status in the table
-            document.getElementById('status-' + appointmentId).textContent = status;
-
-            // Example of sending the update to the server (adjust URL based on your backend)
-            fetch(`/update_status/${appointmentId}/${status}`, {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ status: status })
-            })
-            .then(function(response) {
-                if (response.ok) {
-                    // Successfully updated, reload page or show success message
-                    alert('Status updated successfully!');
-                } else {
-                    alert('Error updating status.');
-                }
-            })
-            .catch(function(error) {
-                console.error('Error:', error);
-                alert('There was an issue updating the status.');
-            });
-        }
-    </script>
-
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
