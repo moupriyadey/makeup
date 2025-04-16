@@ -1,4 +1,6 @@
-from flask import Flask, render_template, request, redirect, url_for, session, flash, send_file
+from flask import current_app, request, url_for
+from markupsafe import Markup
+
 from flask_mail import Mail, Message
 from flask_paginate import Pagination
 import json
