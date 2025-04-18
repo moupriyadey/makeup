@@ -1,80 +1,234 @@
-<!-- templates/index.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Mou's Nail & Makeup</title>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Mou's Makeup & Nail</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
   <style>
     body {
       background: linear-gradient(to right, #fff0f5, #ffe6f0);
-      padding: 50px 0;
+      padding: 20px 0 40px;
     }
-    .container {
-      max-width: 960px;
+
+    .marquee-bar {
+      background-color: #d63384;
+      color: white;
+      padding: 8px 0;
+      font-weight: bold;
+      text-align: center;
     }
+
+    .top-logos {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 5px 20px;
+      margin-bottom: 10px;
+    }
+
+    .top-logos img {
+      width: 80px;
+      height: auto;
+    }
+
     .hero {
       text-align: center;
-      margin-bottom: 50px;
+      margin-bottom: 30px;
     }
+
     .hero h1 {
       color: #d63384;
-      font-size: 3rem;
+      font-size: 2.5rem;
       font-weight: bold;
     }
+
+    .hero h2 {
+      font-size: 1.2rem;
+      font-style: italic;
+      color: #6c757d;
+    }
+
     .hero p {
       color: #6c757d;
-      font-size: 1.2rem;
+      font-size: 1rem;
     }
+
     .btn-custom {
       background-color: #d63384;
       color: white;
     }
-    .testimonial-links {
+
+    .carousel-img {
+      width: 8cm;
+      height: 10cm;
+      object-fit: cover;
+      margin: 0 auto;
+      border-radius: 10px;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+    }
+
+    .testimonial-links,
+    .gallery-links {
       margin-top: 30px;
+      text-align: center;
     }
-    .testimonial-links a {
-      margin: 10px;
+
+    .testimonial-links a,
+    .gallery-links a {
+      margin: 8px;
     }
-    .banner {
-      width: 100%;
-      height: auto;
-      border-radius: 15px;
-      margin-bottom: 30px;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
+
     .footer {
       text-align: center;
-      margin-top: 60px;
+      margin-top: 50px;
       font-size: 0.9rem;
       color: #999;
     }
+
+    .whatsapp-contact {
+      text-align: center;
+      margin-top: 15px;
+      font-size: 1.1rem;
+      color: #000;
+    }
+
+    .whatsapp-contact i {
+      color: #25D366;
+      margin-right: 5px;
+    }
+
+    /* Scroll Down Arrow */
+    .scroll-down-arrow {
+      position: fixed;
+      bottom: 20px;
+      left: 50%;
+      transform: translateX(-50%);
+      font-size: 2.5rem;
+      color: #d63384;
+      animation: bounce 2s infinite;
+      z-index: 9999;
+      text-decoration: none;
+    }
+
+    @keyframes bounce {
+      0%, 100% {
+        transform: translateX(-50%) translateY(0);
+      }
+      50% {
+        transform: translateX(-50%) translateY(-10px);
+      }
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    /* Button Hover Enhancement */
+.btn-custom:hover {
+  background-color: #c02274;
+  color: white;
+}
+
+/* Carousel Control Arrows Styling */
+.carousel-control-prev-icon,
+.carousel-control-next-icon {
+  background-color: #d63384;
+  border-radius: 50%;
+}
+
   </style>
+
+<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+
+<meta name="description" content="Mou's Makeup & Nail - Professional makeup, nail art, and bridal beauty services.">
+<meta name="keywords" content="makeup, nail art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
+<meta name="author" content="Mou's Makeup & Nail">
+
+
 </head>
 <body>
 
-  <div class="container">
-    <img src="https://source.unsplash.com/featured/?makeup,salon" alt="Makeup Banner" class="banner">
+  <!-- Marquee Banner -->
+  <div class="marquee-bar">
+    <marquee behavior="scroll" direction="left">
+      📞 Call Us: +91-9876543210 | 💄 Festive Offer: Get 10% off on Bridal Packages! | 💅 Book your glam session today!
+    </marquee>
+  </div>
 
+  <!-- Top Logos -->
+  <div class="top-logos">
+    <img src="/static/images/logo1.png" alt="Left Logo">
+    <div style="text-align:center; flex: 1; font-weight: bold; color: #d63384;">
+      Mou's Makeup & Nail
+    </div>
+    <img src="/static/images/logo2.png" alt="Right Logo">
+  </div>
+
+  <div class="container">
+
+    <!-- Hero Section -->
     <div class="hero">
-      <h1>Welcome to Mou's Nail & Makeup</h1>
+      <h1>Welcome to Mou's Makeup & Nail</h1>
+      <h2><i>Be Simple, Be Attractive</i></h2>
       <p>Your beauty journey starts here. Book now for flawless makeup, nail art, and more.</p>
+    </div>
+
+    <!-- Carousel -->
+    <div id="scroll-target"></div>
+    <div id="serviceCarousel" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="1500">
+      <div class="carousel-inner text-center">
+        <div class="carousel-item active">
+          <img src="/static/images/service1.png" class="carousel-img" alt="Service 1">
+        </div>
+        <div class="carousel-item">
+          <img src="/static/images/service2.png" class="carousel-img" alt="Service 2">
+        </div>
+        <div class="carousel-item">
+          <img src="/static/images/service3.png" class="carousel-img" alt="Service 3">
+        </div>
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev">
+        <span class="carousel-control-prev-icon"></span>
+      </button>
+      <button class="carousel-control-next" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next">
+        <span class="carousel-control-next-icon"></span>
+      </button>
+    </div>
+
+    <!-- Book Button -->
+    <div class="text-center mb-3">
       <a href="/book" class="btn btn-custom btn-lg">Book an Appointment</a>
     </div>
 
-    <div class="testimonial-links text-center">
+    <!-- Phone & WhatsApp -->
+    <div class="whatsapp-contact">
+      <i class="bi bi-whatsapp"></i> +91-93304 82697 (WhatsApp Available)
+    </div>
+
+    <!-- Testimonials -->
+    <div class="testimonial-links">
       <h4>See what our clients say:</h4>
       <a href="/testimonials" class="btn btn-outline-secondary">Testimonials Page 1</a>
       <a href="/testimonials2" class="btn btn-outline-secondary">Testimonials Page 2</a>
     </div>
 
+    <!-- Gallery & Reviews -->
+    <div class="gallery-links">
+      <a href="/gallery" class="btn btn-primary">View Gallery</a>
+      <a href="https://www.google.com/search?q=mou%27s+makeup+%26+nails&lrd=0x3a027bf65c39937f:0xe0effee5dd313c3e,1,,,," target="_blank" class="btn btn-success">Google Reviews</a>
+    </div>
+
+    <!-- Footer -->
     <div class="footer">
-      &copy; 2025 Mou's Nail & Makeup. All rights reserved.
+      &copy; 2025 Mou's Makeup & Nail. All rights reserved.
     </div>
   </div>
 
+  <!-- Scroll Down Arrow -->
+  <a href="#scroll-target" class="scroll-down-arrow">⌄</a>
+
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
 </body>
 </html>

@@ -1,5 +1,4 @@
-<!-- templates/thank_you.html -->
-
+<!-- thank_you.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -9,38 +8,82 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <style>
         body {
-            background: linear-gradient(to right, #f8f9fa, #ffe6f0);
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
+            background-color: #f8f9fa;
+            padding: 50px 0;
         }
-        .thank-you-box {
-            background: white;
-            padding: 40px;
-            border-radius: 20px;
-            box-shadow: 0 0 20px rgba(0, 0, 0, 0.1);
+        .container {
+            max-width: 960px;
+        }
+        .thank-you-message {
             text-align: center;
+            margin-bottom: 50px;
         }
-        .thank-you-box h1 {
+        .thank-you-message h1 {
             color: #d63384;
+            font-size: 2.5rem;
             font-weight: bold;
         }
-        .thank-you-box p {
+        .thank-you-message p {
             color: #6c757d;
+            font-size: 1.2rem;
+        }
+        .qr-code-container {
+            text-align: center;
+            margin-top: 30px;
+        }
+        .qr-code-container img {
+            width: 151px;
+            height: 151px;
+        }
+        .payment-details {
+            text-align: center;
+            margin-top: 20px;
+            font-size: 1.1rem;
+        }
+        .payment-details p {
+            margin: 10px 0;
+        }
+        .footer {
+            text-align: center;
+            margin-top: 60px;
+            font-size: 0.9rem;
+            color: #999;
         }
         .btn-home {
             margin-top: 20px;
+            background-color: #d63384;
+            color: white;
+            border: none;
+        }
+        .btn-home:hover {
+            background-color: #bb2d82;
         }
     </style>
 </head>
 <body>
-    <div class="thank-you-box">
-        <h1>Thank You!</h1>
-        <p>Your appointment request has been received. We'll get back to you shortly via email.</p>
-        <a href="/" class="btn btn-primary btn-home">Back to Home</a>
+<div class="container">
+    <div class="thank-you-message">
+        <h1>Thank You for Your Booking!</h1>
+        <p>Your appointment has been successfully received. We will contact you if there are any updates or changes to your appointment.</p>
+        <p>Your Appointment ID is: <strong>{{ appointment_id }}</strong></p>
     </div>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <div class="qr-code-container">
+        <h3>Make Payment for Your Appointment</h3>
+        <img src="{{ qr_image_url }}" alt="Payment QR Code">
+    </div>
+    <div class="payment-details">
+        <h4>Payment Details:</h4>
+        <p><strong>UPI ID:</strong> smarasada@okaxis</p>
+        <p><strong>Amount:</strong> ₹500</p>
+        <p><strong>Payment Reference:</strong> Payment for Makeup booking ID {{ appointment_id }}</p>
+    </div>
+    <div class="d-flex justify-content-center">
+        <a href="/" class="btn btn-home">I have paid</a>
+    </div>
+    <div class="footer">
+        &copy; 2025 Mou's Makeup & Nails. All rights reserved.
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

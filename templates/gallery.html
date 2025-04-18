@@ -1,0 +1,76 @@
+<!-- templates/gallery.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Gallery | Mou's Makeup and Nail</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background: linear-gradient(to right, #fff0f5, #ffe6f0);
+      padding: 50px 0;
+    }
+    .container {
+      max-width: 960px;
+    }
+    .gallery-title {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .gallery-title h1 {
+      color: #d63384;
+      font-size: 3rem;
+      font-weight: bold;
+    }
+    .gallery-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(250px, 1fr));
+      gap: 20px;
+    }
+    .gallery-grid img {
+      width: 100%;
+      height: auto;
+      border-radius: 10px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+    .gallery-grid img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    }
+    .back-to-home {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .back-to-home a {
+      font-size: 1.1rem;
+      color: #d63384;
+      text-decoration: none;
+    }
+  </style>
+</head>
+<body>
+
+  <div class="container">
+    <div class="gallery-title">
+      <h1>Our Makeup & Nail Gallery</h1>
+      <p>Take a look at some of our best work and get inspired for your next appointment!</p>
+    </div>
+
+    <div class="gallery-grid">
+      <img src="{{ url_for('static', filename='images/service1.png') }}" alt="Gallery Image 1">
+      <img src="{{ url_for('static', filename='images/service2.png') }}" alt="Gallery Image 2">
+      <img src="{{ url_for('static', filename='images/service3.png') }}" alt="Gallery Image 3">
+      <img src="{{ url_for('static', filename='images/banner.png') }}" alt="Gallery Image 4">
+      <!-- Add more images if necessary -->
+    </div>
+
+    <div class="back-to-home">
+      <a href="/">Back to Home</a>
+    </div>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

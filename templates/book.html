@@ -1,0 +1,61 @@
+<!-- templates/book.html -->
+
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Book Appointment - Mou's Nail & Makeup</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #fff0f5;
+      padding: 30px;
+    }
+    .form-container {
+      max-width: 600px;
+      margin: auto;
+      background: white;
+      padding: 30px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+  </style>
+</head>
+<body>
+  <div class="form-container">
+    <h2 class="mb-4 text-center text-danger">Book Your Appointment</h2>
+    <form method="POST" action="/book">
+      <div class="mb-3">
+        <label class="form-label">Full Name</label>
+        <input type="text" name="name" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Email Address</label>
+        <input type="email" name="email" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Service Type</label>
+        <select name="service" class="form-select" required>
+          <option value="Makeup">Makeup</option>
+          <option value="Nail Art">Nail Art</option>
+          <option value="Facial">Facial</option>
+        </select>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Preferred Date</label>
+        <input type="date" name="date" class="form-control" required>
+      </div>
+      <div class="mb-3">
+        <label class="form-label">Time Slot</label>
+        <select name="time" class="form-select" required>
+          <option value="10:00 AM">10:00 AM</option>
+          <option value="2:00 PM">2:00 PM</option>
+          <option value="6:00 PM">6:00 PM</option>
+          <option value="9:00 PM">9:00 PM</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-danger w-100">Confirm Booking</button>
+    </form>
+  </div>
+</body>
+</html>
