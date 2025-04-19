@@ -244,5 +244,10 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
+@app.route('/services')
+def services():
+    return render_template('services.html')
+
+
 if __name__ == '__main__':
     app.run(debug=True)
