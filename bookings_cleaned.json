@@ -1,22 +1,12 @@
 [
     {
-        "id": "378f6067-5249-4f30-a09f-7d417771586f",
-        "name": "RUPA DEY",
-        "email": "RUPADEYDIAMOND@GMAIL.COM",
-        "mobile": "8920283981",
+        "id": "1ffb2fa0-c76d-4322-a601-3fc29ddf2200",
+        "name": "ggg",
+        "email": "gg@f.com",
+        "mobile": "9999999999",
         "service": "Makeup",
         "date": "2025-05-02",
         "time": "10:00 AM",
         "status": "Confirmed"
-    },
-    {
-        "id": "de4eb8ca-4d73-4b08-a260-288d7f9ec865",
-        "name": "data",
-        "email": "dar@f.com",
-        "mobile": "8920283981",
-        "service": "Makeup",
-        "date": "2025-05-02",
-        "time": "10:00 AM",
-        "status": "Pending"
     }
 ]

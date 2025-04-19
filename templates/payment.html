@@ -7,16 +7,17 @@
 </head>
 <body>
     <h1>Payment for Appointment {{ appointment_id }}</h1>
+    <p>You may now pay Advance Amount Rs. 500 (optional)</p>
     <p>Scan the QR code below to complete your payment.</p>
     
     <!-- Display UPI QR code -->
     <img src="{{ url_for('static', filename=qr_code_path) }}" alt="UPI QR Code">
     
     <form method="POST">
-        <p>If you have completed the payment, click the button below to confirm:</p>
+        <p>After completing the payment, click the button below to confirm:</p>
         <button type="submit">I have paid</button>
     </form>
     
-    <p>If you encounter any issues, please contact us for assistance.</p>
+    <p>If you encounter any issues, please contact us on 9330482697.</p>
 </body>
 </html>

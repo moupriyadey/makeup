@@ -5,8 +5,7 @@ import qrcode
 from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
-
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 
 # Load environment variables
 load_dotenv()
@@ -36,18 +35,15 @@ if not os.path.exists(BOOKINGS_FILE):
 # Initialize the LoginManager
 login_manager = LoginManager()
 login_manager.init_app(app)
-login_manager.login_view = "login"  # The view to redirect to when the user is not logged in
+login_manager.login_view = "login"
 
-# Define the User class
+# User class for login
 class User(UserMixin):
     def __init__(self, id):
         self.id = id
 
-# Define the user_loader function
 @login_manager.user_loader
 def load_user(user_id):
-    # In a real app, you would retrieve the user from the database
-    # For now, we just create a dummy user for demonstration
     return User(user_id)
 
 def load_bookings():
@@ -60,7 +56,6 @@ def save_bookings(bookings):
 
 @app.context_processor
 def inject_enumerate():
-    """Make enumerate function available in templates."""
     return dict(enumerate=enumerate)
 
 @app.route('/')
@@ -72,7 +67,7 @@ def book():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
-        mobile = request.form['mobile']  # Added mobile number
+        mobile = request.form['mobile']
         service = request.form['service']
         date = request.form['date']
         time = request.form['time']
@@ -82,7 +77,7 @@ def book():
             'id': appointment_id,
             'name': name,
             'email': email,
-            'mobile': mobile,  # Added mobile number
+            'mobile': mobile,
             'service': service,
             'date': date,
             'time': time,
@@ -94,7 +89,7 @@ def book():
         save_bookings(bookings)
 
         msg = Message(
-            subject="Appointment Confirmation - Mou's Nail & Makeup",
+            subject="Appointment Confirmation - Mou's Makeup & Nails",
             recipients=[email]
         )
         msg.body = f"""Dear {name},
@@ -105,7 +100,7 @@ Appointment ID: {appointment_id}
 We'll contact you if there are any changes.
 
 Best,
-Mou's Nail & Makeup
+Mou's Makeup & Nails
 """
         try:
             mail.send(msg)
@@ -135,11 +130,7 @@ def testimonials2():
 
 @app.route('/gallery')
 def gallery():
-    gallery_images = [
-        "image1.jpg",
-        "image2.jpg",
-        "image3.jpg"
-    ]
+    gallery_images = ["image1.jpg", "image2.jpg", "image3.jpg"]
     return render_template('gallery.html', images=gallery_images)
 
 @app.route('/thank_you')
@@ -147,7 +138,7 @@ def thank_you():
     appointment_id = request.args.get('appointment_id')
     upi_id = "smarasada@okaxis"
     amount = 1
-    payee_name = "Mou's Makeup and Nail"
+    payee_name = "Mou's Makeup and Nails"
     qr_filename = f"{appointment_id}.png"
     qr_path = os.path.join(QR_FOLDER, qr_filename)
 
@@ -162,9 +153,8 @@ def thank_you():
 def payment_done(appointment_id):
     return redirect(url_for('index'))
 
-# Apply login_required decorator
 @app.route('/admin/dashboard')
-@login_required  # This will now work after initializing LoginManager
+@login_required
 def admin_dashboard():
     status_filter = request.args.get('status')
     date_filter = request.args.get('date')
@@ -184,10 +174,8 @@ def admin_dashboard():
     return render_template('admin_dashboard.html', bookings=bookings)
 
 @app.route('/admin/confirm_booking', methods=['POST'])
+@login_required
 def confirm_booking():
-    if 'logged_in' not in session or session.get('role') != 'admin':
-        return redirect(url_for('login'))
-
     appointment_id = request.form.get('appointment_id')
     bookings = load_bookings()
     confirmed_booking = None
@@ -210,27 +198,19 @@ def confirm_booking():
 Your appointment has been confirmed.
 
 Best regards,
-Mou's Nail & Makeup
+Mou's Makeup & Nails
 """
         try:
             mail.send(msg)
         except Exception as e:
             return f"❌ Error sending confirmation email: {str(e)}"
 
+    flash('Booking Confirmed.', 'success')
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/admin/logout')
-def logout():
-    session.pop('logged_in', None)
-    session.pop('role', None)
-    flash('You have been logged out.', 'success')
-    return redirect(url_for('login'))
-
 @app.route('/admin/delete_booking', methods=['POST'])
+@login_required
 def delete_booking():
-    if 'logged_in' not in session or session.get('role') != 'admin':
-        return redirect(url_for('login'))
-
     appointment_id = request.form.get('appointment_id')
     bookings = load_bookings()
     bookings = [b for b in bookings if b['id'] != appointment_id]
@@ -241,15 +221,13 @@ def delete_booking():
 
 @app.route('/admin/login', methods=['GET', 'POST'])
 def login():
-    print("⚠️ Login route hit!")  # Optional for debugging
-
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
 
         if username == os.getenv('ADMIN_USERNAME') and password == os.getenv('ADMIN_PASSWORD'):
             user = User(username)
-            login_user(user)  # Log the user in using Flask-Login
+            login_user(user)
             session['role'] = 'admin'
             flash('Login successful!', 'success')
             return redirect(url_for('admin_dashboard'))
@@ -259,6 +237,12 @@ def login():
 
     return render_template('admin_login.html')
 
+@app.route('/admin/logout')
+@login_required
+def logout():
+    logout_user()
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))
 
 if __name__ == '__main__':
     app.run(debug=True)
