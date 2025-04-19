@@ -2,16 +2,19 @@ import os
 import json
 import uuid
 import qrcode
-from flask import Flask, render_template, request, redirect, url_for
+from flask import Flask, render_template, request, redirect, url_for, session, flash
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
+from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user
+
 
 # Load environment variables
 load_dotenv()
 
 app = Flask(__name__)
+app.secret_key = 'your_super_secret_key_here'
 
-# Configure Flask-Mail
+# Flask-Mail configuration
 app.config['MAIL_SERVER'] = 'smtp.gmail.com'
 app.config['MAIL_PORT'] = 465
 app.config['MAIL_USERNAME'] = os.getenv('MAIL_USERNAME')
@@ -22,25 +25,43 @@ app.config['MAIL_USE_SSL'] = True
 
 mail = Mail(app)
 
-# Constants
 BOOKINGS_FILE = 'bookings_cleaned.json'
 QR_FOLDER = os.path.join('static', 'qr_codes')
-
-# Ensure directories exist
 os.makedirs(QR_FOLDER, exist_ok=True)
+
 if not os.path.exists(BOOKINGS_FILE):
     with open(BOOKINGS_FILE, 'w') as f:
         json.dump([], f)
 
-# Load bookings
+# Initialize the LoginManager
+login_manager = LoginManager()
+login_manager.init_app(app)
+login_manager.login_view = "login"  # The view to redirect to when the user is not logged in
+
+# Define the User class
+class User(UserMixin):
+    def __init__(self, id):
+        self.id = id
+
+# Define the user_loader function
+@login_manager.user_loader
+def load_user(user_id):
+    # In a real app, you would retrieve the user from the database
+    # For now, we just create a dummy user for demonstration
+    return User(user_id)
+
 def load_bookings():
     with open(BOOKINGS_FILE, 'r') as f:
         return json.load(f)
 
-# Save bookings
 def save_bookings(bookings):
     with open(BOOKINGS_FILE, 'w') as f:
         json.dump(bookings, f, indent=4)
+
+@app.context_processor
+def inject_enumerate():
+    """Make enumerate function available in templates."""
+    return dict(enumerate=enumerate)
 
 @app.route('/')
 def index():
@@ -51,6 +72,7 @@ def book():
     if request.method == 'POST':
         name = request.form['name']
         email = request.form['email']
+        mobile = request.form['mobile']  # Added mobile number
         service = request.form['service']
         date = request.form['date']
         time = request.form['time']
@@ -60,6 +82,7 @@ def book():
             'id': appointment_id,
             'name': name,
             'email': email,
+            'mobile': mobile,  # Added mobile number
             'service': service,
             'date': date,
             'time': time,
@@ -70,7 +93,6 @@ def book():
         bookings.append(new_booking)
         save_bookings(bookings)
 
-        # Send confirmation email
         msg = Message(
             subject="Appointment Confirmation - Mou's Nail & Makeup",
             recipients=[email]
@@ -94,19 +116,41 @@ Mou's Nail & Makeup
 
     return render_template('book.html')
 
+@app.route('/testimonials')
+def testimonials():
+    testimonials_data = [
+        {"name": "Riya Dey", "testimonial": "Amazing service! My makeup was flawless."},
+        {"name": "Shraboni RoyChoudhary", "testimonial": "Highly recommend! Very professional and skilled."},
+        {"name": "Lolita Halder", "testimonial": "I loved the whole experience. Best makeup artist ever!"}
+    ]
+    return render_template('testimonials.html', testimonials=testimonials_data)
+
+@app.route('/testimonials2')
+def testimonials2():
+    testimonials_data2 = [
+        {"name": "Reena Mallik", "testimonial": "The makeup service exceeded my expectations!"},
+        {"name": "Chandana Paul", "testimonial": "Professional, efficient, and so talented!"}
+    ]
+    return render_template('testimonials2.html', testimonials=testimonials_data2)
+
+@app.route('/gallery')
+def gallery():
+    gallery_images = [
+        "image1.jpg",
+        "image2.jpg",
+        "image3.jpg"
+    ]
+    return render_template('gallery.html', images=gallery_images)
+
 @app.route('/thank_you')
 def thank_you():
     appointment_id = request.args.get('appointment_id')
-
-    # Customizable UPI ID and Amount (can also be loaded from environment variables or a form)
-    upi_id = "smarasada@okaxis"  # Change this to your own UPI ID
-    amount = 1  # Specify the amount here
-    payee_name = "Mou's Makeup and Nail"  # Payee name
-
+    upi_id = "smarasada@okaxis"
+    amount = 1
+    payee_name = "Mou's Makeup and Nail"
     qr_filename = f"{appointment_id}.png"
     qr_path = os.path.join(QR_FOLDER, qr_filename)
 
-    # Generate QR if not already created
     if not os.path.exists(qr_path):
         upi_url = f"upi://pay?pa={upi_id}&pn={payee_name}&am={amount}&cu=INR&tn=Payment for Makeup booking ID {appointment_id}"
         qr = qrcode.make(upi_url)
@@ -118,30 +162,32 @@ def thank_you():
 def payment_done(appointment_id):
     return redirect(url_for('index'))
 
-@app.route('/testimonials')
-def testimonials():
-    return render_template('testimonials.html')
-
-@app.route('/testimonials2')
-def testimonials2():
-    return render_template('testimonials2.html')
-
-@app.route('/gallery')
-def gallery():
-    return render_template('gallery.html')
-
-
-@app.route('/admin')
-def admin():
-    return render_template('login.html')
-
+# Apply login_required decorator
 @app.route('/admin/dashboard')
+@login_required  # This will now work after initializing LoginManager
 def admin_dashboard():
-    bookings = load_bookings()
+    status_filter = request.args.get('status')
+    date_filter = request.args.get('date')
+
+    with open('bookings_cleaned.json') as f:
+        bookings = json.load(f)
+
+    if status_filter:
+        bookings = [b for b in bookings if b['status'] == status_filter]
+    if date_filter:
+        bookings = [b for b in bookings if b['date'] == date_filter]
+
+    search_filter = request.args.get('search')
+    if search_filter:
+        bookings = [b for b in bookings if search_filter.lower() in b['name'].lower()]
+
     return render_template('admin_dashboard.html', bookings=bookings)
 
 @app.route('/admin/confirm_booking', methods=['POST'])
 def confirm_booking():
+    if 'logged_in' not in session or session.get('role') != 'admin':
+        return redirect(url_for('login'))
+
     appointment_id = request.form.get('appointment_id')
     bookings = load_bookings()
     confirmed_booking = None
@@ -173,15 +219,46 @@ Mou's Nail & Makeup
 
     return redirect(url_for('admin_dashboard'))
 
-@app.route('/login', methods=['POST'])
+@app.route('/admin/logout')
+def logout():
+    session.pop('logged_in', None)
+    session.pop('role', None)
+    flash('You have been logged out.', 'success')
+    return redirect(url_for('login'))
+
+@app.route('/admin/delete_booking', methods=['POST'])
+def delete_booking():
+    if 'logged_in' not in session or session.get('role') != 'admin':
+        return redirect(url_for('login'))
+
+    appointment_id = request.form.get('appointment_id')
+    bookings = load_bookings()
+    bookings = [b for b in bookings if b['id'] != appointment_id]
+    save_bookings(bookings)
+
+    flash('Booking deleted successfully.', 'success')
+    return redirect(url_for('admin_dashboard'))
+
+@app.route('/admin/login', methods=['GET', 'POST'])
 def login():
-    username = request.form['username']
-    password = request.form['password']
+    print("⚠️ Login route hit!")  # Optional for debugging
 
-    if username == 'admin' and password == 'password':
-        return redirect(url_for('admin_dashboard'))
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
 
-    return 'Login Failed', 403
+        if username == os.getenv('ADMIN_USERNAME') and password == os.getenv('ADMIN_PASSWORD'):
+            user = User(username)
+            login_user(user)  # Log the user in using Flask-Login
+            session['role'] = 'admin'
+            flash('Login successful!', 'success')
+            return redirect(url_for('admin_dashboard'))
+        else:
+            flash('Invalid credentials. Please try again.', 'danger')
+            return redirect(url_for('login'))
+
+    return render_template('admin_login.html')
+
 
 if __name__ == '__main__':
     app.run(debug=True)

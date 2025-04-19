@@ -1,5 +1,3 @@
-<!-- templates/admin_dashboard.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -33,36 +31,61 @@
 <body>
 
 <div class="container">
+
+    {% with messages = get_flashed_messages(with_categories=true) %}
+      {% if messages %}
+        {% for category, message in messages %}
+          <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+            {{ message }}
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+          </div>
+        {% endfor %}
+      {% endif %}
+    {% endwith %}
+
     <div class="dashboard-header text-center">
         <h1 class="text-danger fw-bold">Admin Dashboard</h1>
         <p class="text-muted">Manage and track appointments</p>
     </div>
 
-    <!-- Filter Form -->
-    <form method="GET" action="/admin" class="row g-3 filter-form">
-        <div class="col-md-4">
+    <!-- Filter & Search Form -->
+    <form method="GET" action="{{ url_for('admin_dashboard') }}" class="row g-3 filter-form align-items-end">
+        <div class="col-md-3">
             <label for="status" class="form-label">Filter by Status</label>
             <select class="form-select" id="status" name="status">
                 <option value="">All</option>
-                <option value="Pending">Pending</option>
-                <option value="Confirmed">Confirmed</option>
+                <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
+                <option value="Confirmed" {% if request.args.get('status') == 'Confirmed' %}selected{% endif %}>Confirmed</option>
             </select>
         </div>
-        <div class="col-md-4">
+        <div class="col-md-3">
             <label for="date" class="form-label">Filter by Date</label>
-            <input type="date" class="form-control" id="date" name="date">
+            <input type="date" class="form-control" id="date" name="date" value="{{ request.args.get('date', '') }}">
         </div>
-        <div class="col-md-4 align-self-end">
+        <div class="col-md-3">
+            <label for="search" class="form-label">Search by Name</label>
+            <input type="text" class="form-control" id="search" name="search" placeholder="Enter name" value="{{ request.args.get('search', '') }}">
+        </div>
+        <div class="col-md-3 text-end">
             <button type="submit" class="btn btn-dark w-100">Apply Filters</button>
         </div>
     </form>
+
+    <div class="text-end mt-2 mb-3">
+        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+    </div>
+
+    <!-- Booking Count -->
+    <h5 class="text-muted mb-3">Showing {{ bookings|length }} booking{{ bookings|length != 1 and 's' or '' }}</h5>
 
     <!-- Booking Table -->
     <div class="table-responsive">
         <table class="table table-bordered table-hover shadow-sm bg-white">
             <thead class="table-danger">
                 <tr>
+                    <th>#</th>
                     <th>Name</th>
+                    <th>Mobile</th>
                     <th>Email</th>
                     <th>Service</th>
                     <th>Date</th>
@@ -72,29 +95,44 @@
                 </tr>
             </thead>
             <tbody>
-                {% for booking in bookings %}
-                <tr>
-                    <td>{{ booking.name }}</td>
-                    <td>{{ booking.email }}</td>
-                    <td>{{ booking.service }}</td>
-                    <td>{{ booking.date }}</td>
-                    <td>{{ booking.time }}</td>
-                    <td>{{ booking.status }}</td>
-                    <td>
-                        {% if booking.status != 'Confirmed' %}
-                        <form method="POST" action="/confirm_payment/{{ booking.id }}">
-                            <button type="submit" class="btn btn-confirm btn-sm">Confirm</button>
-                        </form>
-                        {% else %}
-                        <span class="badge bg-success">Confirmed</span>
-                        {% endif %}
-                    </td>
-                </tr>
+                {% if bookings %}
+                    {% for booking in bookings %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ booking.name }}</td>
+                        <td>{{ booking.mobile }}</td>
+                        <td>{{ booking.email }}</td>
+                        <td>{{ booking.service }}</td>
+                        <td>{{ booking.date }}</td>
+                        <td>{{ booking.time }}</td>
+                        <td>
+                            {% if booking.status == 'Confirmed' %}
+                                <span class="badge bg-success">Confirmed</span>
+                            {% else %}
+                                <span class="badge bg-warning text-dark">Pending</span>
+                            {% endif %}
+                        </td>
+                        <td>
+                            <div class="btn-group" role="group">
+                                {% if booking.status != 'Confirmed' %}
+                                <form action="{{ url_for('confirm_booking') }}" method="POST" style="display:inline;">
+                                    <input type="hidden" name="appointment_id" value="{{ booking.id }}">
+                                    <button type="submit" class="btn btn-success btn-sm">Confirm</button>
+                                </form>
+                                {% endif %}
+                                <form action="{{ url_for('delete_booking') }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                                    <input type="hidden" name="appointment_id" value="{{ booking.id }}">
+                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+                                </form>
+                            </div>
+                        </td>
+                    </tr>
+                    {% endfor %}
                 {% else %}
-                <tr>
-                    <td colspan="7" class="text-center text-muted">No bookings found.</td>
-                </tr>
-                {% endfor %}
+                    <tr>
+                        <td colspan="9" class="text-center text-muted">No bookings found.</td>
+                    </tr>
+                {% endif %}
             </tbody>
         </table>
     </div>

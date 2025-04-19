@@ -25,6 +25,21 @@
     .logo {
       max-width: 120px;
     }
+    .btn-primary {
+      background-color: #007bff;
+      border: none;
+    }
+    .btn-primary:hover {
+      background-color: #0056b3;
+      transition: 0.3s ease;
+    }
+    .text-end a {
+      color: #007bff;
+      text-decoration: none;
+    }
+    .text-end a:hover {
+      color: #0056b3;
+    }
   </style>
 </head>
 <body>
@@ -34,7 +49,7 @@
       <h3 class="fw-bold">Admin Login</h3>
     </div>
 
-    <form method="POST">
+    <form method="POST" action="{{ url_for('login') }}">
       {% with messages = get_flashed_messages() %}
         {% if messages %}
           <div class="alert alert-danger">
@@ -42,6 +57,17 @@
           </div>
         {% endif %}
       {% endwith %}
+
+      {% with messages = get_flashed_messages(with_categories=true) %}
+  {% if messages %}
+    <ul class="list-group">
+      {% for category, message in messages %}
+        <li class="list-group-item list-group-item-{{ category }}">{{ message }}</li>
+      {% endfor %}
+    </ul>
+  {% endif %}
+{% endwith %}
+
 
       <div class="mb-3 input-group">
         <span class="input-group-text"><i class="bi bi-person"></i></span>

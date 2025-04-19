@@ -33,10 +33,22 @@
         <label class="form-label">Email Address</label>
         <input type="email" name="email" class="form-control" required>
       </div>
+      
+      <!-- ✅ Added Mobile Number Field -->
+              
+      <div class="mb-3">
+        <label class="form-label">Mobile Number</label>
+        <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Enter Mobile Number">
+      </div>
+      
+        
+  
+
       <div class="mb-3">
         <label class="form-label">Service Type</label>
         <select name="service" class="form-select" required>
-          <option value="Makeup">Makeup</option>
+          <option value="Makeup">Bridal Makeup</option>
+          <option value="Makeup">Party Makeup</option>
           <option value="Nail Art">Nail Art</option>
           <option value="Facial">Facial</option>
         </select>
