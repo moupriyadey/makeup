@@ -137,8 +137,8 @@ def gallery():
 def thank_you():
     appointment_id = request.args.get('appointment_id')
     upi_id = "smarasada@okaxis"
-    amount = 1
-    payee_name = "Mou's Makeup and Nails"
+    amount = 500
+    payee_name = "MOU PRIYA DEY"
     qr_filename = f"{appointment_id}.png"
     qr_path = os.path.join(QR_FOLDER, qr_filename)
 
