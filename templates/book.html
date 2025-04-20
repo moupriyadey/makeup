@@ -1,5 +1,4 @@
 <!-- templates/book.html -->
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -27,47 +26,48 @@
     <form method="POST" action="/book">
       <div class="mb-3">
         <label class="form-label">Full Name</label>
-        <input type="text" name="name" class="form-control" required>
+        <input type="text" name="name" class="form-control" required placeholder="Enter your full name">
       </div>
+
       <div class="mb-3">
         <label class="form-label">Email Address</label>
-        <input type="email" name="email" class="form-control" required>
+        <input type="email" name="email" class="form-control" required placeholder="Enter your email">
       </div>
-      
-      <!-- ✅ Added Mobile Number Field -->
-              
+
       <div class="mb-3">
         <label class="form-label">Mobile Number</label>
-        <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Enter Mobile Number">
+        <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit mobile number">
       </div>
-      
-        
-  
 
       <div class="mb-3">
         <label class="form-label">Service Type</label>
         <select name="service" class="form-select" required>
-          <option value="Makeup">Bridal Makeup</option>
-          <option value="Makeup">Party Makeup</option>
+          <option value="" disabled selected>Select a service</option>
+          <option value="Bridal Makeup">Bridal Makeup</option>
+          <option value="Party Makeup">Party Makeup</option>
           <option value="Nail Art">Nail Art</option>
-          <option value="Facial">Facial & Skincare</option>
-          <option value="Facial">Hairstyling</option>
-          <option value="Facial">Eye Makeup</option>
+          <option value="Facial & Skincare">Facial & Skincare</option>
+          <option value="Hairstyling">Hairstyling</option>
+          <option value="Eye Makeup">Eye Makeup</option>
         </select>
       </div>
+
       <div class="mb-3">
         <label class="form-label">Preferred Date</label>
-        <input type="date" name="date" class="form-control" required>
+        <input type="text" name="date" class="form-control" placeholder="dd/mm/yyyy" required onfocus="(this.type='date')" onblur="if(this.value==''){this.type='text'}">
       </div>
+
       <div class="mb-3">
-        <label class="form-label">Time Slot</label>
+        <label class="form-label">Preferred Time Slot</label>
         <select name="time" class="form-select" required>
+          <option value="" disabled selected>Select a time</option>
           <option value="10:00 AM">10:00 AM</option>
           <option value="2:00 PM">2:00 PM</option>
           <option value="6:00 PM">6:00 PM</option>
           <option value="9:00 PM">9:00 PM</option>
         </select>
       </div>
+
       <button type="submit" class="btn btn-danger w-100">Confirm Booking</button>
     </form>
   </div>

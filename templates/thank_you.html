@@ -1,98 +1,101 @@
-<!-- thank_you.html -->
+<!-- templates/thank_you.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Thank You - Mou's Makeup & Nails</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <style>
-        body {
-            background-color: #f8f9fa;
-            padding: 50px 0;
-        }
-        .container {
-            max-width: 960px;
-        }
-        .thank-you-message {
-            text-align: center;
-            margin-bottom: 50px;
-        }
-        .thank-you-message h1 {
-            color: #d63384;
-            font-size: 2.5rem;
-            font-weight: bold;
-        }
-        .thank-you-message p {
-            color: #6c757d;
-            font-size: 1.2rem;
-        }
-        .qr-code-container {
-            text-align: center;
-            margin-top: 30px;
-        }
-        .qr-code-container img {
-            width: 151px;
-            height: 151px;
-        }
-        .payment-details {
-            text-align: center;
-            margin-top: 20px;
-            font-size: 1.1rem;
-        }
-        .payment-details p {
-            margin: 10px 0;
-        }
-        .footer {
-            text-align: center;
-            margin-top: 60px;
-            font-size: 0.9rem;
-            color: #999;
-        }
-        .btn-home {
-            margin-top: 20px;
-            background-color: #d63384;
-            color: white;
-            border: none;
-        }
-        .btn-home:hover {
-            background-color: #bb2d82;
-        }
-    </style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Thank You - Mou's Makeup & Nails</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <style>
+    body {
+      background-color: #f8f9fa;
+      padding: 50px 0;
+    }
+    .container {
+      max-width: 960px;
+    }
+    .thank-you-message {
+      text-align: center;
+      margin-bottom: 40px;
+    }
+    .thank-you-message h1 {
+      color: #d63384;
+      font-size: 2.5rem;
+      font-weight: bold;
+    }
+    .thank-you-message p {
+      color: #6c757d;
+      font-size: 1.2rem;
+    }
+    .qr-code-container {
+      text-align: center;
+      margin-top: 30px;
+    }
+    .qr-code-container img {
+      width: 151px;
+      height: 151px;
+      border: 2px solid #dee2e6;
+      border-radius: 10px;
+    }
+    .payment-details {
+      text-align: center;
+      margin-top: 30px;
+      font-size: 1.1rem;
+    }
+    .payment-details p {
+      margin: 8px 0;
+    }
+    .btn-home {
+      margin-top: 20px;
+      background-color: #d63384;
+      color: white;
+      border: none;
+    }
+    .btn-home:hover {
+      background-color: #bb2d82;
+    }
+    .footer {
+      text-align: center;
+      margin-top: 60px;
+      font-size: 0.9rem;
+      color: #999;
+    }
+  </style>
 </head>
 <body>
-<div class="container">
+  <div class="container">
     <div class="thank-you-message">
-        <h1>Thank You for Your Booking!</h1>
-        <p>Your appointment has been successfully received. We will contact you soon.</p>
-        <p>Your Appointment ID is: <strong>{{ appointment_id }}</strong></p>
-
-    
+      <h1>Thank You for Your Booking!</h1>
+      <p>Your appointment has been successfully received.</p>
+      <p>We will contact you soon with confirmation details.</p>
+      <p>Your Appointment ID is: <strong>{{ appointment_id }}</strong></p>
     </div>
+
     <div class="qr-code-container">
-        <h3>Scan to pay Advance Payment</h3>
-        <img src="{{ qr_image_url }}" alt="Payment QR Code">
+      <h3 class="text-dark">Scan to Pay Advance</h3>
+      <img src="{{ qr_image_url }}" alt="QR code for UPI payment">
     </div>
-  
+
     <div class="payment-details">
-        <p>Click here to confirm payment</p>
-        <div class="d-flex justify-content-center">
-            <a href="/" class="btn btn-home">I have paid</a>
-        </div>
+      <p>After payment, click the button below to confirm:</p>
+      <div class="d-flex justify-content-center">
+        <a href="/" class="btn btn-home px-4">I Have Paid</a>
+      </div>
 
-        <h4>Banking Name: Mou Priya Dey</h4>
-        <p><strong>UPI ID:</strong> moupriyadeys@axl</p>
-        <p><strong>Amount:</strong> ₹500</p>
-        
+      <hr class="my-4">
 
-        <p><i>"Thank you for choosing my service.."</i></p>
-        <p><strong><i>'your Moupriya'</i></strong></p><p>&#129392; </p>
+      <h4>Banking Name: Mou Priya Dey</h4>
+      <p><strong>UPI ID:</strong> moupriyadeys@axl</p>
+      <p><strong>Amount:</strong> ₹500</p>
+
+      <p><em>“Thank you for choosing my service.”</em></p>
+      <p><strong><em>— Your Moupriya 💖</em></strong></p>
     </div>
 
     <div class="footer">
-        &copy; 2025 Mou's Makeup & Nails. All rights reserved.
+      &copy; 2025 Mou's Makeup & Nails. All rights reserved.
     </div>
-</div>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </div>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
