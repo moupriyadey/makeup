@@ -4,7 +4,17 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
   <title>Mou's Makeup & Nails</title>
+
+  <!-- Bootstrap CSS and Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+  
+  <!-- Favicon and SEO -->
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <meta name="description" content="Mou's Makeup & Nails - Professional makeup, Nails art, and bridal beauty services.">
+  <meta name="keywords" content="makeup, Nails art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
+  <meta name="author" content="Mou's Makeup & Nails">
+
   <style>
     body {
       background: linear-gradient(to right, #fff0f5, #ffe6f0);
@@ -59,6 +69,10 @@
       color: white;
     }
 
+    .btn-custom:hover {
+      background-color: #c02274;
+    }
+
     .carousel-img {
       width: 8cm;
       height: 10cm;
@@ -98,7 +112,6 @@
       margin-right: 5px;
     }
 
-    /* Scroll Down Arrow */
     .scroll-down-arrow {
       position: fixed;
       bottom: 20px;
@@ -112,40 +125,40 @@
     }
 
     @keyframes bounce {
-      0%, 100% {
-        transform: translateX(-50%) translateY(0);
-      }
-      50% {
-        transform: translateX(-50%) translateY(-10px);
-      }
+      0%, 100% { transform: translateX(-50%) translateY(0); }
+      50% { transform: translateX(-50%) translateY(-10px); }
     }
 
     html {
       scroll-behavior: smooth;
     }
 
-    /* Button Hover Enhancement */
-.btn-custom:hover {
-  background-color: #c02274;
-  color: white;
-}
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      background-color: #d63384;
+      border-radius: 50%;
+    }
 
-/* Carousel Control Arrows Styling */
-.carousel-control-prev-icon,
-.carousel-control-next-icon {
-  background-color: #d63384;
-  border-radius: 50%;
-}
+    /* Floating WhatsApp Button */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 80px;
+      right: 20px;
+      background-color: #25D366;
+      color: white;
+      border-radius: 50%;
+      padding: 12px 14px;
+      font-size: 24px;
+      z-index: 1000;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+    }
+
+    .whatsapp-float:hover {
+      background-color: #20c95d;
+      text-decoration: none;
+    }
 
   </style>
-
-<link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-
-<meta name="description" content="Mou's Makeup & Nails - Professional makeup, Nails art, and bridal beauty services.">
-<meta name="keywords" content="makeup, Nails art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
-<meta name="author" content="Mou's Makeup & Nails">
-
-
 </head>
 <body>
 
@@ -179,6 +192,9 @@
     <div id="serviceCarousel" class="carousel slide mb-4" data-bs-ride="carousel" data-bs-interval="1600">
       <div class="carousel-inner text-center">
         <div class="carousel-item active">
+          <img src="/static/images/banner1.png.jpg" class="carousel-img" alt="Banner 1">
+        </div>
+        <div class="carousel-item">
           <img src="/static/images/service1.png" class="carousel-img" alt="Service 1">
         </div>
         <div class="carousel-item">
@@ -187,12 +203,6 @@
         <div class="carousel-item">
           <img src="/static/images/service3.png" class="carousel-img" alt="Service 3">
         </div>
-
-        <div class="carousel-item">
-          <img src="/static/images/banner1.png.jpg" class="carousel-img" alt="banner1.png.jpg">
-        </div>
-
-
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev">
         <span class="carousel-control-prev-icon"></span>
@@ -207,18 +217,22 @@
       <a href="/book" class="btn btn-custom btn-lg">Book an Appointment</a>
     </div>
 
-    <!-- Phone & WhatsApp -->
+    <!-- WhatsApp Contact -->
     <div class="whatsapp-contact">
       <i class="bi bi-whatsapp"></i> +91-93304 82697
-   <p>HomeService Available</p>
+      <p>Home Service Available</p>
     </div>
 
-<!-- Gallery & Reviews -->
-<div class="gallery-links">
-  <a href="/gallery" class="btn btn-primary">View Gallery</a>
-  <a href="https://g.co/kgs/oA9p2gq" target="_blank" class="btn btn-success">Google Reviews</a>
+ <!-- Services Button -->
+ <div class="text-center mt-3">
+  <a href="/services" class="btn btn-warning">See All Services</a>
 </div>
 
+    <!-- Gallery & Reviews -->
+    <div class="gallery-links">
+      <a href="/gallery" class="btn btn-primary">View Gallery</a>
+      <a href="https://g.co/kgs/oA9p2gq" target="_blank" class="btn btn-success">Google Reviews</a>
+    </div>
 
     <!-- Testimonials -->
     <div class="testimonial-links">
@@ -226,18 +240,26 @@
       <a href="/testimonials" class="btn btn-outline-secondary">Testimonials Page 1</a>
       <a href="/testimonials2" class="btn btn-outline-secondary">Testimonials Page 2</a>
     </div>
-<!-- Address Section -->
-<div class="text-center mt-4">
-  <h5 style="color: #d63384;"><i class="bi bi-geo-alt-fill"></i> Visit Us</h5>
-  <p>18, Santhosh Roy Road, Behala, Kolkata - 700008</p>
-</div>
 
-<!-- Services Button -->
-<div class="text-center mt-3">
-  <a href="/services" class="btn btn-warning">See All Services</a>
-</div>
-
+    <div class="text-center mt-4">
+      <h5 style="color: #d63384;"><i class="bi bi-geo-alt-fill"></i> Visit Us<!-- Floating Direction Button -->
+        <a href="https://www.google.com/maps/dir/?api=1&destination=18,+Santosh+Roy+Rd,+Behala,+Kolkata,+West+Bengal+700008"
+        class="direction-float" target="_blank" title="Get Directions">
+        <i class="bi bi-geo-alt-fill"></i>
+        </a></h5>
+      <p>
+        <a href="https://www.google.com/maps?q=18,+Santosh+Roy+Road,+Behala,+Kolkata,+700008"
+           target="_blank" style="color: #333; text-decoration: underline;">
+          18, Santhosh Roy Road, Behala, Kolkata - 700008
+        </a>
+      </p>
+    </div>
     
+
+
+   
+
+
     <!-- Footer -->
     <div class="footer">
       &copy; 2025 Mou's Makeup & Nails. All rights reserved.
@@ -247,7 +269,13 @@
   <!-- Scroll Down Arrow -->
   <a href="#scroll-target" class="scroll-down-arrow">⌄</a>
 
+  <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css">
+
+  <!-- Floating WhatsApp Button -->
+  <a href="https://wa.me/919330482697" class="whatsapp-float" target="_blank" title="Chat with us on WhatsApp">
+    <i class="bi bi-whatsapp"></i>
+  </a>
+
 </body>
 </html>

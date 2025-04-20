@@ -127,3 +127,51 @@ footer a:hover {
     max-height: 300px;
   }
 }
+
+/* Floating WhatsApp Button (Mobile Only) */
+.whatsapp-float {
+  display: none; /* Hidden by default */
+}
+
+@media (max-width: 768px) {
+  .whatsapp-float {
+    display: block;
+    position: fixed;
+    bottom: 20px;
+    right: 20px;
+    background-color: #25D366;
+    color: white;
+    border-radius: 50%;
+    padding: 12px;
+    font-size: 28px;
+    z-index: 10000;
+    box-shadow: 0 4px 8px rgba(0,0,0,0.3);
+    text-align: center;
+    transition: background 0.3s;
+  }
+
+  .direction-float {
+    position: fixed;
+    bottom: 90px;
+    right: 20px;
+    background-color: #d63384;
+    color: white;
+    font-size: 1.8rem;
+    padding: 10px 14px;
+    border-radius: 50%;
+    z-index: 9999;
+    text-decoration: none;
+    box-shadow: 0 4px 6px rgba(0, 0, 0, 0.3);
+    transition: background-color 0.3s ease;
+  }
+  
+  .direction-float:hover {
+    background-color: #c02274;
+  }
+  
+
+  .whatsapp-float:hover {
+    background-color: #1ebe5d;
+    color: white;
+  }
+}

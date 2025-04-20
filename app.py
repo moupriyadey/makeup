@@ -136,7 +136,7 @@ def gallery():
 @app.route('/thank_you')
 def thank_you():
     appointment_id = request.args.get('appointment_id')
-    upi_id = "smarasada@okaxis"
+    upi_id = "moupriyadeys@axl"
     amount = 500
     payee_name = "MOU PRIYA DEY"
     qr_filename = f"{appointment_id}.png"
