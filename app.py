@@ -69,6 +69,7 @@ def index():
     return render_template('index.html')
 
 # Booking route
+# Fix in book() route for date format
 @app.route('/book', methods=['GET', 'POST'])
 def book():
     if request.method == 'POST':
@@ -81,8 +82,15 @@ def book():
         time = request.form['time']
         appointment_id = str(uuid.uuid4())
 
-        # Convert date to dd/mm/yyyy format
-        formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
+        # TRY both date formats
+        try:
+            formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
+        except ValueError:
+            try:
+                formatted_date = datetime.strptime(date_str, "%d/%m/%Y").strftime("%d/%m/%Y")
+            except ValueError:
+                flash("Invalid date format. Please use DD/MM/YYYY or YYYY-MM-DD.", "danger")
+                return redirect(url_for('book'))
 
         new_booking = {
             'id': appointment_id,
@@ -124,6 +132,7 @@ Mou's Makeup & Nails
     # If GET request, pass current date to template
     current_date = datetime.today().strftime('%Y-%m-%d')
     return render_template('book.html', date=current_date)
+
 
 # Testimonials routes
 @app.route('/testimonials')
@@ -266,6 +275,18 @@ def logout():
 @app.route('/services')
 def services():
     return render_template('services.html')
+
+@app.route('/confirm_payment/<appointment_id>', methods=['POST'])
+def confirm_payment(appointment_id):
+    bookings = load_bookings()
+    for booking in bookings:
+        if booking['id'] == appointment_id:
+            booking['payment_status'] = 'Paid'
+            break
+    save_bookings(bookings)
+    flash('Payment confirmed. Thank you!')
+    return redirect(url_for('index'))
+
 
 if __name__ == '__main__':
     app.run(debug=True)

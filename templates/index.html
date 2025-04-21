@@ -162,6 +162,18 @@
 </head>
 <body>
 
+  <!-- Flash Message Section -->
+  {% with messages = get_flashed_messages(with_categories=true) %}
+    {% if messages %}
+      {% for category, message in messages %}
+        <div class="alert alert-{{ category }} alert-dismissible fade show m-3" role="alert">
+          {{ message }}
+          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+      {% endfor %}
+    {% endif %}
+  {% endwith %}
+  
   <!-- Marquee Banner -->
   <div class="marquee-bar">
     <marquee behavior="scroll" direction="left">

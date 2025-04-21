@@ -79,8 +79,11 @@
     <div class="payment-details">
       <p>After payment, click the button below to confirm:</p>
       <div class="d-flex justify-content-center">
-        <a href="/" class="btn btn-home px-4">I Have Paid</a>
+        <form action="/confirm_payment/{{ appointment_id }}" method="POST">
+          <button type="submit" class="btn btn-home px-4">I Have Paid</button>
+        </form>
       </div>
+      
 
       <hr class="my-4">
 
@@ -89,7 +92,7 @@
       <p><strong>Amount:</strong> ₹500</p>
 
       <p><em>“Thank you for choosing my service.”</em></p>
-      <p><strong><em>— Your Moupriya 💖</em></strong></p>
+      <p><strong><em>— your Moupriya 💖</em></strong></p>
     </div>
 
     <div class="footer">
