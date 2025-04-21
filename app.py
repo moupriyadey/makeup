@@ -288,5 +288,12 @@ def confirm_payment(appointment_id):
     return redirect(url_for('index'))
 
 
+@app.route('/test-image')
+def test_image():
+    return '''
+    <img src="/static/images/nail2.jpg" alt="Gallery Image 9"> 
+    '''
+
+
 if __name__ == '__main__':
     app.run(debug=True)
