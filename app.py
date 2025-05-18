@@ -272,6 +272,11 @@ def logout():
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
 
+
+@app.route('/terms-of-sale')
+def terms_of_sale():
+    return render_template('terms_of_sale.html')
+
 # Services page
 @app.route('/services')
 def services():
