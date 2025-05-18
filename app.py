@@ -273,7 +273,7 @@ def logout():
     return redirect(url_for('login'))
 
 
-@app.route('/terms-of-sale')
+@app.route('/terms_of_sale')
 def terms_of_sale():
     return render_template('terms_of_sale.html')
 
