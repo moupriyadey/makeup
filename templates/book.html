@@ -3,82 +3,168 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Book Appointment - Mou's Makeup & Nails</title>
+  <title>Book Appointment | Mou's Makeup & Nails</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+
+  <!-- Bootstrap CSS + Flatpickr CSS -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css">
+  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+
   <style>
+    /* Page background */
     body {
-      background-color: #fff0f5;
-      padding: 30px;
+      background: linear-gradient(120deg, #ffe3f0 0%, #fff9f9 100%);
+      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+      margin: 0;
+      padding: 1rem 0;
     }
-    .form-container {
-      max-width: 600px;
-      margin: auto;
-      background: white;
-      padding: 30px;
-      border-radius: 10px;
-      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    /* Centered form card */
+    .form-card {
+      max-width: 500px;
+      margin: 0 auto;
+      background: #fff;
+      border-radius: 1rem;
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+      overflow: hidden;
+    }
+    /* Decorative header */
+    .form-header {
+      background: linear-gradient(135deg, #e91e63, #f50057);
+      color: white;
+      padding: 2rem 1rem;
+      text-align: center;
+    }
+    .form-header h2 {
+      margin: 0;
+      font-size: 1.75rem;
+    }
+    .form-header p {
+      margin-top: 0.5rem;
+      font-size: 0.9rem;
+      opacity: 0.9;
+    }
+    /* Body of form */
+    .form-body {
+      padding: 1.5rem;
+    }
+    .form-body .form-label {
+      font-weight: 600;
+      color: #444;
+    }
+    /* Icon inside inputs */
+    .icon-group {
+      position: relative;
+    }
+    .icon-group i {
+      position: absolute;
+      top: 50%;
+      left: 1rem;
+      transform: translateY(-50%);
+      color: #e91e63;
+      font-size: 1.2rem;
+    }
+    .icon-group .form-control {
+      padding-left: 3rem;
+    }
+    /* Submit button */
+    .btn-submit {
+      background: #e91e63;
+      border: none;
+      color: #fff;
+      font-weight: 600;
+      width: 100%;
+      padding: 0.75rem;
+      border-radius: 0.5rem;
+      transition: background 0.3s ease;
+    }
+    .btn-submit:hover {
+      background: #c2185b;
+    }
+    /* Mobile spacing fix */
+    @media (max-width: 576px) {
+      .form-header {
+        padding: 1.5rem 0.5rem;
+      }
+      .form-body {
+        padding: 1rem;
+      }
     }
   </style>
 </head>
 <body>
-  <div class="form-container">
-    <h2 class="mb-4 text-center text-danger">Book Your Appointment</h2>
+
+<div class="form-card">
+  <div class="form-header">
+    <h2>Book Your Appointment</h2>
+    <p>Easy, fast & secure booking</p>
+  </div>
+  <div class="form-body">
     <form method="POST" action="/book">
-      <div class="mb-3">
-        <label class="form-label">Full Name</label>
-        <input type="text" name="name" class="form-control" required placeholder="Enter your full name">
+      <div class="mb-3 icon-group">
+        <i class="bi bi-person-fill"></i>
+        <input type="text" name="name" class="form-control" required placeholder="Full Name">
       </div>
-
-      <div class="mb-3">
-        <label class="form-label">Email Address</label>
-        <input type="email" name="email" class="form-control" required placeholder="Enter your email">
+      <div class="mb-3 icon-group">
+        <i class="bi bi-envelope-fill"></i>
+        <input type="email" name="email" class="form-control" required placeholder="Email Address">
       </div>
-
-      <div class="mb-3">
-        <label class="form-label">Mobile Number</label>
-        <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Enter 10-digit mobile number">
+      <div class="mb-3 icon-group">
+        <i class="bi bi-telephone-fill"></i>
+        <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Mobile Number">
       </div>
-
       <div class="mb-3">
         <label class="form-label">Service Type</label>
         <select name="service" class="form-select" required>
           <option value="" disabled selected>Select a service</option>
-          <option value="Bridal Makeup">Bridal Makeup</option>
-          <option value="Party Makeup">Party Makeup</option>
-          <option value="Nail Art">Nail Art</option>
-          <option value="Facial & Skincare">Facial & Skincare</option>
-          <option value="Hairstyling">Hairstyling</option>
-          <option value="Eye Makeup">Eye Makeup</option>
+          <option>Party Makeup</option>
+          <option>Nail Art</option>
+          <option>Haldi Makeup</option>
+          <option>HD Makeup</option>
+          <option>Hairstyling</option>
+          <option>Eye Makeup</option>
+          <option>Waterproof Makeup</option>
+          <option>Reception Makeup</option>
+          <option>Any Occasion</option>
         </select>
       </div>
-
-      <div class="mb-3">
-        <label class="form-label">Preferred Date</label>
-        <input type="text" id="date" name="date" class="form-control" placeholder="dd/mm/yyyy" required>
+      <div class="mb-3 icon-group">
+        <i class="bi bi-calendar-date-fill"></i>
+        <input type="text" id="date" name="date" class="form-control" required placeholder="Preferred Date">
       </div>
-
       <div class="mb-3">
-        <label class="form-label">Preferred Time Slot</label>
+        <label class="form-label">Time Slot</label>
         <select name="time" class="form-select" required>
           <option value="" disabled selected>Select a time</option>
-          <option value="10:00 AM">09:00 AM</option>
-          <option value="2:00 PM">12:00 PM</option>
-          <option value="6:00 PM">04:00 PM</option>
-          <option value="9:00 PM">07:00 PM</option>
+          <option>08:00 AM</option>
+          <option>09:00 AM</option>
+          <option>10:00 AM</option>
+          <option>11:00 AM</option>
+          <option>12:00 PM</option>
+          <option>01:00 PM</option>
+          <option>02:00 PM</option>
+          <option>03:00 PM</option>
+          <option>04:00 PM</option>
+          <option>05:00 PM</option>
+          <option>06:00 PM</option>
+          <option>07:00 PM</option>
+          <option>08:00 PM</option>
         </select>
       </div>
-
-      <button type="submit" class="btn btn-danger w-100">Confirm Booking</button>
+      <button type="submit" class="btn-submit">Confirm Booking</button>
     </form>
   </div>
+</div>
 
-  <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-  <script>
-    flatpickr("#date", {
-      dateFormat: "d/m/Y",
-      minDate: "today"
-    });
-  </script>
+<!-- Flatpickr & Bootstrap JS -->
+<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  flatpickr("#date", {
+    dateFormat: "d/m/Y",
+    minDate: "today",
+    disableMobile: true
+  });
+</script>
 </body>
 </html>
