@@ -199,38 +199,127 @@
   </div>
 
   <!-- Featured Services -->
-  <div class="section-title">Featured Services</div>
-  <div class="container">
+ <div class="section-title">Featured Services</div>
+<div class="container">
     <div class="row gy-4">
-      <div class="col-6 col-md-4 text-center">
-        <i class="bi bi-brush" style="font-size:2rem;color:#d63384;"></i>
-        <p>Bridal Makeup</p>
-      </div>
-      <div class="col-6 col-md-4 text-center">
-        <i class="bi bi-stars" style="font-size:2rem;color:#d63384;"></i>
-        <p>Reception & Party</p>
-      </div>
-      <div class="col-6 col-md-4 text-center">
-        <i class="bi bi-droplet" style="font-size:2rem;color:#d63384;"></i>
-        <p>Waterproof & HD Makeup</p>
-      </div>
-      <div class="col-6 col-md-4 text-center">
-        <i class="bi bi-hand-thumbs-up" style="font-size:2rem;color:#d63384;"></i>
-        <p>Nail Art</p>
-      </div>
-      <div class="col-6 col-md-4 text-center">
-        <i class="bi bi-scissors" style="font-size:2rem;color:#d63384;"></i>
-        <p>Hairstyling</p>
-      </div>
-      <div class="col-6 col-md-4 text-center">
-        <i class="bi bi-balloon-heart" style="font-size:2rem;color:#d63384;"></i>
-        <p>Occasional & Haldi</p>
-      </div>
+        <div class="col-6 col-md-4 text-center service-item">
+            <div class="service-header">
+                <i class="bi bi-brush service-icon"></i>
+                <h5>Bridal Makeup</h5>
+            </div>
+            <div class="service-body">
+                <p>Professional bridal looks tailored to your wedding style.</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+            <div class="service-header">
+                <i class="bi bi-stars service-icon"></i>
+                <h5>Reception & Party</h5>
+            </div>
+            <div class="service-body">
+                <p>Glamorous looks for birthdays, parties, and events.</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+            <div class="service-header">
+                <i class="bi bi-droplet-half service-icon"></i>
+                <h5>Waterproof Makeup</h5>
+            </div>
+            <div class="service-body">
+                <p>Smudge-free, water-resistant makeup for long-lasting wear.</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+            <div class="service-header">
+                <i class="bi bi-hand-thumbs-up service-icon"></i>
+                <h5>Nail Art</h5>
+            </div>
+            <div class="service-body">
+                <p>Trendy and classy nail art designs personalized for you.</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+            <div class="service-header">
+                <i class="bi bi-scissors service-icon"></i>
+                <h5>Hairstyling</h5>
+            </div>
+            <div class="service-body">
+                <p>Elegant hairstyles perfect for any occasion or event.</p>
+            </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+            <div class="service-header">
+                <i class="bi bi-balloon-heart service-icon"></i>
+                <h5>Occasional Makeup</h5>
+            </div>
+            <div class="service-body">
+                <p>Customized makeup for anniversaries, festivals, and events.</p>
+            </div>
+        </div>
     </div>
     <div class="text-center mt-3">
-      <a href="/services" class="btn btn-custom">See All Services</a>
+        <a href="/services" class="btn btn-custom">See All Services</a>
     </div>
-  </div>
+</div>
+
+<style>
+    .service-item {
+        border: none;
+        border-radius: 1rem; /* Apply border-radius to the main container */
+        overflow: hidden;
+        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        transition: transform 0.3s ease, box-shadow 0.3s ease;
+        margin-bottom: 1.5rem; /* Add some spacing between items */
+    }
+
+    .service-item:hover {
+        transform: translateY(-8px);
+        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+
+    .service-header {
+        background: linear-gradient(120deg, #e91e63, #f50057);
+        padding: 1.5rem;
+        text-align: center;
+        border-top-left-radius: 1rem; /* Match top radius */
+        border-top-right-radius: 1rem; /* Match top radius */
+    }
+
+    .service-icon {
+        font-size: 2rem;
+        margin-bottom: 0.75rem;
+        color: white;
+    }
+
+    .service-header h5 {
+        color: #fff;
+        margin: 0;
+        font-weight: 600;
+    }
+
+    .service-body {
+        padding: 1.25rem;
+        background: #fff;
+        text-align: center; /* Center the description text */
+        border-bottom-left-radius: 1rem; /* Match bottom radius */
+        border-bottom-right-radius: 1rem; /* Match bottom radius */
+    }
+
+    .service-body p {
+        margin: 0;
+        color: #555;
+        font-size: 0.9rem; /* Adjust font size for description */
+    }
+
+    /* Responsive adjustments for smaller screens */
+    @media (max-width: 767px) {
+        .col-6 {
+            width: 100%; /* Make them full width on smaller screens */
+        }
+    }
+</style>
+
+
 
   <!-- Gallery Carousel -->
   <div class="section-title">Gallery Highlights</div>
