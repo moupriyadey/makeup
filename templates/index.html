@@ -1,383 +1,425 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <title>Mou's Makeup & Nails</title>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+    <title>Mou's Makeup & Nails</title>
 
-  <!-- Bootstrap CSS + Icons + Google Fonts -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet"/>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
 
-  <!-- Favicon & SEO -->
-  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <meta name="description" content="Mou's Makeup & Nails - Professional makeup, nail art, and bridal beauty services.">
-  <meta name="keywords" content="makeup, nail art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
-  <meta name="author" content="Mou's Makeup & Nails">
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="description" content="Mou's Makeup & Nails - Professional makeup, nail art, and bridal beauty services.">
+    <meta name="keywords" content="makeup, nail art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
+    <meta name="author" content="Mou's Makeup & Nails">
 
-  <style>
-    body {
-      font-family: 'Roboto', sans-serif;
-      background: linear-gradient(to right, #fff0f5, #ffe6f0);
-      color: #333;
-    }
-    h1, h2, .brand {
-      font-family: 'Playfair Display', serif;
-    }
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #fff0f5, #ffe6f0);
+            color: #333;
+            /* Add padding to account for fixed navbar */
+            padding-top: 100px; /* Adjust as needed based on your navbar height */
+        }
+        h1, h2, .brand {
+            font-family: 'Playfair Display', serif;
+        }
 
-    .top-bar {
-      background: #d63384;
-      color: #fff;
-      text-align: center;
-      padding: .5rem 0;
-      font-weight: 600;
-    }
-    .top-bar a {
-      color: #fff;
-      text-decoration: underline;
-    }
+        .top-bar {
+            background: #d63384;
+            color: #fff;
+            text-align: center;
+            padding: .5rem 0;
+            font-weight: 600;
+        }
+        .top-bar a {
+            color: #fff;
+            text-decoration: underline;
+        }
 
-    .brand {
-      text-align: center;
-      color: #d63384;
-      font-size: 2rem;
-      margin: 1rem 0;
-    }
+        /* Navbar styles */
+        .navbar {
+            background-color: #ffffff; /* White background for navbar */
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1); /* Subtle shadow */
+            position: fixed; /* Make the navbar fixed */
+            top: 0;
+            left: 0;
+            width: 100%;
+            z-index: 1030; /* Ensure it's above other content */
+        }
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            color: #d63384 !important; /* Brand color */
+            font-size: 1.8rem;
+            font-weight: 700;
+        }
+        .navbar-nav .nav-link {
+            color: #555;
+            font-weight: 500;
+            margin-right: 15px;
+            transition: color 0.3s ease;
+        }
+        .navbar-nav .nav-link:hover {
+            color: #d63384; /* Highlight on hover */
+        }
+        .navbar-toggler {
+            border-color: rgba(0,0,0,.1);
+        }
+        .navbar-toggler-icon {
+            background-image: url("data:image/svg+xml,%3csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 30 30'%3e%3cpath stroke='rgba%28214, 51, 132, 1%29' stroke-linecap='round' stroke-miterlimit='10' stroke-width='2' d='M4 7h22M4 15h22M4 23h22'/%3e%3c/svg%3e");
+        }
 
-    .hero {
-      text-align: center;
-      padding: 2rem 1rem;
-    }
-    .hero h1 {
-      color: #d63384;
-      font-size: 2.5rem;
-    }
-    .hero p {
-      color: #555;
-      margin-bottom: 1.5rem;
-    }
-    .btn-hero {
-      background: #d63384;
-      color: #fff;
-      padding: .75rem 2rem;
-      border: none;
-      border-radius: .5rem;
-      transition: background .2s, transform .2s;
-    }
-    .btn-hero:hover {
-      background: #c2185b;
-      transform: scale(1.05);
-    }
+        .brand-old { /* This style is kept for reference but not directly used for the navbar-brand */
+            text-align: center;
+            color: #d63384;
+            font-size: 2rem;
+            margin: 1rem 0;
+        }
 
-    .section-title {
-      text-align: center;
-      color: #d63384;
-      font-size: 1.75rem;
-      margin: 3rem 0 1rem;
-      position: relative;
-    }
-    .section-title::after {
-      content: '';
-      display: block;
-      width: 60px;
-      height: 4px;
-      background: #d63384;
-      margin: .5rem auto 0;
-      border-radius: 2px;
-    }
+        .hero {
+            text-align: center;
+            padding: 2rem 1rem;
+        }
+        .hero h1 {
+            color: #d63384;
+            font-size: 2.5rem;
+        }
+        .hero p {
+            color: #555;
+            margin-bottom: 1.5rem;
+        }
+        .btn-hero {
+            background: #d63384;
+            color: #fff;
+            padding: .75rem 2rem;
+            border: none;
+            border-radius: .5rem;
+            transition: background .2s, transform .2s;
+        }
+        .btn-hero:hover {
+            background: #c2185b;
+            transform: scale(1.05);
+        }
 
-    .carousel-img {
-      width: 302px;
-      height: 378px;
-      object-fit: cover;
-      border-radius: .5rem;
-      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
-      margin: 0 auto;
-    }
-    .carousel-control-prev-icon,
-    .carousel-control-next-icon {
-      background-color: #d63384;
-      border-radius: 50%;
-    }
+        .section-title {
+            text-align: center;
+            color: #d63384;
+            font-size: 1.75rem;
+            margin: 3rem 0 1rem;
+            position: relative;
+        }
+        .section-title::after {
+            content: '';
+            display: block;
+            width: 60px;
+            height: 4px;
+            background: #d63384;
+            margin: .5rem auto 0;
+            border-radius: 2px;
+        }
 
-    .btn-custom {
-      background: #d63384;
-      color: #fff;
-      margin: 0 .5rem;
-      transition: transform .2s;
-    }
-    .btn-custom:hover {
-      background: #c2185b;
-      transform: scale(1.05);
-    }
+        .carousel-img {
+            width: 302px;
+            height: 378px;
+            object-fit: cover;
+            border-radius: .5rem;
+            box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+            margin: 0 auto;
+        }
+        .carousel-control-prev-icon,
+        .carousel-control-next-icon {
+            background-color: #d63384;
+            border-radius: 50%;
+        }
 
-    .gallery-links .btn-primary {
-      background: #6f42c1;
-      border: none;
-    }
-    .gallery-links .btn-success {
-      background: #28a745;
-      border: none;
-    }
+        .btn-custom {
+            background: #d63384;
+            color: #fff;
+            margin: 0 .5rem;
+            transition: transform .2s;
+        }
+        .btn-custom:hover {
+            background: #c2185b;
+            transform: scale(1.05);
+        }
 
-    .testimonial-links .btn-outline-secondary {
-      border-color: #d63384;
-      color: #d63384;
-    }
-    .testimonial-links .btn-outline-secondary:hover {
-      background: #d63384;
-      color: #fff;
-    }
+        .gallery-links .btn-primary {
+            background: #6f42c1;
+            border: none;
+        }
+        .gallery-links .btn-success {
+            background: #28a745;
+            border: none;
+        }
 
-    .whatsapp-float {
-      position: fixed;
-      bottom: 20px;
-      right: 20px;
-      background: #25d366;
-      color: #fff;
-      width: 56px;
-      height: 56px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 1.5rem;
-      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
-      z-index: 1000;
-    }
-    .whatsapp-float:hover {
-      background: #20c95d;
-    }
+        .testimonial-links .btn-outline-secondary {
+            border-color: #d63384;
+            color: #d63384;
+        }
+        .testimonial-links .btn-outline-secondary:hover {
+            background: #d63384;
+            color: #fff;
+        }
 
-    .address h5 i {
-      margin-right: .25rem;
-    }
-    .address a {
-      text-decoration: none;
-    }
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25d366;
+            color: #fff;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .whatsapp-float:hover {
+            background: #20c95d;
+        }
 
-    .footer {
-      text-align: center;
-      padding: 2rem 0;
-      color: #777;
-      font-size: .9rem;
-    }
-    .footer a {
-      color: #d63384;
-      text-decoration: none;
-    }
+        .address h5 i {
+            margin-right: .25rem;
+        }
+        .address a {
+            text-decoration: none;
+        }
 
-    @media(max-width:576px) {
-      .hero h1 {
-        font-size: 2rem;
-      }
-      .carousel-img {
-        width: 80%;
-        height: auto;
-      }
-    }
-  </style>
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #777;
+            font-size: .9rem;
+        }
+        .footer a {
+            color: #d63384;
+            text-decoration: none;
+        }
+
+        .service-item {
+            border: none;
+            border-radius: 1rem;
+            overflow: hidden;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+            transition: transform 0.3s ease, box-shadow 0.3s ease;
+            margin-bottom: 1.5rem;
+        }
+
+        .service-item:hover {
+            transform: translateY(-8px);
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+        }
+
+        .service-header {
+            background: linear-gradient(120deg, #e91e63, #f50057);
+            padding: 1.5rem;
+            text-align: center;
+            border-top-left-radius: 1rem;
+            border-top-right-radius: 1rem;
+        }
+
+        .service-icon {
+            font-size: 2rem;
+            margin-bottom: 0.75rem;
+            color: white;
+        }
+
+        .service-header h5 {
+            color: #fff;
+            margin: 0;
+            font-weight: 600;
+        }
+
+        .service-body {
+            padding: 1.25rem;
+            background: #fff;
+            text-align: center;
+            border-bottom-left-radius: 1rem;
+            border-bottom-right-radius: 1rem;
+        }
+
+        .service-body p {
+            margin: 0;
+            color: #555;
+            font-size: 0.9rem;
+        }
+
+
+        @media(max-width:576px) {
+            .hero h1 {
+                font-size: 2rem;
+            }
+            .carousel-img {
+                width: 80%;
+                height: auto;
+            }
+            .col-6 {
+                width: 100%;
+            }
+        }
+    </style>
 </head>
 <body>
 
-  <!-- Top contact bar -->
-  <div class="top-bar">
-    📞 <a href="tel:+919330482697">+91 93304 82697</a>
-     |  Home Service Available  
-    |  <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat</a>
-  </div>
+    <div class="top-bar">
+        📞 <a href="tel:+919330482697">+91 93304 82697</a>
+        | Home Service Available
+        | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat</a>
+    </div>
 
-  <!-- Brand -->
-  <div class="brand">Mou's Makeup & Nails</div>
+    <nav class="navbar navbar-expand-lg navbar-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('services') }}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('gallery') }}">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('testimonials') }}">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('book') }}">Book Now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Admin Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
 
-  <!-- Hero -->
-  <div class="hero container">
-    <h1>Welcome to Your Beauty Haven</h1>
-    <p>Flawless bridal & party makeup, nail art, hairstyling, HD sessions & more—book your glam experience today!</p>
-    <a href="/book" class="btn btn-hero">Book Now</a>
-  </div>
+    <div class="hero container">
+        <h1>Welcome to Your Beauty Haven</h1>
+        <p>Flawless bridal & party makeup, nail art, hairstyling, HD sessions & more—book your glam experience today!</p>
+        <a href="{{ url_for('book') }}" class="btn btn-hero">Book Now</a>
+    </div>
 
-  <!-- Featured Services -->
- <div class="section-title">Featured Services</div>
-<div class="container">
-    <div class="row gy-4">
-        <div class="col-6 col-md-4 text-center service-item">
-            <div class="service-header">
-                <i class="bi bi-brush service-icon"></i>
-                <h5>Bridal Makeup</h5>
+    <div class="section-title">Featured Services</div>
+    <div class="container">
+        <div class="row gy-4">
+            <div class="col-6 col-md-4 text-center service-item">
+                <div class="service-header">
+                    <i class="bi bi-brush service-icon"></i>
+                    <h5>Bridal Makeup</h5>
+                </div>
+                <div class="service-body">
+                    <p>Professional bridal looks tailored to your wedding style.</p>
+                </div>
             </div>
-            <div class="service-body">
-                <p>Professional bridal looks tailored to your wedding style.</p>
+            <div class="col-6 col-md-4 text-center service-item">
+                <div class="service-header">
+                    <i class="bi bi-stars service-icon"></i>
+                    <h5>Reception & Party</h5>
+                </div>
+                <div class="service-body">
+                    <p>Glamorous looks for birthdays, parties, and events.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 text-center service-item">
+                <div class="service-header">
+                    <i class="bi bi-droplet-half service-icon"></i>
+                    <h5>Waterproof Makeup</h5>
+                </div>
+                <div class="service-body">
+                    <p>Smudge-free, water-resistant makeup for long-lasting wear.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 text-center service-item">
+                <div class="service-header">
+                    <i class="bi bi-hand-thumbs-up service-icon"></i>
+                    <h5>Nail Art</h5>
+                </div>
+                <div class="service-body">
+                    <p>Trendy and classy nail art designs personalized for you.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 text-center service-item">
+                <div class="service-header">
+                    <i class="bi bi-scissors service-icon"></i>
+                    <h5>Hairstyling</h5>
+                </div>
+                <div class="service-body">
+                    <p>Elegant hairstyles perfect for any occasion or event.</p>
+                </div>
+            </div>
+            <div class="col-6 col-md-4 text-center service-item">
+                <div class="service-header">
+                    <i class="bi bi-balloon-heart service-icon"></i>
+                    <h5>Occasional Makeup</h5>
+                </div>
+                <div class="service-body">
+                    <p>Customized makeup for anniversaries, festivals, and events.</p>
+                </div>
             </div>
         </div>
-        <div class="col-6 col-md-4 text-center service-item">
-            <div class="service-header">
-                <i class="bi bi-stars service-icon"></i>
-                <h5>Reception & Party</h5>
-            </div>
-            <div class="service-body">
-                <p>Glamorous looks for birthdays, parties, and events.</p>
-            </div>
-        </div>
-        <div class="col-6 col-md-4 text-center service-item">
-            <div class="service-header">
-                <i class="bi bi-droplet-half service-icon"></i>
-                <h5>Waterproof Makeup</h5>
-            </div>
-            <div class="service-body">
-                <p>Smudge-free, water-resistant makeup for long-lasting wear.</p>
-            </div>
-        </div>
-        <div class="col-6 col-md-4 text-center service-item">
-            <div class="service-header">
-                <i class="bi bi-hand-thumbs-up service-icon"></i>
-                <h5>Nail Art</h5>
-            </div>
-            <div class="service-body">
-                <p>Trendy and classy nail art designs personalized for you.</p>
-            </div>
-        </div>
-        <div class="col-6 col-md-4 text-center service-item">
-            <div class="service-header">
-                <i class="bi bi-scissors service-icon"></i>
-                <h5>Hairstyling</h5>
-            </div>
-            <div class="service-body">
-                <p>Elegant hairstyles perfect for any occasion or event.</p>
-            </div>
-        </div>
-        <div class="col-6 col-md-4 text-center service-item">
-            <div class="service-header">
-                <i class="bi bi-balloon-heart service-icon"></i>
-                <h5>Occasional Makeup</h5>
-            </div>
-            <div class="service-body">
-                <p>Customized makeup for anniversaries, festivals, and events.</p>
-            </div>
+        <div class="text-center mt-3">
+            <a href="{{ url_for('services') }}" class="btn btn-custom">See All Services</a>
         </div>
     </div>
-    <div class="text-center mt-3">
-        <a href="/services" class="btn btn-custom">See All Services</a>
+
+    <div class="section-title">Gallery Highlights</div>
+    <div id="serviceCarousel" class="carousel slide container mb-4" data-bs-ride="carousel" data-bs-interval="1500">
+        <div class="carousel-inner">
+            {% for img in ['banner1.png.jpg','service1.png','service2.png','service3.png','nail1.jpg','nail2.jpg','nail3.jpg'] %}
+            <div class="carousel-item {% if loop.first %}active{% endif %}">
+                <img src="{{ url_for('static', filename='images/' + img) }}" class="d-block mx-auto carousel-img" alt="{{ img }}">
+            </div>
+            {% endfor %}
+        </div>
+        <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev">
+            <span class="carousel-control-prev-icon"></span>
+        </button>
+        <button class="carousel-control-next" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next">
+            <span class="carousel-control-next-icon"></span>
+        </button>
     </div>
-</div>
 
-<style>
-    .service-item {
-        border: none;
-        border-radius: 1rem; /* Apply border-radius to the main container */
-        overflow: hidden;
-        box-shadow: 0 4px 12px rgba(0,0,0,0.05);
-        transition: transform 0.3s ease, box-shadow 0.3s ease;
-        margin-bottom: 1.5rem; /* Add some spacing between items */
-    }
-
-    .service-item:hover {
-        transform: translateY(-8px);
-        box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-    }
-
-    .service-header {
-        background: linear-gradient(120deg, #e91e63, #f50057);
-        padding: 1.5rem;
-        text-align: center;
-        border-top-left-radius: 1rem; /* Match top radius */
-        border-top-right-radius: 1rem; /* Match top radius */
-    }
-
-    .service-icon {
-        font-size: 2rem;
-        margin-bottom: 0.75rem;
-        color: white;
-    }
-
-    .service-header h5 {
-        color: #fff;
-        margin: 0;
-        font-weight: 600;
-    }
-
-    .service-body {
-        padding: 1.25rem;
-        background: #fff;
-        text-align: center; /* Center the description text */
-        border-bottom-left-radius: 1rem; /* Match bottom radius */
-        border-bottom-right-radius: 1rem; /* Match bottom radius */
-    }
-
-    .service-body p {
-        margin: 0;
-        color: #555;
-        font-size: 0.9rem; /* Adjust font size for description */
-    }
-
-    /* Responsive adjustments for smaller screens */
-    @media (max-width: 767px) {
-        .col-6 {
-            width: 100%; /* Make them full width on smaller screens */
-        }
-    }
-</style>
-
-
-
-  <!-- Gallery Carousel -->
-  <div class="section-title">Gallery Highlights</div>
-  <div id="serviceCarousel" class="carousel slide container mb-4" data-bs-ride="carousel" data-bs-interval="1500">
-    <div class="carousel-inner">
-      {% for img in ['banner1.png.jpg','service1.png','service2.png','service3.png','nail1.jpg','nail2.jpg','nail3.jpg'] %}
-      <div class="carousel-item {% if loop.first %}active{% endif %}">
-        <img src="/static/images/{{ img }}" class="d-block mx-auto carousel-img" alt="{{ img }}">
-      </div>
-      {% endfor %}
+    <div class="gallery-links text-center my-4">
+        <a href="{{ url_for('gallery') }}" class="btn btn-primary mx-2">View Gallery</a>
+        <a href="https://g.co/kgs/oA9p2gq" target="_blank" class="btn btn-success mx-2">Google Reviews</a>
     </div>
-    <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev">
-      <span class="carousel-control-prev-icon"></span>
-    </button>
-    <button class="carousel-control-next" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next">
-      <span class="carousel-control-next-icon"></span>
-    </button>
-  </div>
 
-  <!-- Actions: Gallery & Reviews -->
-  <div class="gallery-links text-center">
-    <a href="/gallery" class="btn btn-primary mx-2">View Gallery</a>
-    <a href="https://g.co/kgs/oA9p2gq" target="_blank" class="btn btn-success mx-2">Google Reviews</a>
-  </div>
+    <div class="testimonial-links text-center my-4">
+        <a href="{{ url_for('testimonials') }}" class="btn btn-outline-secondary mx-2">View All Testimonials</a>
+    </div>
 
-  <!-- Testimonials -->
-  <div class="testimonial-links text-center my-4">
-    <a href="/testimonials" class="btn btn-outline-secondary mx-2">Testimonials 1</a>
-    <a href="/testimonials2" class="btn btn-outline-secondary mx-2">Testimonials 2</a>
-  </div>
+    <div class="address text-center my-4">
+        <h5 style="color:#d63384;">
+            <i class="bi bi-geo-alt-fill"></i>
+            <a href="https://www.google.com/maps/dir/?api=1&destination=18,+Narayan+Roy+Road,+Purba+Barisha,+Kolkata,+700008" target="_blank">
+                Visit Us
+            </a>
+        </h5>
+        <p>
+            <a href="https://www.google.com/maps?q=18,+Narayan+Roy+Road,+Purba+Barisha,+Kolkata,+700008" target="_blank" style="color:#333; text-decoration:underline;">
+                18, Narayan Roy Road, Purba Barisha, Kolkata – 700008
+            </a>
+        </p>
+    </div>
 
-  <!-- Visit Us / Map -->
-  <div class="address text-center my-4">
-    <h5 style="color:#d63384;">
-      <i class="bi bi-geo-alt-fill"></i>
-      <a href="https://www.google.com/maps/dir/?api=1&destination=18,+Narayan+Roy+Road,+Purba+Barisha,+Kolkata,+700008" target="_blank">
-        Visit Us
-      </a>
-    </h5>
-    <p>
-      <a href="https://www.google.com/maps?q=18,+Narayan+Roy+Road,+Purba+Barisha,+Kolkata,+700008" target="_blank" style="color:#333; text-decoration:underline;">
-        18, Narayan Roy Road, Purba Barisha, Kolkata – 700008
-      </a>
-    </p>
-  </div>
+    <div class="footer container">
+        © 2025 Mou's Makeup & Nails. All rights reserved. |
+        <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a>
+    </div>
 
-  <!-- Footer -->
-  <div class="footer container">
-    &copy; 2025 Mou's Makeup & Nails. All rights reserved. | 
-    <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a>
-  </div>
+    <a href="https://wa.me/919330482697" class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
 
-  <!-- Floating WhatsApp Button -->
-  <a href="https://wa.me/919330482697" class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
-    <i class="bi bi-whatsapp"></i>
-  </a>
-
-  <!-- Bootstrap JS -->
-  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>

@@ -1,170 +1,314 @@
-<!-- templates/book.html -->
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <title>Book Appointment | Mou's Makeup & Nails</title>
-  <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta charset="UTF-8">
+    <title>Book Appointment | Mou's Makeup & Nails</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1">
 
-  <!-- Bootstrap CSS + Flatpickr CSS -->
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
-  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/flatpickr/dist/flatpickr.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
 
-  <style>
-    /* Page background */
-    body {
-      background: linear-gradient(120deg, #ffe3f0 0%, #fff9f9 100%);
-      font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-      margin: 0;
-      padding: 1rem 0;
-    }
-    /* Centered form card */
-    .form-card {
-      max-width: 500px;
-      margin: 0 auto;
-      background: #fff;
-      border-radius: 1rem;
-      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
-      overflow: hidden;
-    }
-    /* Decorative header */
-    .form-header {
-      background: linear-gradient(135deg, #e91e63, #f50057);
-      color: white;
-      padding: 2rem 1rem;
-      text-align: center;
-    }
-    .form-header h2 {
-      margin: 0;
-      font-size: 1.75rem;
-    }
-    .form-header p {
-      margin-top: 0.5rem;
-      font-size: 0.9rem;
-      opacity: 0.9;
-    }
-    /* Body of form */
-    .form-body {
-      padding: 1.5rem;
-    }
-    .form-body .form-label {
-      font-weight: 600;
-      color: #444;
-    }
-    /* Icon inside inputs */
-    .icon-group {
-      position: relative;
-    }
-    .icon-group i {
-      position: absolute;
-      top: 50%;
-      left: 1rem;
-      transform: translateY(-50%);
-      color: #e91e63;
-      font-size: 1.2rem;
-    }
-    .icon-group .form-control {
-      padding-left: 3rem;
-    }
-    /* Submit button */
-    .btn-submit {
-      background: #e91e63;
-      border: none;
-      color: #fff;
-      font-weight: 600;
-      width: 100%;
-      padding: 0.75rem;
-      border-radius: 0.5rem;
-      transition: background 0.3s ease;
-    }
-    .btn-submit:hover {
-      background: #c2185b;
-    }
-    /* Mobile spacing fix */
-    @media (max-width: 576px) {
-      .form-header {
-        padding: 1.5rem 0.5rem;
-      }
-      .form-body {
-        padding: 1rem;
-      }
-    }
-  </style>
+    <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+    <meta name="description" content="Mou's Makeup & Nails - Professional makeup, nail art, and bridal beauty services.">
+    <meta name="keywords" content="makeup, nail art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
+    <meta name="author" content="Mou's Makeup & Nails">
+
+    <style>
+        /* General Body and Font Styles (Copied from index.html for consistency) */
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #fff0f5, #ffe6f0);
+            color: #333;
+            margin: 0;
+            padding-top: 150px; /* Added padding-top for fixed header */
+        }
+        h1, h2, .brand {
+            font-family: 'Playfair Display', serif;
+        }
+
+        /* Top Contact Bar (Copied from index.html) */
+        .top-bar {
+            background: #d63384;
+            color: #fff;
+            text-align: center;
+            padding: .5rem 0;
+            font-weight: 600;
+        }
+        .top-bar a {
+            color: #fff;
+            text-decoration: underline;
+        }
+
+        /* Brand (Copied from index.html) */
+        .brand {
+            text-align: center;
+            color: #d63384;
+            font-size: 2rem;
+            margin: 1rem 0;
+        }
+
+        /* Navbar (Copied from index.html) */
+        .navbar {
+            background: #fff;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
+            margin-bottom: 2rem;
+            position: fixed; /* Makes the navbar stick to the top */
+            top: 0;
+            width: 100%;
+            z-index: 1030;
+            padding-top: 80px; /* Adjust for the combined height of top-bar and brand */
+            border-bottom: 1px solid #eee;
+        }
+        .navbar-brand {
+            font-family: 'Playfair Display', serif;
+            color: #d63384 !important;
+            font-size: 1.8rem;
+        }
+        .nav-link {
+            color: #d63384 !important;
+            font-weight: 500;
+            margin: 0 .5rem;
+            transition: color .2s;
+        }
+        .nav-link:hover {
+            color: #c2185b !important;
+        }
+
+        /* Specific styles for book.html's form card */
+        .form-card {
+            max-width: 500px;
+            margin: 0 auto;
+            background: #fff;
+            border-radius: 1rem;
+            box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+            overflow: hidden;
+            padding-bottom: 2rem; /* Add padding for space above footer */
+        }
+        .form-header {
+            background: linear-gradient(135deg, #e91e63, #f50057);
+            color: white;
+            padding: 2rem 1rem;
+            text-align: center;
+        }
+        .form-header h2 {
+            margin: 0;
+            font-size: 1.75rem;
+        }
+        .form-header p {
+            margin-top: 0.5rem;
+            font-size: 0.9rem;
+            opacity: 0.9;
+        }
+        .form-body {
+            padding: 1.5rem;
+        }
+        .form-body .form-label {
+            font-weight: 600;
+            color: #444;
+        }
+        .icon-group {
+            position: relative;
+        }
+        .icon-group i {
+            position: absolute;
+            top: 50%;
+            left: 1rem;
+            transform: translateY(-50%);
+            color: #e91e63;
+            font-size: 1.2rem;
+        }
+        .icon-group .form-control {
+            padding-left: 3rem;
+        }
+        .btn-submit {
+            background: #e91e63;
+            border: none;
+            color: #fff;
+            font-weight: 600;
+            width: 100%;
+            padding: 0.75rem;
+            border-radius: 0.5rem;
+            transition: background 0.3s ease;
+        }
+        .btn-submit:hover {
+            background: #c2185b;
+        }
+
+        /* Footer (Copied from index.html) */
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #777;
+            font-size: .9rem;
+        }
+        .footer a {
+            color: #d63384;
+            text-decoration: none;
+        }
+
+        /* WhatsApp Floating Button (Copied from index.html) */
+        .whatsapp-float {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #25d366;
+            color: #fff;
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+            z-index: 1000;
+        }
+        .whatsapp-float:hover {
+            background: #20c95d;
+        }
+
+        /* Responsive Adjustments (Copied from index.html) */
+        @media(max-width:992px) {
+            .navbar-collapse {
+                background-color: #fff;
+                padding: 1rem;
+                border-radius: .5rem;
+                margin-top: 1rem;
+            }
+        }
+        @media (max-width: 576px) {
+            .form-header {
+                padding: 1.5rem 0.5rem;
+            }
+            .form-body {
+                padding: 1rem;
+            }
+            body { /* Adjust padding for smaller screens if needed */
+                padding-top: 130px; /* Slightly less padding on mobile */
+            }
+        }
+    </style>
 </head>
 <body>
 
-<div class="form-card">
-  <div class="form-header">
-    <h2>Book Your Appointment</h2>
-    <p>Easy, fast & secure booking</p>
-  </div>
-  <div class="form-body">
-    <form method="POST" action="/book">
-      <div class="mb-3 icon-group">
-        <i class="bi bi-person-fill"></i>
-        <input type="text" name="name" class="form-control" required placeholder="Full Name">
-      </div>
-      <div class="mb-3 icon-group">
-        <i class="bi bi-envelope-fill"></i>
-        <input type="email" name="email" class="form-control" required placeholder="Email Address">
-      </div>
-      <div class="mb-3 icon-group">
-        <i class="bi bi-telephone-fill"></i>
-        <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Mobile Number">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Service Type</label>
-        <select name="service" class="form-select" required>
-          <option value="" disabled selected>Select a service</option>
-          <option>Party Makeup</option>
-          <option>Nail Art</option>
-          <option>Haldi Makeup</option>
-          <option>HD Makeup</option>
-          <option>Hairstyling</option>
-          <option>Eye Makeup</option>
-          <option>Waterproof Makeup</option>
-          <option>Reception Makeup</option>
-          <option>Any Occasion</option>
-        </select>
-      </div>
-      <div class="mb-3 icon-group">
-        <i class="bi bi-calendar-date-fill"></i>
-        <input type="text" id="date" name="date" class="form-control" required placeholder="Preferred Date">
-      </div>
-      <div class="mb-3">
-        <label class="form-label">Time Slot</label>
-        <select name="time" class="form-select" required>
-          <option value="" disabled selected>Select a time</option>
-          <option>08:00 AM</option>
-          <option>09:00 AM</option>
-          <option>10:00 AM</option>
-          <option>11:00 AM</option>
-          <option>12:00 PM</option>
-          <option>01:00 PM</option>
-          <option>02:00 PM</option>
-          <option>03:00 PM</option>
-          <option>04:00 PM</option>
-          <option>05:00 PM</option>
-          <option>06:00 PM</option>
-          <option>07:00 PM</option>
-          <option>08:00 PM</option>
-        </select>
-      </div>
-      <button type="submit" class="btn-submit">Confirm Booking</button>
-    </form>
-  </div>
-</div>
+    <div class="top-bar">
+        📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat</a>
+    </div>
 
-<!-- Flatpickr & Bootstrap JS -->
-<script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-  flatpickr("#date", {
-    dateFormat: "d/m/Y",
-    minDate: "today",
-    disableMobile: true
-  });
-</script>
+    <div class="brand">Mou's Makeup & Nails</div>
+
+    <nav class="navbar navbar-expand-lg bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand d-lg-none" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse justify-content-center" id="navbarNav">
+                <ul class="navbar-nav">
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('index') }}">Home</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('services') }}">Services</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('gallery') }}">Gallery</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('testimonials') }}">Testimonials</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link active" aria-current="page" href="{{ url_for('book') }}">Book Now</a>
+                    </li>
+                    <li class="nav-item">
+                        <a class="nav-link" href="{{ url_for('login') }}">Admin Login</a>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="form-card">
+        <div class="form-header">
+            <h2>Book Your Appointment</h2>
+            <p>Easy, fast & secure booking</p>
+        </div>
+        <div class="form-body">
+            <form method="POST" action="/book">
+                <div class="mb-3 icon-group">
+                    <i class="bi bi-person-fill"></i>
+                    <input type="text" name="name" class="form-control" required placeholder="Full Name">
+                </div>
+                <div class="mb-3 icon-group">
+                    <i class="bi bi-envelope-fill"></i>
+                    <input type="email" name="email" class="form-control" required placeholder="Email Address">
+                </div>
+                <div class="mb-3 icon-group">
+                    <i class="bi bi-telephone-fill"></i>
+                    <input type="tel" name="mobile" class="form-control" required pattern="[0-9]{10}" maxlength="10" placeholder="Mobile Number">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Service Type</label>
+                    <select name="service" class="form-select" required>
+                        <option value="" disabled selected>Select a service</option>
+                        <option>Party Makeup</option>
+                        <option>Nail Art</option>
+                        <option>Haldi Makeup</option>
+                        <option>HD Makeup</option>
+                        <option>Hairstyling</option>
+                        <option>Eye Makeup</option>
+                        <option>Waterproof Makeup</option>
+                        <option>Reception Makeup</option>
+                        <option>Bridal Makeup</option>
+                        <option>Occasional Makeup(Any occassion)</option>
+                    </select>
+                </div>
+                <div class="mb-3 icon-group">
+                    <i class="bi bi-calendar-date-fill"></i>
+                    <input type="text" id="date" name="date" class="form-control" required placeholder="Preferred Date">
+                </div>
+                <div class="mb-3">
+                    <label class="form-label">Time Slot</label>
+                    <select name="time" class="form-select" required>
+                        <option value="" disabled selected>Select a time</option>
+                        <option>08:00 AM</option>
+                        <option>09:00 AM</option>
+                        <option>10:00 AM</option>
+                        <option>11:00 AM</option>
+                        <option>12:00 PM</option>
+                        <option>01:00 PM</option>
+                        <option>02:00 PM</option>
+                        <option>03:00 PM</option>
+                        <option>04:00 PM</option>
+                        <option>05:00 PM</option>
+                        <option>06:00 PM</option>
+                        <option>07:00 PM</option>
+                        <option>08:00 PM</option>
+                    </select>
+                </div>
+                <button type="submit" class="btn-submit">Confirm Booking</button>
+            </form>
+        </div>
+    </div>
+
+    <div class="footer container">
+        © 2025 Mou's Makeup & Nails. All rights reserved. |
+        <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a>
+    </div>
+
+    <a href="https://wa.me/919330482697" class="whatsapp-float" target="_blank" title="Chat on WhatsApp">
+        <i class="bi bi-whatsapp"></i>
+    </a>
+
+    <script src="https://cdn.jsdelivr.net/npm/flatpickr"></script>
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        flatpickr("#date", {
+            dateFormat: "d/m/Y",
+            minDate: "today",
+            disableMobile: true
+        });
+    </script>
 </body>
 </html>
