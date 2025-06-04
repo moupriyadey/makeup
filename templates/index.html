@@ -144,29 +144,28 @@
       margin: 0;
       font-weight: 600;
     }
-    .service-body {
-      max-height: 0;
-      overflow: hidden;
-      padding: 0 1.25rem;
-      transition: max-height .3s ease, padding .3s ease;
-    }
-    .service-item:hover .service-body,
-    .service-item:focus-within .service-body {
-      max-height: 5rem;
-      padding: 1.25rem;
-    }
-    .service-body p {
-      margin: 0;
-      color: #555;
-      font-size: .9rem;
-    }
+   .service-body {
+  max-height: 0;
+  overflow: hidden;
+  padding: 0 1.25rem;
+  opacity: 0;
+  transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
+}
 
-    @media (max-width: 576px) {
-      .service-body {
-        max-height: none !important;
-        padding: 1.25rem !important;
-      }
-    }
+.service-item:hover .service-body,
+.service-item.show-desc .service-body {
+  max-height: 150px;
+  padding: 1.25rem;
+  opacity: 1;
+}
+
+@media (max-width: 576px) {
+  .service-body {
+    max-height: 150px !important;
+    opacity: 1 !important;
+    padding: 1.25rem !important;
+  }
+}
 
     /* Carousel */
     .carousel-img {
@@ -251,6 +250,36 @@
       to { opacity: 1; }
     }
   </style>
+
+<script>
+  document.addEventListener("DOMContentLoaded", function () {
+    const serviceItems = document.querySelectorAll(".service-item");
+
+    serviceItems.forEach((item) => {
+      // On desktop, use hover
+      item.addEventListener("mouseenter", () => {
+        if (window.innerWidth > 576) {
+          item.classList.add("show-desc");
+        }
+      });
+      item.addEventListener("mouseleave", () => {
+        if (window.innerWidth > 576) {
+          item.classList.remove("show-desc");
+        }
+      });
+
+      // On mobile, use click to toggle
+      const header = item.querySelector(".service-header");
+      header.addEventListener("click", () => {
+        if (window.innerWidth <= 576) {
+          item.classList.toggle("show-desc");
+        }
+      });
+    });
+  });
+</script>
+
+
 </head>
 <body>
 
@@ -298,7 +327,7 @@
               <i class="bi bi-brush service-icon fs-1 text-primary"></i>
               <h5 class="mt-2">Bridal Makeup</h5>
             </div>
-            <div class="collapse service-body" id="service1">
+            <div class="service-body" id="service1">
               <p>Professional bridal looks tailored to your wedding style.</p>
             </div>
           </div>
@@ -310,7 +339,7 @@
               <i class="bi bi-stars service-icon fs-1 text-warning"></i>
               <h5 class="mt-2">Reception & Party</h5>
             </div>
-            <div class="collapse service-body" id="service2">
+            <div class="service-body" id="service2">
               <p>Glamorous looks for birthdays, parties, and events.</p>
             </div>
           </div>
@@ -322,7 +351,7 @@
               <i class="bi bi-droplet-half service-icon fs-1 text-info"></i>
               <h5 class="mt-2">Waterproof Makeup</h5>
             </div>
-            <div class="collapse service-body" id="service3">
+            <div class="service-body" id="service3">
               <p>Smudge-proof and long-lasting finish, perfect for any weather.</p>
             </div>
           </div>
@@ -334,7 +363,7 @@
               <i class="bi bi-hand-thumbs-up service-icon fs-1 text-success"></i>
               <h5 class="mt-2">Nail Art Combo</h5>
             </div>
-            <div class="collapse service-body" id="service4">
+            <div class="service-body" id="service4">
               <p>Trendy and classy nail designs personalized for you.</p>
             </div>
           </div>
@@ -348,7 +377,7 @@
 
               <h5 class="mt-2">Classic Hairstyling</h5>
             </div>
-            <div class="collapse service-body" id="service5">
+            <div class="service-body" id="service5">
               <p>Elegant hairstyles perfect for any occasion or event.</p>
             </div>
           </div>
@@ -360,7 +389,7 @@
               <i class="bi bi-balloon-heart service-icon fs-1 text-pink"></i>
               <h5 class="mt-2">Occasional Makeup</h5>
             </div>
-            <div class="collapse service-body" id="service6">
+            <div class="service-body" id="service6">
               <p>Customized makeup for anniversaries, festivals, and special events.</p>
             </div>
           </div>
@@ -394,7 +423,7 @@
 
   <!-- Address -->
   <section class="address text-center mb-5">
-    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i><a href="https://www.google.com/maps?q=18,+Narayan+Roy+Road,+Purba+Barisha,+Kolkata,+700008" target="_blank"> 226/M, Jayrampur Jala Road, Parnasree Palli, near BG Press Auto Stand, Kolkata–700060</a></h5>
+    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i><a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, Jayrampur Jala Road, Parnasree Palli, near BG Press Market</a>, Kolkata–700060</a></h5>
   </section>
 
   <!-- WhatsApp -->
