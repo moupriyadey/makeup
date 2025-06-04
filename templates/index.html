@@ -143,29 +143,38 @@
       color: #fff;
       margin: 0;
       font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      width: 100%;
+      font-size: 1.1rem; /* Adjusted for better fit */
     }
-   .service-body {
-  max-height: 0;
-  overflow: hidden;
-  padding: 0 1.25rem;
-  opacity: 0;
-  transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
-}
-
-.service-item:hover .service-body,
-.service-item.show-desc .service-body {
-  max-height: 150px;
-  padding: 1.25rem;
-  opacity: 1;
-}
-
-@media (max-width: 576px) {
-  .service-body {
-    max-height: 150px !important;
-    opacity: 1 !important;
-    padding: 1.25rem !important;
-  }
-}
+    @media (max-width: 576px) {
+      .service-header h5 {
+        font-size: 0.9rem; /* Smaller font for mobile */
+      }
+    }
+    .service-body {
+      max-height: 0;
+      padding: 0 1.25rem;
+      opacity: 0;
+      transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
+    }
+    .service-item.show-desc .service-body {
+      padding: 1.25rem;
+      opacity: 1;
+      overflow: visible; /* Prevent clipping during transition */
+    }
+    /* Ensure smooth transition on mobile with a fallback max-height */
+    @media (max-width: 576px) {
+      .service-item .service-body {
+        transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
+      }
+      .service-item.show-desc .service-body {
+        max-height: 500px; /* Fallback for mobile if JS fails */
+      }
+    }
 
     /* Carousel */
     .carousel-img {
@@ -251,38 +260,71 @@
     }
   </style>
 
-<script>
-  document.addEventListener("DOMContentLoaded", function () {
-    const serviceItems = document.querySelectorAll(".service-item");
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      const serviceItems = document.querySelectorAll(".service-item");
 
-    serviceItems.forEach((item) => {
-      // On desktop, use hover
-      item.addEventListener("mouseenter", () => {
-        if (window.innerWidth > 576) {
-          item.classList.add("show-desc");
-        }
-      });
-      item.addEventListener("mouseleave", () => {
-        if (window.innerWidth > 576) {
-          item.classList.remove("show-desc");
-        }
-      });
+      serviceItems.forEach((item) => {
+        const header = item.querySelector(".service-header");
+        const body = item.querySelector(".service-body");
 
-      // On mobile, use click to toggle
-      const header = item.querySelector(".service-header");
-      header.addEventListener("click", () => {
-        if (window.innerWidth <= 576) {
-          item.classList.toggle("show-desc");
-        }
+        // Function to update max-height dynamically
+        const updateMaxHeight = () => {
+          // Use setTimeout to ensure DOM is fully rendered
+          setTimeout(() => {
+            if (item.classList.contains("show-desc")) {
+              // Add 20px buffer to account for padding/margins
+              body.style.maxHeight = `${body.scrollHeight + 20}px`;
+              body.style.overflow = "visible"; // Ensure no clipping
+            } else {
+              body.style.maxHeight = "0";
+              body.style.overflow = "hidden"; // Restore clipping when collapsed
+            }
+          }, 0);
+        };
+
+        // On desktop, use hover
+        item.addEventListener("mouseenter", () => {
+          if (window.innerWidth > 576) {
+            item.classList.add("show-desc");
+            updateMaxHeight();
+          }
+        });
+        item.addEventListener("mouseleave", () => {
+          if (window.innerWidth > 576) {
+            item.classList.remove("show-desc");
+            updateMaxHeight();
+          }
+        });
+
+        // On mobile, use click to toggle
+        header.addEventListener("click", () => {
+          if (window.innerWidth <= 576) {
+            // Close other open service items
+            serviceItems.forEach((otherItem) => {
+              if (otherItem !== item && otherItem.classList.contains("show-desc")) {
+                otherItem.classList.remove("show-desc");
+                otherItem.querySelector(".service-body").style.maxHeight = "0";
+                otherItem.querySelector(".service-body").style.overflow = "hidden";
+              }
+            });
+            // Toggle the clicked item
+            item.classList.toggle("show-desc");
+            updateMaxHeight();
+          }
+        });
+
+        // Update max-height on window resize to handle dynamic content
+        window.addEventListener("resize", () => {
+          if (item.classList.contains("show-desc")) {
+            updateMaxHeight();
+          }
+        });
       });
     });
-  });
-</script>
-
-
+  </script>
 </head>
 <body>
-
   <!-- Top Bar -->
   <div class="top-bar">
     📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat</a>
@@ -323,11 +365,11 @@
         <!-- Service 1 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
-            <div class="service-header mb-2" data-bs-toggle="collapse" data-bs-target="#service1">
+            <div class="service-header mb-2">
               <i class="bi bi-brush service-icon fs-1 text-primary"></i>
               <h5 class="mt-2">Bridal Makeup</h5>
             </div>
-            <div class="service-body" id="service1">
+            <div class="service-body">
               <p>Professional bridal looks tailored to your wedding style.</p>
             </div>
           </div>
@@ -335,11 +377,11 @@
         <!-- Service 2 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
-            <div class="service-header mb-2" data-bs-toggle="collapse" data-bs-target="#service2">
+            <div class="service-header mb-2">
               <i class="bi bi-stars service-icon fs-1 text-warning"></i>
               <h5 class="mt-2">Reception & Party</h5>
             </div>
-            <div class="service-body" id="service2">
+            <div class="service-body">
               <p>Glamorous looks for birthdays, parties, and events.</p>
             </div>
           </div>
@@ -347,11 +389,11 @@
         <!-- Service 3 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
-            <div class="service-header mb-2" data-bs-toggle="collapse" data-bs-target="#service3">
+            <div class="service-header mb-2">
               <i class="bi bi-droplet-half service-icon fs-1 text-info"></i>
               <h5 class="mt-2">Waterproof Makeup</h5>
             </div>
-            <div class="service-body" id="service3">
+            <div class="service-body">
               <p>Smudge-proof and long-lasting finish, perfect for any weather.</p>
             </div>
           </div>
@@ -359,11 +401,11 @@
         <!-- Service 4 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
-            <div class="service-header mb-2" data-bs-toggle="collapse" data-bs-target="#service4">
+            <div class="service-header mb-2">
               <i class="bi bi-hand-thumbs-up service-icon fs-1 text-success"></i>
               <h5 class="mt-2">Nail Art Combo</h5>
             </div>
-            <div class="service-body" id="service4">
+            <div class="service-body">
               <p>Trendy and classy nail designs personalized for you.</p>
             </div>
           </div>
@@ -371,13 +413,11 @@
         <!-- Service 5 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
-            <div class="service-header mb-2" data-bs-toggle="collapse" data-bs-target="#service5">
-            
-<i class="bi bi-scissors service-icon fs-1 text-warning"></i>
-
+            <div class="service-header mb-2">
+              <i class="bi bi-scissors service-icon fs-1 text-warning"></i>
               <h5 class="mt-2">Classic Hairstyling</h5>
             </div>
-            <div class="service-body" id="service5">
+            <div class="service-body">
               <p>Elegant hairstyles perfect for any occasion or event.</p>
             </div>
           </div>
@@ -385,11 +425,11 @@
         <!-- Service 6 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
-            <div class="service-header mb-2" data-bs-toggle="collapse" data-bs-target="#service6">
+            <div class="service-header mb-2">
               <i class="bi bi-balloon-heart service-icon fs-1 text-pink"></i>
               <h5 class="mt-2">Occasional Makeup</h5>
             </div>
-            <div class="service-body" id="service6">
+            <div class="service-body">
               <p>Customized makeup for anniversaries, festivals, and special events.</p>
             </div>
           </div>
@@ -435,7 +475,7 @@
       <a href="https://www.instagram.com/glow_haven015/" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
       <a href="https://www.facebook.com/moupriya.dey.463189/" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
     </div>
-    <div class="container">&copy; 2025 Mou's Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
+    <div class="container">© 2025 Mou's Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
   </footer>
 
   <!-- Bootstrap JS -->
