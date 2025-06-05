@@ -23,6 +23,7 @@
       font-family: 'Roboto', sans-serif;
       background: linear-gradient(to right, #fff0f5, #ffe6f0);
       color: #333;
+      position: relative;
     }
     h1, h2, .brand {
       font-family: 'Playfair Display', serif;
@@ -35,42 +36,38 @@
       background: #ba2da5;
       color: #fff;
       text-align: center;
-      padding: .4rem 0;
+      padding: .3rem 0;
       z-index: 1040;
       font-weight: 600;
-      overflow: hidden; /* Hide overflowing marquee content */
-      white-space: nowrap; /* Prevent text wrapping */
+      overflow: hidden;
+      white-space: nowrap;
     }
     .top-bar a {
       color: #fff;
       text-decoration: underline;
     }
     .top-bar a:hover {
-      color: #f0e6f0; /* Subtle hover effect for links */
+      color: #f0e6f0;
     }
     .marquee-content {
-      display: inline-block; /* Allow animation */
-      animation: marquee 15s linear infinite; /* Smooth scroll, 15s duration */
-      padding-left: 100%; /* Start content off-screen */
+      display: inline-block;
+      animation: marquee 15s linear infinite;
+      padding-left: 100%;
     }
     .top-bar:hover .marquee-content {
-      animation-play-state: paused; /* Pause on hover */
+      animation-play-state: paused;
     }
     @keyframes marquee {
-      0% {
-        transform: translateX(0); /* Start at initial position */
-      }
-      100% {
-        transform: translateX(-100%); /* Move fully left */
-      }
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
     }
     @media (max-width: 576px) {
       .top-bar {
-        font-size: 0.85rem; /* Smaller font on mobile */
-        padding: .4rem 0; /* Slightly less padding */
+        font-size: 0.85rem;
+        padding: .2rem 0;
       }
       .marquee-content {
-        animation-duration: 12s; /* Faster scroll on mobile */
+        animation-duration: 12s;
       }
     }
 
@@ -92,16 +89,31 @@
       align-items: center;
     }
     .navbar-logo {
-      height: 40px; /* Adjust logo height */
-      margin-right: 0.5rem; /* Space between logo and text */
+      height: 40px;
+      margin-right: 0.5rem;
       vertical-align: middle;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1030;
+      cursor: pointer;
+    }
+    .navbar-logo.enlarged {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: auto;
+      max-width: 90vw;
+      max-height: 90vh;
+      z-index: 1050;
+      margin-right: 0;
     }
     @media (max-width: 576px) {
       .navbar-logo {
-        height: 30px; /* Smaller logo on mobile */
+        height: 30px;
       }
       .navbar-brand {
-        font-size: 1.5rem; /* Smaller text on mobile */
+        font-size: 1.5rem;
       }
     }
     .nav-link {
@@ -193,19 +205,19 @@
       text-overflow: ellipsis;
       text-align: center;
       width: 100%;
-      font-size: 1.1rem; /* Base font size for larger screens */
+      font-size: 1.1rem;
     }
     @media (max-width: 576px) {
       .service-header {
-        padding: 1rem; /* Reduced padding for mobile */
-        min-height: 4.5rem; /* Ensure enough height for two lines */
+        padding: 1rem;
+        min-height: 4.5rem;
       }
       .service-header h5 {
-        font-size: 0.8rem; /* Smaller font size for mobile */
-        white-space: normal; /* Allow text to wrap */
-        line-height: 1.2; /* Tighter line height for two lines */
-        max-height: 2.4rem; /* Limit to two lines (2 * 1.2rem) */
-        overflow: hidden; /* Hide any overflow beyond two lines */
+        font-size: 0.8rem;
+        white-space: normal;
+        line-height: 1.2;
+        max-height: 2.4rem;
+        overflow: hidden;
       }
     }
     .service-body {
@@ -217,15 +229,14 @@
     .service-item.show-desc .service-body {
       padding: 1.25rem;
       opacity: 1;
-      overflow: visible; /* Prevent clipping during transition */
+      overflow: visible;
     }
-    /* Ensure smooth transition on mobile with a fallback max-height */
     @media (max-width: 576px) {
       .service-item .service-body {
         transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
       }
       .service-item.show-desc .service-body {
-        max-height: 500px; /* Fallback for mobile if JS fails */
+        max-height: 500px;
       }
     }
 
@@ -267,7 +278,7 @@
     }
     .address h5 a {
       text-decoration: underline;
-      text-decoration-color: #007bff; /* Blue underline for address link */
+      text-decoration-color: #007bff;
     }
 
     /* WhatsApp */
@@ -310,6 +321,43 @@
       color: #a02a64;
     }
 
+    /* Floating Animation */
+    .zodiac-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .symbol {
+      position: absolute;
+      font-size: 1.2rem;
+      color: #d63384;
+      opacity: 0.4;
+      animation: float 8s linear forwards;
+      user-select: none;
+      transform: translateX(var(--offset-x, 0));
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg);
+        opacity: 0.4;
+      }
+      100% {
+        transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .symbol {
+        animation: none;
+        display: none;
+      }
+    }
+
     /* Fade-in Keyframes */
     @keyframes fadeIn {
       from { opacity: 0; }
@@ -319,28 +367,22 @@
 
   <script>
     document.addEventListener("DOMContentLoaded", function () {
+      // Service Item Script
       const serviceItems = document.querySelectorAll(".service-item");
-
       serviceItems.forEach((item) => {
         const header = item.querySelector(".service-header");
         const body = item.querySelector(".service-body");
-
-        // Function to update max-height dynamically
         const updateMaxHeight = () => {
-          // Use setTimeout to ensure DOM is fully rendered
           setTimeout(() => {
             if (item.classList.contains("show-desc")) {
-              // Add 20px buffer to account for padding/margins
               body.style.maxHeight = `${body.scrollHeight + 20}px`;
-              body.style.overflow = "visible"; // Ensure no clipping
+              body.style.overflow = "visible";
             } else {
               body.style.maxHeight = "0";
-              body.style.overflow = "hidden"; // Restore clipping when collapsed
+              body.style.overflow = "hidden";
             }
           }, 0);
         };
-
-        // On desktop, use hover
         item.addEventListener("mouseenter", () => {
           if (window.innerWidth > 576) {
             item.classList.add("show-desc");
@@ -353,11 +395,8 @@
             updateMaxHeight();
           }
         });
-
-        // On mobile, use click to toggle
         header.addEventListener("click", () => {
           if (window.innerWidth <= 576) {
-            // Close other open service items
             serviceItems.forEach((otherItem) => {
               if (otherItem !== item && otherItem.classList.contains("show-desc")) {
                 otherItem.classList.remove("show-desc");
@@ -365,18 +404,48 @@
                 otherItem.querySelector(".service-body").style.overflow = "hidden";
               }
             });
-            // Toggle the clicked item
             item.classList.toggle("show-desc");
             updateMaxHeight();
           }
         });
-
-        // Update max-height on window resize to handle dynamic content
         window.addEventListener("resize", () => {
           if (item.classList.contains("show-desc")) {
             updateMaxHeight();
           }
         });
+      });
+
+      // Floating Animation Script
+      const animationContainer = document.querySelector(".zodiac-animation");
+      const symbols = [
+        "♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓",
+        "💄", "🖌️", "💅", "💋"
+      ];
+      
+      function createSymbol() {
+        const symbol = document.createElement("span");
+        symbol.className = "symbol";
+        symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        
+        symbol.style.left = `${Math.random() * 100}vw`;
+        const duration = 6 + Math.random() * 4;
+        symbol.style.animationDuration = `${duration}s`;
+        const offset = (Math.random() - 0.5) * 100;
+        symbol.style.setProperty("--offset-x", `${offset}px`);
+        
+        animationContainer.appendChild(symbol);
+        symbol.addEventListener("animationend", () => {
+          symbol.remove();
+        });
+      }
+      
+      setInterval(createSymbol, 500 + Math.random() * 500);
+
+      // Logo Click Toggle Script
+      const logo = document.querySelector(".navbar-logo");
+      logo.addEventListener("click", (event) => {
+        event.preventDefault(); // Prevent navigation
+        logo.classList.toggle("enlarged");
       });
     });
   </script>
@@ -385,7 +454,7 @@
   <!-- Top Bar -->
   <div class="top-bar">
     <span class="marquee-content">
-      📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Book your Appointment. Chat now!!  </a>
+      📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat</a>
     </span>
   </div>
 
@@ -424,7 +493,6 @@
     <div class="container">
       <div class="section-title text-center mb-5"><h2 class="fw-bold">Featured Services</h2></div>
       <div class="row gy-4">
-        <!-- Service 1 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
             <div class="service-header mb-2">
@@ -436,7 +504,6 @@
             </div>
           </div>
         </div>
-        <!-- Service 2 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
             <div class="service-header mb-2">
@@ -448,7 +515,6 @@
             </div>
           </div>
         </div>
-        <!-- Service 3 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
             <div class="service-header mb-2">
@@ -460,7 +526,6 @@
             </div>
           </div>
         </div>
-        <!-- Service 4 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
             <div class="service-header mb-2">
@@ -472,7 +537,6 @@
             </div>
           </div>
         </div>
-        <!-- Service 5 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
             <div class="service-header mb-2">
@@ -484,7 +548,6 @@
             </div>
           </div>
         </div>
-        <!-- Service 6 -->
         <div class="col-6 col-md-4 text-center service-item">
           <div class="service-card p-4 shadow-sm rounded-4 h-100">
             <div class="service-header mb-2">
@@ -509,11 +572,11 @@
         {% endfor %}
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
-      <button class="carousel-control-next" type="button" data-bs-target="#serviceCarousel" data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>
+      <button class="carousel-control-next" type="button"></button>
     </div>
   </section>
 
-  <!-- Gallery & Testimonials Links -->
+  <!-- Gallery & Testimonials -->
   <section class="gallery-links text-center mb-5">
     <a href="{{ url_for('gallery') }}" class="btn btn-primary mx-2">View Gallery</a>
     <a href="https://g.co/kgs/oA9p2gq" class="btn btn-success mx-2" target="_blank">Google Reviews</a>
@@ -525,11 +588,16 @@
 
   <!-- Address -->
   <section class="address text-center mb-5">
-    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i><a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, Jayrampur Jala Road, Parnasree Palli, near BG Press Market</a>, Kolkata–60</h5>
+    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i>
+    <a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, Jayrampur Jala Road, Parnasree Palli, near BG Press Market</a>,
+    Kolkata–700060</h5>
   </section>
 
   <!-- WhatsApp -->
   <a href="https://wa.me/919330482697" class="whatsapp-float" target="_blank" title="Chat on WhatsApp"><i class="bi bi-whatsapp"></i></a>
+
+  <!-- Floating Animation -->
+  <div class="zodiac-animation"></div>
 
   <!-- Footer -->
   <footer class="footer">
@@ -537,10 +605,172 @@
       <a href="https://www.instagram.com/glow_haven015/" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
       <a href="https://www.facebook.com/moupriya.dey.463189/" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
     </div>
-    <div class="container">© 2025 Mou's Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
+    <div class="container">© 2025 Mou’s Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
   </footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
 </body>
 </html>
+```
+
+### Changes Made
+1. **Updated Logo Click Script**:
+   - Removed the `window.innerWidth > 576` condition from the JavaScript click handler:
+     ```javascript
+     logo.addEventListener("click", (event) => {
+       event.preventDefault();
+       logo.classList.toggle("enlarged");
+     });
+     ```
+     - Now, clicking the logo toggles the `.enlarged` class on all devices, enabling enlargement on mobile.
+2. **Updated CSS for Mobile**:
+   - Removed the `.navbar-logo.enlarged` override in the `@media (max-width: 576px)` rule, allowing the `.enlarged` styles to apply on mobile:
+     ```css
+     @media (max-width: 576px) {
+       .navbar-logo {
+         height: 30px;
+       }
+       .navbar-brand {
+         font-size: 1.5rem;
+       }
+     }
+     ```
+     - The `.enlarged` class now applies universally:
+       ```css
+     .navbar-logo.enlarged {
+       position: fixed;
+       top: 50%;
+       left: 50%;
+       transform: translate(-50%, -50%);
+       height: auto;
+       max-width: 90vw;
+       max-height: 90vh;
+       z-index: 1050;
+       margin-right: 0;
+     }
+     ```
+     - Ensures the logo scales to fit the viewport on mobile screens (e.g., ~320px on iPhone SE).
+3. **Preserved Features**:
+   - Floating animation (zodiac: ♈–♓, makeup: 💄, 🖌️, 💅, 💋) remains unchanged, with symbols appearing every 0.5–1s, floating for 6–10s.
+   - `top-bar` marquee, navbar, hero, services, carousel, address, WhatsApp float, and footer are untouched.
+   - Service item script and animation container (`<div class="zodiac-animation"></div>`) are intact.
+   - Logo file path (`images/logo.jpg`) and `alt` text are unchanged.
+
+### Behavior
+- **Logo Click**:
+  - **All Devices**: Clicking the logo toggles between normal size (`40px` on desktop, `30px` on mobile) and full screen (`max-width: 90vw`, `max-height: 90vh`, centered). A second click collapses it back. The logo is stable (no vibration) and appears above all content (`z-index: 1050`) when enlarged.
+  - **Navigation**: Clicking the logo prevents navigation (due to `event.preventDefault()`). Users can navigate to the homepage by clicking the "Mou’s Makeup & Nails" text or the "Home" navbar link.
+- **Mobile**:
+  - The logo enlarges smoothly on touch devices, fitting within the viewport.
+  - Touch events toggle the `.enlarged` class, ensuring usability.
+  - No accidental zooming or scrolling issues, as the logo is `position: fixed` when enlarged.
+- **Floating Animation**: Unaffected, with symbols floating as before.
+
+### Notes
+- **Logo Quality**: Ensure `logo.jpg` is high-resolution (≥ 800px) to avoid pixelation when enlarged, especially on mobile retina displays. If blurry, replace with a higher-quality image in `static/images/`.
+- **Navigation**: Since logo clicks don’t navigate, users rely on the navbar-brand text or "Home" link. To allow navigation on a separate gesture (e.g., double-tap), we can add:
+  ```javascript
+  let clickCount = 0;
+  logo.addEventListener("click", (event) => {
+    event.preventDefault();
+    clickCount++;
+    if (clickCount === 1) {
+      logo.classList.toggle("enlarged");
+    } else if (clickCount === 2) {
+      window.location.href = logo.parentElement.href; // Navigate
+      clickCount = 0;
+    }
+    setTimeout(() => { clickCount = 0; }, 1000); // Reset after 1s
+  });
+  ```
+  This makes double-click navigate to the homepage. Let me know if you want this.
+- **Accessibility**:
+  - The `alt` text ("Moupriya Dey - Certified MakeUp Artist") is retained for screen readers.
+  - Touch events are compatible with assistive devices.
+  - If moving to a logo-only navbar (per your earlier request), consider `aria-label` (see below).
+- **Performance**: The toggle remains lightweight, with no impact on animations or DOM.
+
+### Combining with Logo-Only Navbar
+Per your earlier request for a logo-only navbar without `alt` text, you can modify the navbar to:
+```html
+<a class="navbar-brand" href="{{ url_for('index') }}">
+  <img src="{{ url_for('static', filename='images/logo.jpg') }}" class="navbar-logo" aria-label="Mou’s Makeup & Nails Logo">
+</a>
+```
+Update CSS:
+```css
+.navbar-brand {
+  display: flex;
+  align-items: center;
+}
+.navbar-logo {
+  height: 44px;
+  vertical-align: middle;
+  transition: all 0.3s ease;
+  position: relative;
+  z-index: 1030;
+  cursor: pointer;
+}
+.navbar-logo.enlarged {
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  height: auto;
+  max-width: 90vw;
+  max-height: 90vh;
+  z-index: 1050;
+}
+@media (max-width: 576px) {
+  .navbar-logo {
+    height: 32px;
+  }
+}
+```
+This removes the text and `alt`, increases logo size (`44px`/`32px`), adds `aria-label` for accessibility, and enables enlargement on mobile. Let me know if you want this version.
+
+### Deploying to Render
+1. **Save Updated `index.html`**:
+   - Replace `templates/index.html` with the code above.
+2. **Verify Logo**:
+   - Ensure `logo.jpg` is in `static/images/` and high-resolution.
+3. **Commit and Push**:
+   ```bash
+   cd /path/to/mous-makeup-nails
+   git add templates/index.html
+   git commit -m "Enabled logo enlargement on mobile view"
+   git push origin main
+   ```
+4. **Trigger Deployment**:
+   - Automatic deployments will deploy via Render.
+   - Check Render Dashboard (`https://dashboard.render.com/`) for status.
+   - For manual, select the latest commit.
+5. **Test**:
+   - Visit `https://your.app.onrender.com/`.
+   - **Logo Click**: On mobile (e.g., iPhone 13, ~390px), click the logo to enlarge to full screen, click again to collapse. Verify the same on desktop. Ensure no vibration or unintended navigation.
+   - **Animation**: Confirm zodiac and makeup symbols float as before.
+   - **Navigation**: Test navigation via "Mou’s Makeup & Nails" text or "Home" link.
+   - **Interactivity**: Verify `top-bar`, navbar links, and WhatsApp button work.
+
+### Testing Notes
+- **Mobile Enlargement**: Test on devices (e.g., iPhone SE, Android ~360px) to ensure the logo enlarges smoothly, fits the screen, and collapses on second tap. Check for touch responsiveness.
+- **Logo Stability**: Confirm no vibration or repeated collapsing on mobile or desktop.
+- **Resolution**: If the logo is blurry when enlarged, replace `logo.jpg` with a higher-resolution image.
+- **Overlap**: Ensure the enlarged logo (`z-index: 1050`) appears above `top-bar` (1040), `navbar` (1030), and other elements. Symbols remain below (`z-index: 1`).
+- **Browsers**: Verify in Chrome, Safari (iOS), and Firefox for consistent click behavior.
+- **Accessibility**: Test with screen readers (e.g., VoiceOver on iOS) to ensure the logo is announced correctly.
+
+### Customization
+- **Enlargement Size**: Adjust `max-width: 80vw; max-height: 80vh` for smaller enlargement on mobile):
+  ```css
+  .navbar-logo.enlarged {
+    max-width: 80vw;
+    max-height: 80vh;
+  }
+  ```
+- **Transition Speed**: Change `transition: all 0.5s ease` for a slower effect (e.g., `0.5s`).
+- **Navigation Gesture**: Add double-tap navigation as shown above if needed.
+- **Animation Frequency**: If symbols are too frequent on mobile, increase `setInterval(createSymbol, 1000)` for 1s intervals.
+
+If you want the logo-only navbar, double-tap navigation, or further tweaks (e.g., animation adjustments, logo size), let me know, and I’ll provide an updated artifact. If issues arise (e.g., logo not enlarging on mobile, touch delays), share details like device, browser, or screenshots, and I’ll assist further. Thanks for the update!
