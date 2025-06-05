@@ -35,13 +35,43 @@
       background: #ba2da5;
       color: #fff;
       text-align: center;
-      padding: .5rem 0;
+      padding: .4rem 0;
       z-index: 1040;
       font-weight: 600;
+      overflow: hidden; /* Hide overflowing marquee content */
+      white-space: nowrap; /* Prevent text wrapping */
     }
     .top-bar a {
       color: #fff;
       text-decoration: underline;
+    }
+    .top-bar a:hover {
+      color: #f0e6f0; /* Subtle hover effect for links */
+    }
+    .marquee-content {
+      display: inline-block; /* Allow animation */
+      animation: marquee 15s linear infinite; /* Smooth scroll, 15s duration */
+      padding-left: 100%; /* Start content off-screen */
+    }
+    .top-bar:hover .marquee-content {
+      animation-play-state: paused; /* Pause on hover */
+    }
+    @keyframes marquee {
+      0% {
+        transform: translateX(0); /* Start at initial position */
+      }
+      100% {
+        transform: translateX(-100%); /* Move fully left */
+      }
+    }
+    @media (max-width: 576px) {
+      .top-bar {
+        font-size: 0.85rem; /* Smaller font on mobile */
+        padding: .4rem 0; /* Slightly less padding */
+      }
+      .marquee-content {
+        animation-duration: 12s; /* Faster scroll on mobile */
+      }
     }
 
     .navbar {
@@ -58,6 +88,21 @@
       color: #d63384 !important;
       font-size: 1.8rem;
       font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-logo {
+      height: 40px; /* Adjust logo height */
+      margin-right: 0.5rem; /* Space between logo and text */
+      vertical-align: middle;
+    }
+    @media (max-width: 576px) {
+      .navbar-logo {
+        height: 30px; /* Smaller logo on mobile */
+      }
+      .navbar-brand {
+        font-size: 1.5rem; /* Smaller text on mobile */
+      }
     }
     .nav-link {
       color: #555 !important;
@@ -148,11 +193,19 @@
       text-overflow: ellipsis;
       text-align: center;
       width: 100%;
-      font-size: 1.1rem; /* Adjusted for better fit */
+      font-size: 1.1rem; /* Base font size for larger screens */
     }
     @media (max-width: 576px) {
+      .service-header {
+        padding: 1rem; /* Reduced padding for mobile */
+        min-height: 4.5rem; /* Ensure enough height for two lines */
+      }
       .service-header h5 {
-        font-size: 0.9rem; /* Smaller font for mobile */
+        font-size: 0.8rem; /* Smaller font size for mobile */
+        white-space: normal; /* Allow text to wrap */
+        line-height: 1.2; /* Tighter line height for two lines */
+        max-height: 2.4rem; /* Limit to two lines (2 * 1.2rem) */
+        overflow: hidden; /* Hide any overflow beyond two lines */
       }
     }
     .service-body {
@@ -211,6 +264,10 @@
     }
     .address a:hover {
       color: #d63384;
+    }
+    .address h5 a {
+      text-decoration: underline;
+      text-decoration-color: #007bff; /* Blue underline for address link */
     }
 
     /* WhatsApp */
@@ -327,13 +384,18 @@
 <body>
   <!-- Top Bar -->
   <div class="top-bar">
-    📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat</a>
+    <span class="marquee-content">
+      📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available | <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Book your Appointment. Chat now!!  </a>
+    </span>
   </div>
 
   <!-- Navbar -->
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
+      <a class="navbar-brand" href="{{ url_for('index') }}">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Moupriya Dey - Certified MakeUp Artist" class="navbar-logo">
+        Mou's Makeup & Nails
+      </a>
       <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
         <span class="navbar-toggler-icon"></span>
       </button>
@@ -463,7 +525,7 @@
 
   <!-- Address -->
   <section class="address text-center mb-5">
-    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i><a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, Jayrampur Jala Road, Parnasree Palli, near BG Press Market</a>, Kolkata–700060</a></h5>
+    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i><a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, Jayrampur Jala Road, Parnasree Palli, near BG Press Market</a>, Kolkata–60</h5>
   </section>
 
   <!-- WhatsApp -->
