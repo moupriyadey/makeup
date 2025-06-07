@@ -2,145 +2,427 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <title>Mou's Schedules - Mou's Makeup & Nails</title>
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mou's Schedules - Mou's Makeup & Nails</title>
+    <!-- Bootstrap & Icons -->
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
-            background-color: #fff0f5;
-            padding: 20px;
+            margin: 0;
+            padding-top: 20px; /* Adjusted for no top-bar */
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #fff0f5, #ffe6f0);
+            color: #333;
+            position: relative;
         }
+        h1, h2 {
+            font-family: 'Playfair Display', serif;
+        }
+        /* Removed marquee styling to prevent vertical text arrangement */
         .dashboard-header {
-            margin-bottom: 30px;
+            margin-bottom: 2rem;
+            text-align: center;
         }
-        .table th, .table td {
-            vertical-align: middle;
+        .dashboard-header h1 {
+            color: #d63384;
         }
         .filter-form {
-            margin-bottom: 20px;
+            background: #fff;
+            padding: 1rem;
+            border-radius: .5rem;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 1.5rem;
+        }
+        .table {
+            background: #fff;
+            border-radius: .5rem;
+            overflow: hidden;
+        }
+        .table th {
+            background: #d63384;
+            color: #fff;
+            font-weight: 600;
+        }
+        .table tbody tr:nth-child(even) {
+            background: #fff0f5;
+        }
+        .table tbody tr:hover {
+            background: #ffe6f0;
+        }
+        .table th.sortable {
+            cursor: pointer;
+            position: relative;
+        }
+        .table th.sortable::after {
+            content: '\2195';
+            position: absolute;
+            right: .5rem;
+            opacity: 0.5;
+        }
+        .table th.sort-asc::after {
+            content: '\2191';
+            opacity: 1;
+        }
+        .table th.sort-desc::after {
+            content: '\2193';
+            opacity: 1;
+        }
+        .btn-primary {
+            background: #d63384;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #c2185b;
         }
         .btn-confirm {
-            background-color: #28a745;
-            color: white;
+            background: #28a745;
+            color: #fff;
         }
-        .btn-confirm:hover, .btn-confirm:focus {
-            background-color: #218838;
+        .btn-confirm:hover {
+            background: #218838;
+        }
+        .btn-delete {
+            background: #dc3545;
+            color: #fff;
+        }
+        .btn-delete:hover {
+            background: #c82333;
+        }
+        .pagination {
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+        .floating-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .symbol {
+            position: absolute;
+            font-size: 1.2rem;
+            color: #d63384;
+            opacity: 0.4;
+            animation: float 8s linear forwards;
+            user-select: none;
+            transform: translateX(var(--offset-x, 0));
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg);
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .symbol {
+                animation: none;
+                display: none;
+            }
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #777;
+            font-size: .9rem;
+        }
+        .footer a {
+            color: #d63384;
+            text-decoration: none;
+            margin: 0 .5rem;
+        }
+        .footer a:hover {
+            color: #a02a64;
+        }
+        @media (max-width: 576px) {
+            .filter-form .col-md-3 {
+                margin-bottom: .5rem;
+            }
+            .table-responsive {
+                font-size: .9rem;
+            }
+            .btn-group .btn {
+                font-size: .8rem;
+                padding: .25rem .5rem;
+            }
         }
     </style>
 </head>
 <body>
+    <!-- Removed marquee top-bar due to vertical text arrangement issue -->
+    <div class="container">
+        <!-- Flash messages -->
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
 
-<div class="container">
-    {% with messages = get_flashed_messages(with_categories=true) %}
-    {% if messages %}
-      {% for category, message in messages %}
-        <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
-          {{ message }}
-          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        <!-- Dashboard header -->
+        <div class="dashboard-header">
+            <h1 class="fw-bold">Mou's Schedules</h1>
+            <p class="text-muted">Manage and track appointments</p>
         </div>
-      {% endfor %}
-    {% endif %}
-    {% endwith %}
-  
-    <div class="dashboard-header text-center">
-        <h1 class="text-danger fw-bold">Mou's Schedules</h1>
-        <p class="text-muted">Manage and track appointments</p>
-    </div>
 
-    <!-- Filter & Search Form -->
-    <form method="GET" action="{{ url_for('admin_dashboard') }}" class="row g-3 filter-form align-items-end">
-        <div class="col-md-3">
-            <label for="status" class="form-label">Filter by Status</label>
-            <select class="form-select" id="status" name="status">
-                <option value="">All</option>
-                <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
-                <option value="Confirmed" {% if request.args.get('status') == 'Confirmed' %}selected{% endif %}>Confirmed</option>
-            </select>
-        </div>
-        <div class="col-md-3">
-            <label for="date" class="form-label">Filter by Date</label>
-            <input type="date" class="form-control" id="date" name="date" value="{{ request.args.get('date', '') }}">
-        </div>
-        <div class="col-md-3">
-            <label for="search" class="form-label">Search by Name</label>
-            <input type="text" class="form-control" id="search" name="search" placeholder="Enter name" value="{{ request.args.get('search', '') }}">
-        </div>
-        <div class="col-md-3 text-end">
-            <button type="submit" class="btn btn-dark w-100">Apply Filters</button>
-        </div>
-    </form>
+        <!-- Filter & Search Form -->
+        <form method="GET" action="{{ url_for('admin_dashboard') }}" class="row g-3 filter-form align-items-end">
+            <div class="col-md-3">
+                <label for="status" class="form-label">Filter by Status</label>
+                <select class="form-select" id="status" name="status">
+                    <option value="">All</option>
+                    <option value="Pending" {% if request.args.get('status') == 'Pending' %}selected{% endif %}>Pending</option>
+                    <option value="Confirmed" {% if request.args.get('status') == 'Confirmed' %}selected{% endif %}>Confirmed</option>
+                </select>
+            </div>
+            <div class="col-md-3">
+                <label for="date" class="form-label">Filter by Date</label>
+                <input type="date" class="form-control" id="date" name="date" value="{{ request.args.get('date', '') }}">
+            </div>
+            <div class="col-md-3">
+                <label for="search" class="form-label">Search by Name/ID</label>
+                <input type="text" class="form-control" id="search" name="search" placeholder="Enter name or ID" value="{{ request.args.get('search', '') }}">
+            </div>
+            <div class="col-md-3 text-end">
+                <button type="submit" class="btn btn-primary w-100">Apply Filters</button>
+            </div>
+            <div class="col-md-3 text-end">
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary w-100">Clear Filters</a>
+            </div>
+        </form>
 
-    <div class="text-end mt-2 mb-3">
-        <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
-    </div>
+        <!-- Action buttons -->
+        <div class="d-flex justify-content-between mb-3">
+            <h5 class="text-muted">Showing {{ bookings|length }} booking{{ bookings|length != 1 and 's' or '' }}</h5>
+            <div>
+                <button id="downloadCsv" class="btn btn-primary me-2">Download CSV</button>
+                <a href="{{ url_for('logout') }}" class="btn btn-danger">Logout</a>
+            </div>
+        </div>
 
-    <!-- Booking Count -->
-    <h5 class="text-muted mb-3">Showing {{ bookings|length }} booking{{ bookings|length != 1 and 's' or '' }}</h5>
-
-    <!-- Booking Table -->
-    <div class="table-responsive">
-        <table class="table table-bordered table-hover shadow-sm bg-white">
-            <thead class="table-danger">
-                <tr>
-                    <th>#</th>
-                    <th>Name</th>
-                    <th>Mobile</th>
-                    <th>Email</th>
-                    <th>Service</th>
-                    <th>Date</th>
-                    <th>Time</th>
-                    <th>Status</th>
-                    <th>Action</th>
-                </tr>
-            </thead>
-            <tbody>
-                {% if bookings %}
-                    {% for booking in bookings %}
+        <!-- Booking Table -->
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover shadow-sm">
+                <thead>
                     <tr>
-                        <td>{{ loop.index }}</td>
-                        <td>{{ booking.name }}</td>
-                        <td>{{ booking.mobile }}</td>
-                        <td>{{ booking.email }}</td>
-                        <td>{{ booking.service }}</td>
-                        <td>{{ booking.date }}</td>
-                        <td>{{ booking.time }}</td>
-                        <td>
-                            {% if booking.status == 'Confirmed' %}
-                                <span class="badge bg-success">Confirmed</span>
-                            {% else %}
-                                <span class="badge bg-warning text-dark">Pending</span>
-                            {% endif %}
-                        </td>
-                        <td>
-                            <div class="btn-group" role="group">
-                                {% if booking.status != 'Confirmed' %}
-                                <form action="{{ url_for('confirm_booking') }}" method="POST" style="display:inline;">
-                                    <input type="hidden" name="appointment_id" value="{{ booking.id }}">
-                                    <button type="submit" class="btn btn-success btn-sm">Confirm</button>
-                                </form>
+                        <th class="sortable" data-sort="index">#</th>
+                        <th class="sortable" data-sort="name">Name</th>
+                        <th class="sortable" data-sort="mobile">Mobile</th>
+                        <th>Email</th>
+                        <th class="sortable" data-sort="service">Service</th>
+                        <th class="sortable" data-sort="date">Date</th>
+                        <th class="sortable" data-sort="time">Time</th>
+                        <th class="sortable" data-sort="status">Status</th>
+                        <th class="sortable" data-sort="payment_status">Payment</th>
+                        <!-- Created At column: Shows booking creation timestamp -->
+                        <th class="sortable" data-sort="created_at">Created At</th>
+                        <th>Action</th>
+                    </tr>
+                </thead>
+                <tbody id="bookingTable">
+                    {% if bookings %}
+                        {% set page = request.args.get('page', 1, type=int) %}
+                        {% set per_page = 10 %}
+                        {% set total = bookings|length %}
+                        {% set start = (page - 1) * per_page %}
+                        {% set end = start + per_page %}
+                        {% for booking in bookings[start:end] %}
+                        <tr>
+                            <td>{{ loop.index + start }}</td>
+                            <td>{{ booking.name }}</td>
+                            <td>{{ booking.mobile }}</td>
+                            <td>{{ booking.email }}</td>
+                            <td>{{ booking.service }}</td>
+                            <td>{{ booking.date }}</td>
+                            <td>{{ booking.time }}</td>
+                            <td>
+                                {% if booking.status == 'Confirmed' %}
+                                    <span class="badge bg-success">Confirmed</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Pending</span>
                                 {% endif %}
-                                <form action="{{ url_for('delete_booking') }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this booking?');">
-                                    <input type="hidden" name="appointment_id" value="{{ booking.id }}">
-                                    <button type="submit" class="btn btn-danger btn-sm">Delete</button>
-                                </form>
-                            </div>
-                        </td>
-                    </tr>
+                            </td>
+                            <td>
+                                {% if booking.payment_status == 'Paid' %}
+                                    <span class="badge bg-success">Paid</span>
+                                {% else %}
+                                    <span class="badge bg-warning text-dark">Unpaid</span>
+                                {% endif %}
+                            </td>
+                            <td>{{ booking.created_at|default('N/A') }}</td>
+                            <td>
+                                <div class="btn-group" role="group">
+                                    {% if booking.status != 'Confirmed' %}
+                                    <form action="{{ url_for('confirm_booking') }}" method="POST" style="display:inline;">
+                                        <input type="hidden" name="appointment_id" value="{{ booking.id }}">
+                                        <button type="submit" class="btn btn-confirm btn-sm" data-bs-toggle="tooltip" title="Confirm Booking">Confirm</button>
+                                    </form>
+                                    {% endif %}
+                                    <form action="{{ url_for('delete_booking') }}" method="POST" style="display:inline;" onsubmit="return confirm('Are you sure you want to delete this booking?');">
+                                        <input type="hidden" name="appointment_id" value="{{ booking.id }}">
+                                        <button type="submit" class="btn btn-delete btn-sm" data-bs-toggle="tooltip" title="Delete Booking">Delete</button>
+                                    </form>
+                                </div>
+                            </td>
+                        </tr>
+                        {% endfor %}
+                    {% else %}
+                        <tr>
+                            <td colspan="11" class="text-center text-muted">No bookings found.</td>
+                        </tr>
+                    {% endif %}
+                </tbody>
+            </table>
+        </div>
+
+        <!-- Pagination -->
+        {% if bookings %}
+            {% set total_pages = (bookings|length / 10)|round(0, 'ceil')|int %}
+            {% set page = request.args.get('page', 1, type=int) %}
+            <nav aria-label="Page navigation">
+                <ul class="pagination">
+                    <li class="page-item {% if page == 1 %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_dashboard', page=page-1, status=request.args.get('status'), date=request.args.get('date'), search=request.args.get('search')) }}" aria-label="Previous">
+                            <span aria-hidden="true">«</span>
+                        </a>
+                    </li>
+                    {% for p in range(1, total_pages + 1) %}
+                        <li class="page-item {% if p == page %}active{% endif %}">
+                            <a class="page-link" href="{{ url_for('admin_dashboard', page=p, status=request.args.get('status'), date=request.args.get('date'), search=request.args.get('search')) }}">{{ p }}</a>
+                        </li>
                     {% endfor %}
-                {% else %}
-                    <tr>
-                        <td colspan="9" class="text-center text-muted">No bookings found.</td>
-                    </tr>
-                {% endif %}
-            </tbody>
-        </table>
+                    <li class="page-item {% if page == total_pages %}disabled{% endif %}">
+                        <a class="page-link" href="{{ url_for('admin_dashboard', page=page+1, status=request.args.get('status'), date=request.args.get('date'), search=request.args.get('search')) }}" aria-label="Next">
+                            <span aria-hidden="true">»</span>
+                        </a>
+                    </li>
+                </ul>
+            </nav>
+        {% endif %}
+
+        <!-- Back to Home -->
+        <div class="text-center mt-4">
+            <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
+        </div>
     </div>
 
-    <div class="text-center mt-4">
-        <a href="/" class="btn btn-outline-secondary">Back to Home</a>
-    </div>
-</div>
+    <!-- Floating Animation -->
+    <div class="floating-animation"></div>
 
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="mt-3">
+            <a href="https://www.instagram.com/glow_haven015/" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
+            <a href="https://www.facebook.com/moupriya.dey.463189/" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
+        </div>
+        <div class="container">© 2025 Mou's Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        // Floating Animation
+        const animationContainer = document.querySelector(".floating-animation");
+        const symbols = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓", "💄", "🖌️", "💅", "💋"];
+        function createSymbol() {
+            const symbol = document.createElement("span");
+            symbol.className = "symbol";
+            symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            symbol.style.left = `${Math.random() * 100}vw`;
+            const duration = 6 + Math.random() * 4;
+            symbol.style.animationDuration = `${duration}s`;
+            const offset = (Math.random() - 0.5) * 100;
+            symbol.style.setProperty("--offset-x", `${offset}px`);
+            animationContainer.appendChild(symbol);
+            symbol.addEventListener("animationend", () => symbol.remove());
+        }
+        setInterval(createSymbol, 500 + Math.random() * 500);
+
+        // Table Sorting
+        const table = document.querySelector("#bookingTable");
+        const headers = document.querySelectorAll(".sortable");
+        let sortDirection = {};
+        headers.forEach(header => {
+            header.addEventListener("click", () => {
+                const sortKey = header.dataset.sort;
+                const isAsc = sortDirection[sortKey] !== "asc";
+                sortDirection = { [sortKey]: isAsc ? "asc" : "desc" };
+                headers.forEach(h => {
+                    h.classList.remove("sort-asc", "sort-desc");
+                    if (h.dataset.sort === sortKey) {
+                        h.classList.add(isAsc ? "sort-asc" : "sort-desc");
+                    }
+                });
+                const rows = Array.from(table.querySelectorAll("tr"));
+                rows.sort((a, b) => {
+                    let aText = a.querySelector(`td:nth-child(${[...header.parentElement.children].indexOf(header) + 1})`).textContent.trim();
+                    let bText = b.querySelector(`td:nth-child(${[...header.parentElement.children].indexOf(header) + 1})`).textContent.trim();
+                    if (sortKey === "date") {
+                        aText = new Date(aText.split("/").reverse().join("-"));
+                        bText = new Date(bText.split("/").reverse().join("-"));
+                    } else if (sortKey === "created_at") {
+                        if (aText === "N/A") return isAsc ? 1 : -1;
+                        if (bText === "N/A") return isAsc ? -1 : 1;
+                        aText = new Date(aText.replace(/(\d{4})-(\d{2})-(\d{2})/, "$1-$2-$3"));
+                        bText = new Date(bText.replace(/(\d{4})-(\d{2})-(\d{2})/, "$1-$2-$3"));
+                    } else if (sortKey === "index") {
+                        aText = parseInt(aText);
+                        bText = parseInt(bText);
+                    }
+                    return isAsc ? (aText > bText ? 1 : -1) : (aText < bText ? 1 : -1);
+                });
+                table.innerHTML = "";
+                rows.forEach(row => table.appendChild(row));
+            });
+        });
+
+        // Download CSV
+        document.getElementById("downloadCsv").addEventListener("click", () => {
+            const rows = document.querySelectorAll("#bookingTable tr");
+            let csv = "Index,Name,Mobile,Email,Service,Date,Time,Status,Payment Status,Created At\n";
+            rows.forEach(row => {
+                const cols = row.querySelectorAll("td");
+                if (cols.length) {
+                    const data = [
+                        cols[0].textContent.trim(),
+                        `"${cols[1].textContent.trim()}"`,
+                        cols[2].textContent.trim(),
+                        cols[3].textContent.trim(),
+                        `"${cols[4].textContent.trim()}"`,
+                        cols[5].textContent.trim(),
+                        cols[6].textContent.trim(),
+                        cols[7].querySelector(".badge").textContent.trim(),
+                        cols[8].querySelector(".badge").textContent.trim(),
+                        `"${cols[9].textContent.trim()}"`
+                    ];
+                    csv += data.join(",") + "\n";
+                }
+            });
+            const blob = new Blob([csv], { type: "text/csv" });
+            const url = window.URL.createObjectURL(blob);
+            const a = document.createElement("a");
+            a.href = url;
+            a.download = "bookings.csv";
+            a.click();
+            window.URL.revokeObjectURL(url);
+        });
+
+        // Initialize Tooltips
+        const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');
+        [...tooltipTriggerList].forEach(tooltipTriggerEl => new bootstrap.Tooltip(tooltipTriggerEl));
+    </script>
 </body>
 </html>

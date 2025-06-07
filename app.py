@@ -2,7 +2,7 @@ import os
 import json
 import uuid
 import qrcode
-import random # Import the random module
+import random
 from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
@@ -64,7 +64,6 @@ def generate_unique_numerical_id():
     bookings = load_bookings()
     existing_ids = {booking['id'] for booking in bookings}
     while True:
-        # Generate a random 6-8 digit number
         new_id = str(random.randint(100000, 99999999))
         if new_id not in existing_ids:
             return new_id
@@ -74,7 +73,7 @@ def generate_unique_numerical_id():
 def inject_enumerate():
     return dict(enumerate=enumerate)
 
-# New context processor to make datetime available globally in templates
+# Context processor to make datetime available globally in templates
 @app.context_processor
 def inject_datetime():
     return {'datetime': datetime}
@@ -88,7 +87,6 @@ def index():
 @app.route('/book', methods=['GET', 'POST'])
 def book():
     if request.method == 'POST':
-        # Handle form submission
         name = request.form['name']
         email = request.form['email']
         mobile = request.form['mobile']
@@ -97,9 +95,9 @@ def book():
         time = request.form['time']
 
         # Generate a numerical appointment ID
-        appointment_id = generate_unique_numerical_id() # Use the new function
+        appointment_id = generate_unique_numerical_id()
 
-        # TRY both date formats
+        # Try both date formats
         try:
             formatted_date = datetime.strptime(date_str, "%Y-%m-%d").strftime("%d/%m/%Y")
         except ValueError:
@@ -108,6 +106,9 @@ def book():
             except ValueError:
                 flash("Invalid date format. Please use DD/MM/YYYY or YYYY-MM-DD.", "danger")
                 return redirect(url_for('book'))
+
+        # Add creation timestamp
+        created_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
 
         new_booking = {
             'id': appointment_id,
@@ -118,7 +119,8 @@ def book():
             'date': formatted_date,
             'time': time,
             'status': 'Pending',
-            'payment_status': 'Unpaid' # Initialize payment status
+            'payment_status': 'Unpaid',
+            'created_at': created_at
         }
 
         bookings = load_bookings()
@@ -134,6 +136,7 @@ def book():
 
 Your appointment for {service} on {formatted_date} at {time} has been received.
 Appointment ID: {appointment_id}
+Booked on: {created_at}
 
 Please note: A partial payment of INR 500 is required to confirm your booking. Please scan the QR code on the payment page.
 
@@ -148,17 +151,14 @@ Mou's Makeup & Nails
             print(f"❌ Error sending email: {e}")
             flash(f"Error sending confirmation email. Please ensure your email is correct: {e}", "warning")
 
-
         return redirect(url_for('thank_you', appointment_id=appointment_id))
 
-    # If GET request, pass current date to template
     current_date = datetime.today().strftime('%Y-%m-%d')
     return render_template('book.html', date=current_date)
 
 # Testimonials route
 @app.route('/testimonials')
 def testimonials():
-    # Combine all testimonials into one list
     testimonials_data = [
         {"name": "Priya Sharma", "testimonial": "Absolutely loved my bridal look! The team was professional, punctual, and so talented.", "rating": 5, "image": "priya_sharma.jpg"},
         {"name": "Riya Dey", "testimonial": "They transformed me for my big day! Everyone complimented my hair and makeup.", "rating": 5, "image": "riya_dey.jpg"},
@@ -168,23 +168,16 @@ def testimonials():
         {"name": "Meenakshi Roy", "testimonial": "The hair styling lasted all day and I got compliments everywhere I went. Super happy!", "rating": 4, "image": "meenakshi_roy.jpg"},
         {"name": "Reena Mallik", "testimonial": "The makeup service exceeded my expectations!", "rating": 5, "image": "reena_mallik.jpg"},
         {"name": "Chandana Paul", "testimonial": "Professional, efficient, and so talented!", "rating": 5, "image": "chandana_paul.jpg"}
-        # Add more testimonials here as your business grows!
     ]
-    # You can sort testimonials here if you want them in a specific order
-    return render_template('testimonials.html', testimonials=testimonials_data) # Removed datetime=datetime here
-
-# !!! IMPORTANT: Remove or comment out the testimonials2 route from your app.py
-# @app.route('/testimonials2')
-# def testimonials2():
-#    ... (delete this entire route) ...
+    return render_template('testimonials.html', testimonials=testimonials_data)
 
 # Gallery route
 @app.route('/gallery')
 def gallery():
-    gallery_images = ["image1.jpg", "image2.jpg", "image3.jpg"] # Update with actual image paths
+    gallery_images = ["image1.jpg", "image2.jpg", "image3.jpg"]
     return render_template('gallery.html', images=gallery_images)
 
-# Thank you page after booking (now also handling payment QR)
+# Thank you page after booking
 @app.route('/thank_you')
 def thank_you():
     appointment_id = request.args.get('appointment_id')
@@ -192,7 +185,6 @@ def thank_you():
         flash("No appointment ID provided.", "danger")
         return redirect(url_for('index'))
 
-    # Retrieve booking details for displaying on the page
     bookings = load_bookings()
     booking_details = next((b for b in bookings if b['id'] == appointment_id), None)
 
@@ -200,13 +192,12 @@ def thank_you():
         flash("Appointment details not found.", "danger")
         return redirect(url_for('index'))
 
-    upi_id = "moupriyadeys@axl" # Replace with actual UPI ID
-    amount = 500 # Fixed partial payment amount
+    upi_id = "moupriyadeys@axl"
+    amount = 500
     payee_name = "MOU PRIYA DEY"
-    qr_filename = f"qr_{appointment_id}.png" # Prefix with 'qr_' to avoid conflicts
+    qr_filename = f"qr_{appointment_id}.png"
     qr_path = os.path.join(QR_FOLDER, qr_filename)
 
-    # Generate QR code only if it doesn't exist
     if not os.path.exists(qr_path):
         upi_url = f"upi://pay?pa={upi_id}&pn={payee_name}&am={amount}&cu=INR&tn=Payment for Makeup booking ID {appointment_id}"
         qr = qrcode.make(upi_url)
@@ -225,13 +216,13 @@ def confirm_payment(appointment_id):
     for booking in bookings:
         if booking['id'] == appointment_id:
             booking['payment_status'] = 'Paid'
-            save_bookings(bookings) # Save after updating status
+            save_bookings(bookings)
             flash('Payment confirmed. Thank you for your payment!', 'success')
             return redirect(url_for('payment_success', appointment_id=appointment_id))
     flash('Booking not found for payment confirmation.', 'danger')
-    return redirect(url_for('index')) # Fallback if booking not found
+    return redirect(url_for('index'))
 
-# New route for payment success page
+# Payment success page
 @app.route('/payment_success/<appointment_id>')
 def payment_success(appointment_id):
     bookings = load_bookings()
@@ -241,8 +232,7 @@ def payment_success(appointment_id):
         return redirect(url_for('index'))
     return render_template('payment_success.html', booking=booking_details)
 
-
-# Admin routes
+# Admin dashboard
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
@@ -252,7 +242,6 @@ def admin_dashboard():
 
     bookings = load_bookings()
 
-    # Filter bookings by status and date
     filtered_bookings = []
     for b in bookings:
         match_status = True
@@ -264,13 +253,12 @@ def admin_dashboard():
         if date_filter and b['date'] != date_filter:
             match_date = False
         if search_filter and search_filter.lower() not in b['name'].lower() and search_filter.lower() not in b['id'].lower():
-            match_search = False # Also search by ID
+            match_search = False
 
         if match_status and match_date and match_search:
             filtered_bookings.append(b)
 
     return render_template('admin_dashboard.html', bookings=filtered_bookings)
-
 
 @app.route('/admin/confirm_booking', methods=['POST'])
 @login_required
@@ -302,6 +290,7 @@ Date: {confirmed_booking['date']}
 Time: {confirmed_booking['time']}
 Appointment ID: {confirmed_booking['id']}
 Payment Status: {confirmed_booking.get('payment_status', 'N/A')}
+Booked on: {confirmed_booking.get('created_at', 'N/A')}
 
 Best regards,
 Mou's Makeup & Nails
@@ -350,7 +339,6 @@ def logout():
     logout_user()
     flash('You have been logged out.', 'success')
     return redirect(url_for('login'))
-
 
 @app.route('/terms_of_sale')
 def terms_of_sale():
