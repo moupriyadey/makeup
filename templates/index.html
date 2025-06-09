@@ -51,8 +51,8 @@
     }
     .marquee-content {
       display: inline-block;
-      animation: marquee 15s linear infinite;
-      padding-left: 100%;
+  min-width: 200%; /* Important for smooth repeat */
+  animation: marquee 35s linear infinite;
     }
     .top-bar:hover .marquee-content {
       animation-play-state: paused;
@@ -67,7 +67,7 @@
         padding: .2rem 0;
       }
       .marquee-content {
-        animation-duration: 12s;
+        animation-duration: 24s;
       }
     }
 
