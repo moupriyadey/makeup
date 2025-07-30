@@ -3,50 +3,26 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Gallery - Mou's Makeup & Nails</title>
+    <title>Upload Image - Mou's Makeup & Nails</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
     <style>
         body {
-            margin: 0;
-            padding-top: 20px; /* Adjusted for no top-bar */
             font-family: 'Roboto', sans-serif;
             background: linear-gradient(to right, #fff0f5, #ffe6f0);
             color: #333;
-            position: relative;
+            display: flex;
+            flex-direction: column;
+            min-height: 100vh;
         }
         h1, h2 {
             font-family: 'Playfair Display', serif;
         }
-        /* Custom styles for the gallery */
-        .gallery-card {
-            border: none; /* Remove default card border */
-            border-radius: 10px;
-            box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Subtle shadow */
-            transition: transform 0.3s ease, box-shadow 0.3s ease; /* Smooth transition for hover */
-            overflow: hidden; /* Ensures border-radius applies to image */
+        .content {
+            flex: 1;
+            padding-top: 50px; /* Adjust as needed for navbar */
         }
-        .gallery-card:hover {
-            transform: translateY(-5px); /* Lift effect on hover */
-            box-shadow: 0 8px 16px rgba(0, 0, 0, 0.2); /* Enhanced shadow on hover */
-        }
-        .gallery-card .card-img-top {
-            object-fit: cover;
-            height: 300px; /* Fixed height for consistent grid layout */
-            width: 100%;
-            border-top-left-radius: 10px; /* Apply border-radius to image corners */
-            border-top-right-radius: 10px;
-            display: block; /* Remove extra space below image */
-        }
-        .gallery-card .card-body {
-            display: none; /* Hide the card body, effectively hiding the filename */
-            padding: 0; /* Remove padding if body is hidden */
-        }
-
-        /* Adjustments for overall layout consistency */
-        body { display: flex; flex-direction: column; min-height: 100vh; }
-        .content { flex: 1; }
         footer {
             background-color: #f8f9fa;
             padding: 2rem 0;
@@ -54,7 +30,7 @@
             border-top: 1px solid #e7e7e7;
             color: #777;
             font-size: .9rem;
-            margin-top: 40px; /* Add some space above the footer */
+            margin-top: 40px;
         }
         footer a {
             color: #d63384;
@@ -63,27 +39,6 @@
         }
         footer a:hover {
             color: #a02a64;
-        }
-        .container.mt-5 {
-            padding-top: 0;
-            margin-top: 0 !important;
-        }
-        /* Responsive adjustments for the gallery grid */
-        .row-cols-xs-1 > * {
-            flex: 0 0 auto;
-            width: 100%;
-        }
-        @media (min-width: 576px) { /* Small devices (sm) */
-            .row-cols-sm-2 > * {
-                flex: 0 0 auto;
-                width: 50%;
-            }
-        }
-        @media (min-width: 768px) { /* Medium devices (md) */
-            .row-cols-md-3 > * {
-                flex: 0 0 auto;
-                width: 33.33333333%;
-            }
         }
     </style>
 </head>
@@ -115,26 +70,23 @@
         </div>
     </nav>
     <div class="content">
-        <div class="container mt-5">
-            <h1 class="text-center mb-5">Our Work Gallery</h1>
-            <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
-                {% if images %}
-                    {% for image_filename in images %}
-                    <div class="col">
-                        <div class="card gallery-card h-100">
-                            <img src="{{ url_for('uploaded_file', filename=image_filename) }}" class="card-img-top" alt="Gallery Image">
-                            </div>
-                    </div>
+        <div class="container">
+            <h1 class="text-center mb-4">Upload New Gallery Images</h1>
+            {% with messages = get_flashed_messages(with_categories=true) %}
+                {% if messages %}
+                    {% for category, message in messages %}
+                    <div class="alert alert-{{ category }}">{{ message }}</div>
                     {% endfor %}
-                {% else %}
-                    <div class="col-12 text-center py-5">
-                        <p class="lead">No images in the gallery yet. Please check back soon!</p>
-                        {% if current_user.is_authenticated and session.get('role') == 'admin' %}
-                            <p><a href="{{ url_for('upload_image') }}" class="btn btn-primary mt-3">Upload Images</a></p>
-                        {% endif %}
-                    </div>
                 {% endif %}
-            </div>
+            {% endwith %}
+            <form method="POST" enctype="multipart/form-data" action="{{ url_for('upload_image') }}">
+                <div class="mb-3">
+                    <label for="fileInput" class="form-label">Select Images (PNG, JPG, JPEG, GIF)</label>
+                    <input class="form-control" type="file" id="fileInput" name="files[]" multiple required>
+                </div>
+                <button type="submit" class="btn btn-primary">Upload Images</button>
+                <a href="{{ url_for('admin_dashboard') }}" class="btn btn-secondary">Back to Admin Dashboard</a>
+            </form>
         </div>
     </div>
 

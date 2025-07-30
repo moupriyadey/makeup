@@ -3,11 +3,12 @@ import json
 import uuid
 import qrcode
 import random
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory # Added send_from_directory
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from datetime import datetime
+from werkzeug.utils import secure_filename # Added secure_filename
 
 # Load environment variables
 load_dotenv()
@@ -32,6 +33,13 @@ BOOKINGS_FILE = 'bookings_cleaned.json'
 QR_FOLDER = os.path.join('static', 'qr_codes')
 os.makedirs(QR_FOLDER, exist_ok=True)
 
+# Image Upload Configuration
+UPLOAD_FOLDER = os.path.join('static', 'gallery_uploads')
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+
+app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Ensure the upload folder exists
+
 if not os.path.exists(BOOKINGS_FILE):
     with open(BOOKINGS_FILE, 'w') as f:
         json.dump([], f)
@@ -49,6 +57,11 @@ class User(UserMixin):
 @login_manager.user_loader
 def load_user(user_id):
     return User(user_id)
+
+# Helper function to check allowed file extensions
+def allowed_file(filename):
+    return '.' in filename and \
+           filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
 # Load and save bookings
 def load_bookings():
@@ -81,7 +94,7 @@ def inject_datetime():
 # Home route
 @app.route('/')
 def index():
-    return render_template('index.html')
+    return render_template('index.html', datetime=datetime) # Pass datetime
 
 # Booking route
 @app.route('/book', methods=['GET', 'POST'])
@@ -154,7 +167,7 @@ Mou's Makeup & Nails
         return redirect(url_for('thank_you', appointment_id=appointment_id))
 
     current_date = datetime.today().strftime('%Y-%m-%d')
-    return render_template('book.html', date=current_date)
+    return render_template('book.html', date=current_date, datetime=datetime) # Pass datetime
 
 # Testimonials route
 @app.route('/testimonials')
@@ -169,13 +182,17 @@ def testimonials():
         {"name": "Reena Mallik", "testimonial": "The makeup service exceeded my expectations!", "rating": 5, "image": "reena_mallik.jpg"},
         {"name": "Chandana Paul", "testimonial": "Professional, efficient, and so talented!", "rating": 5, "image": "chandana_paul.jpg"}
     ]
-    return render_template('testimonials.html', testimonials=testimonials_data)
+    return render_template('testimonials.html', testimonials=testimonials_data, datetime=datetime) # Pass datetime
 
-# Gallery route
+# Gallery route - UPDATED TO READ FROM UPLOAD_FOLDER
 @app.route('/gallery')
 def gallery():
-    gallery_images = ["image1.jpg", "image2.jpg", "image3.jpg"]
-    return render_template('gallery.html', images=gallery_images)
+    gallery_images = []
+    for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+        if allowed_file(filename):
+            gallery_images.append(filename)
+    gallery_images.sort(reverse=True) # Sort to show newest first, optional
+    return render_template('gallery.html', images=gallery_images, datetime=datetime) # Pass datetime
 
 # Thank you page after booking
 @app.route('/thank_you')
@@ -207,7 +224,8 @@ def thank_you():
                            appointment_id=appointment_id,
                            qr_image_url=f"/static/qr_codes/{qr_filename}",
                            booking=booking_details,
-                           payment_amount=amount)
+                           payment_amount=amount,
+                           datetime=datetime) # Pass datetime
 
 # Payment confirmation route
 @app.route('/confirm_payment/<appointment_id>', methods=['POST'])
@@ -230,9 +248,11 @@ def payment_success(appointment_id):
     if not booking_details:
         flash("Payment confirmation details not found.", "danger")
         return redirect(url_for('index'))
-    return render_template('payment_success.html', booking=booking_details)
+    return render_template('payment_success.html', booking=booking_details, datetime=datetime) # Pass datetime
 
 # Admin dashboard
+# app.py (Find your existing admin_dashboard route)
+
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
@@ -250,15 +270,49 @@ def admin_dashboard():
 
         if status_filter and b['status'] != status_filter:
             match_status = False
-        if date_filter and b['date'] != date_filter:
-            match_date = False
+        # The date filter logic needs to parse the date strings to compare correctly
+        if date_filter:
+            try:
+                filter_date_obj = datetime.strptime(date_filter, "%Y-%m-%d").date()
+                booking_date_obj = datetime.strptime(b['date'], "%d/%m/%Y").date()
+                if booking_date_obj != filter_date_obj:
+                    match_date = False
+            except ValueError:
+                # Handle cases where date_filter or b['date'] might be in unexpected formats
+                match_date = False # Or flash an error
         if search_filter and search_filter.lower() not in b['name'].lower() and search_filter.lower() not in b['id'].lower():
             match_search = False
 
         if match_status and match_date and match_search:
             filtered_bookings.append(b)
 
-    return render_template('admin_dashboard.html', bookings=filtered_bookings)
+    # Manual pagination logic (if not using Flask-SQLAlchemy-Pagination)
+    page = request.args.get('page', 1, type=int)
+    per_page = 10  # Number of bookings per page
+    total_bookings = len(filtered_bookings)
+    total_pages = (total_bookings + per_page - 1) // per_page
+    start_index = (page - 1) * per_page
+    end_index = start_index + per_page
+    paginated_bookings = filtered_bookings[start_index:end_index]
+
+    # --- NEW ADDITION: Get gallery images here ---
+    gallery_images = []
+    # Ensure UPLOAD_FOLDER is configured correctly in app.py at the top
+    # e.g., UPLOAD_FOLDER = os.path.join('static', 'gallery_uploads')
+    # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
+    if os.path.exists(app.config['UPLOAD_FOLDER']):
+        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+            # Check for allowed extensions before adding to the list
+            if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+                gallery_images.append(filename)
+    gallery_images.sort(reverse=True) # Optional: sort by newest first
+
+    return render_template('admin_dashboard.html',
+                           bookings=paginated_bookings,
+                           current_page=page,
+                           total_pages=total_pages,
+                           datetime=datetime,
+                           gallery_images=gallery_images) # <-- Pass the gallery_images list
 
 @app.route('/admin/confirm_booking', methods=['POST'])
 @login_required
@@ -331,7 +385,7 @@ def login():
             flash('Invalid credentials. Please try again.', 'danger')
             return redirect(url_for('login'))
 
-    return render_template('admin_login.html')
+    return render_template('admin_login.html', datetime=datetime) # Pass datetime
 
 @app.route('/admin/logout')
 @login_required
@@ -342,12 +396,86 @@ def logout():
 
 @app.route('/terms_of_sale')
 def terms_of_sale():
-    return render_template('terms_of_sale.html')
+    return render_template('terms_of_sale.html', datetime=datetime) # Pass datetime
 
 # Services page
 @app.route('/services')
 def services():
-    return render_template('services.html')
+    return render_template('services.html', datetime=datetime) # Pass datetime
+
+# --- NEW/UPDATED GALLERY & UPLOAD ROUTES ---
+# app.py (Find your existing upload_image route)
+
+# ... (keep existing imports and code)
+
+@app.route('/admin/upload_image', methods=['GET', 'POST'])
+@login_required
+def upload_image():
+    if request.method == 'POST':
+        # Check if the post request has the file part
+        if 'files[]' not in request.files: # Changed from 'file' to 'files[]'
+            flash('No file part', 'danger')
+            return redirect(request.url)
+
+        files = request.files.getlist('files[]') # Use getlist for multiple files
+        uploaded_count = 0
+        skipped_count = 0
+
+        for file in files:
+            # If the user does not select a file for a given input field,
+            # the browser submits an empty file without a filename.
+            if file.filename == '':
+                skipped_count += 1
+                continue # Skip empty file input
+
+            if file and allowed_file(file.filename):
+                filename = secure_filename(file.filename)
+                try:
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    uploaded_count += 1
+                except Exception as e:
+                    flash(f'Error uploading "{filename}": {e}', 'warning')
+                    skipped_count += 1
+            else:
+                flash(f'Skipped "{file.filename}": Allowed image types are png, jpg, jpeg, gif', 'warning')
+                skipped_count += 1
+
+        if uploaded_count > 0:
+            flash(f'{uploaded_count} image(s) successfully uploaded!', 'success')
+        if skipped_count > 0:
+            flash(f'{skipped_count} image(s) skipped due to errors or invalid file types.', 'info')
+
+        return redirect(url_for('gallery')) # Redirect to gallery to see the new images
+
+    return render_template('admin_upload_image.html', datetime=datetime)
+@app.route('/static/gallery_uploads/<filename>')
+def uploaded_file(filename):
+    return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
+
+# app.py additions
+# ... (keep your existing imports and code above)
+
+import os # Ensure this is already imported at the top, if not add it.
+# ...
+
+@app.route('/admin/delete_image/<filename>', methods=['POST'])
+@login_required
+def delete_image(filename):
+    if session.get('role') != 'admin': # Optional: additional check for admin role
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('admin_dashboard'))
+
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    if os.path.exists(filepath):
+        try:
+            os.remove(filepath)
+            flash(f'Image "{filename}" deleted successfully.', 'success')
+        except Exception as e:
+            flash(f'Error deleting image "{filename}": {e}', 'danger')
+    else:
+        flash(f'Image "{filename}" not found.', 'danger')
+
+    return redirect(url_for('admin_dashboard')) # Redirect back to admin dashboard
 
 # Prevent cached pages for admin panel after logout
 @app.after_request
