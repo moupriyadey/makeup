@@ -3,12 +3,15 @@ import json
 import uuid
 import qrcode
 import random
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory # Added send_from_directory
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory # send_from_directory is back for local files
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from datetime import datetime
-from werkzeug.utils import secure_filename # Added secure_filename
+from werkzeug.utils import secure_filename
+from flask_sqlalchemy import SQLAlchemy # For database integration
+
+# REMOVED: Cloudinary imports
 
 # Load environment variables
 load_dotenv()
@@ -28,21 +31,23 @@ app.config['MAIL_USE_SSL'] = True
 
 mail = Mail(app)
 
+# Flask-SQLAlchemy Configuration (for Neon DB for bookings)
+app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+db = SQLAlchemy(app)
+
+# REMOVED: Cloudinary Configuration
+
 # File paths and QR folder setup
-BOOKINGS_FILE = 'bookings_cleaned.json'
 QR_FOLDER = os.path.join('static', 'qr_codes')
 os.makedirs(QR_FOLDER, exist_ok=True)
 
-# Image Upload Configuration
+# Image Upload Configuration (REINTRODUCED for local storage)
 UPLOAD_FOLDER = os.path.join('static', 'gallery_uploads')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'}
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'} # Reintroduced for local file type validation
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Ensure the upload folder exists
-
-if not os.path.exists(BOOKINGS_FILE):
-    with open(BOOKINGS_FILE, 'w') as f:
-        json.dump([], f)
 
 # Initialize the LoginManager
 login_manager = LoginManager()
@@ -58,27 +63,34 @@ class User(UserMixin):
 def load_user(user_id):
     return User(user_id)
 
-# Helper function to check allowed file extensions
+# Helper function to check allowed file extensions (now using ALLOWED_EXTENSIONS)
 def allowed_file(filename):
     return '.' in filename and \
            filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS
 
-# Load and save bookings
-def load_bookings():
-    with open(BOOKINGS_FILE, 'r') as f:
-        return json.load(f)
+# Define the Booking Model (for Neon DB)
+class Booking(db.Model):
+    id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    name = db.Column(db.String(100), nullable=False)
+    email = db.Column(db.String(100), nullable=False)
+    mobile = db.Column(db.String(20), nullable=False)
+    service = db.Column(db.String(100), nullable=False)
+    date = db.Column(db.String(20), nullable=False) # Store as string "DD/MM/YYYY" for now
+    time = db.Column(db.String(10), nullable=False)
+    status = db.Column(db.String(20), default='Pending')
+    payment_status = db.Column(db.String(20), default='Unpaid')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow) # Store as datetime object
 
-def save_bookings(bookings):
-    with open(BOOKINGS_FILE, 'w') as f:
-        json.dump(bookings, f, indent=4)
+    def __repr__(self):
+        return f"<Booking {self.id}>"
 
-# Function to generate unique numerical ID
+# REMOVED: GalleryImage Model (since images are local, not in DB metadata)
+
+# Function to generate unique numerical ID (checks DB)
 def generate_unique_numerical_id():
-    bookings = load_bookings()
-    existing_ids = {booking['id'] for booking in bookings}
     while True:
         new_id = str(random.randint(100000, 99999999))
-        if new_id not in existing_ids:
+        if not Booking.query.filter_by(id=new_id).first(): # Check if ID exists in DB
             return new_id
 
 # Context processor to add enumerate to templates
@@ -94,9 +106,9 @@ def inject_datetime():
 # Home route
 @app.route('/')
 def index():
-    return render_template('index.html', datetime=datetime) # Pass datetime
+    return render_template('index.html', datetime=datetime)
 
-# Booking route
+# Booking route - UPDATED FOR DB (no change from previous DB integration)
 @app.route('/book', methods=['GET', 'POST'])
 def book():
     if request.method == 'POST':
@@ -120,25 +132,21 @@ def book():
                 flash("Invalid date format. Please use DD/MM/YYYY or YYYY-MM-DD.", "danger")
                 return redirect(url_for('book'))
 
-        # Add creation timestamp
-        created_at = datetime.utcnow().strftime("%Y-%m-%d %H:%M:%S")
-
-        new_booking = {
-            'id': appointment_id,
-            'name': name,
-            'email': email,
-            'mobile': mobile,
-            'service': service,
-            'date': formatted_date,
-            'time': time,
-            'status': 'Pending',
-            'payment_status': 'Unpaid',
-            'created_at': created_at
-        }
-
-        bookings = load_bookings()
-        bookings.append(new_booking)
-        save_bookings(bookings)
+        # Create new booking object and add to DB
+        new_booking = Booking(
+            id=appointment_id,
+            name=name,
+            email=email,
+            mobile=mobile,
+            service=service,
+            date=formatted_date,
+            time=time,
+            status='Pending',
+            payment_status='Unpaid',
+            created_at=datetime.utcnow() # Store as datetime object
+        )
+        db.session.add(new_booking)
+        db.session.commit() # Commit to save to database
 
         # Send confirmation email
         msg = Message(
@@ -149,7 +157,7 @@ def book():
 
 Your appointment for {service} on {formatted_date} at {time} has been received.
 Appointment ID: {appointment_id}
-Booked on: {created_at}
+Booked on: {new_booking.created_at.strftime("%Y-%m-%d %H:%M:%S")}
 
 Please note: A partial payment of INR 500 is required to confirm your booking. Please scan the QR code on the payment page.
 
@@ -167,9 +175,9 @@ Mou's Makeup & Nails
         return redirect(url_for('thank_you', appointment_id=appointment_id))
 
     current_date = datetime.today().strftime('%Y-%m-%d')
-    return render_template('book.html', date=current_date, datetime=datetime) # Pass datetime
+    return render_template('book.html', date=current_date, datetime=datetime)
 
-# Testimonials route
+# Testimonials route (no change)
 @app.route('/testimonials')
 def testimonials():
     testimonials_data = [
@@ -182,19 +190,21 @@ def testimonials():
         {"name": "Reena Mallik", "testimonial": "The makeup service exceeded my expectations!", "rating": 5, "image": "reena_mallik.jpg"},
         {"name": "Chandana Paul", "testimonial": "Professional, efficient, and so talented!", "rating": 5, "image": "chandana_paul.jpg"}
     ]
-    return render_template('testimonials.html', testimonials=testimonials_data, datetime=datetime) # Pass datetime
+    return render_template('testimonials.html', testimonials=testimonials_data, datetime=datetime)
 
-# Gallery route - UPDATED TO READ FROM UPLOAD_FOLDER
+# Gallery route - REVERTED TO READ FROM LOCAL UPLOAD_FOLDER
 @app.route('/gallery')
 def gallery():
     gallery_images = []
-    for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-        if allowed_file(filename):
-            gallery_images.append(filename)
-    gallery_images.sort(reverse=True) # Sort to show newest first, optional
-    return render_template('gallery.html', images=gallery_images, datetime=datetime) # Pass datetime
+    # This now reads from the local filesystem (UPLOAD_FOLDER)
+    if os.path.exists(app.config['UPLOAD_FOLDER']): # Check if folder exists
+        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
+            if allowed_file(filename): # Use allowed_file for validation
+                gallery_images.append(filename)
+    gallery_images.sort(reverse=True) # Sort to show newest first
+    return render_template('gallery.html', images=gallery_images, datetime=datetime)
 
-# Thank you page after booking
+# Thank you page after booking - UPDATED FOR DB (no change from previous DB integration)
 @app.route('/thank_you')
 def thank_you():
     appointment_id = request.args.get('appointment_id')
@@ -202,8 +212,7 @@ def thank_you():
         flash("No appointment ID provided.", "danger")
         return redirect(url_for('index'))
 
-    bookings = load_bookings()
-    booking_details = next((b for b in bookings if b['id'] == appointment_id), None)
+    booking_details = Booking.query.get(appointment_id) # Fetch from DB
 
     if not booking_details:
         flash("Appointment details not found.", "danger")
@@ -225,34 +234,30 @@ def thank_you():
                            qr_image_url=f"/static/qr_codes/{qr_filename}",
                            booking=booking_details,
                            payment_amount=amount,
-                           datetime=datetime) # Pass datetime
+                           datetime=datetime)
 
-# Payment confirmation route
+# Payment confirmation route - UPDATED FOR DB (no change from previous DB integration)
 @app.route('/confirm_payment/<appointment_id>', methods=['POST'])
 def confirm_payment(appointment_id):
-    bookings = load_bookings()
-    for booking in bookings:
-        if booking['id'] == appointment_id:
-            booking['payment_status'] = 'Paid'
-            save_bookings(bookings)
-            flash('Payment confirmed. Thank you for your payment!', 'success')
-            return redirect(url_for('payment_success', appointment_id=appointment_id))
+    booking = Booking.query.get(appointment_id) # Fetch from DB
+    if booking:
+        booking.payment_status = 'Paid' # Update status
+        db.session.commit() # Commit to save
+        flash('Payment confirmed. Thank you for your payment!', 'success')
+        return redirect(url_for('payment_success', appointment_id=appointment_id))
     flash('Booking not found for payment confirmation.', 'danger')
     return redirect(url_for('index'))
 
-# Payment success page
+# Payment success page - UPDATED FOR DB (no change from previous DB integration)
 @app.route('/payment_success/<appointment_id>')
 def payment_success(appointment_id):
-    bookings = load_bookings()
-    booking_details = next((b for b in bookings if b['id'] == appointment_id), None)
+    booking_details = Booking.query.get(appointment_id) # Fetch from DB
     if not booking_details:
         flash("Payment confirmation details not found.", "danger")
         return redirect(url_for('index'))
-    return render_template('payment_success.html', booking=booking_details, datetime=datetime) # Pass datetime
+    return render_template('payment_success.html', booking=booking_details, datetime=datetime)
 
-# Admin dashboard
-# app.py (Find your existing admin_dashboard route)
-
+# Admin dashboard - UPDATED FOR DB & REVERTED FOR LOCAL IMAGES
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
@@ -260,91 +265,75 @@ def admin_dashboard():
     date_filter = request.args.get('date')
     search_filter = request.args.get('search')
 
-    bookings = load_bookings()
+    # Query all bookings from the database (no change from previous DB integration)
+    query = Booking.query
 
-    filtered_bookings = []
-    for b in bookings:
-        match_status = True
-        match_date = True
-        match_search = True
+    if status_filter:
+        query = query.filter_by(status=status_filter)
 
-        if status_filter and b['status'] != status_filter:
-            match_status = False
-        # The date filter logic needs to parse the date strings to compare correctly
-        if date_filter:
-            try:
-                filter_date_obj = datetime.strptime(date_filter, "%Y-%m-%d").date()
-                booking_date_obj = datetime.strptime(b['date'], "%d/%m/%Y").date()
-                if booking_date_obj != filter_date_obj:
-                    match_date = False
-            except ValueError:
-                # Handle cases where date_filter or b['date'] might be in unexpected formats
-                match_date = False # Or flash an error
-        if search_filter and search_filter.lower() not in b['name'].lower() and search_filter.lower() not in b['id'].lower():
-            match_search = False
+    if date_filter:
+        try:
+            # Convert date_filter to the same format as stored in DB (DD/MM/YYYY)
+            filter_date_obj = datetime.strptime(date_filter, "%Y-%m-%d").strftime("%d/%m/%Y")
+            query = query.filter_by(date=filter_date_obj)
+        except ValueError:
+            flash("Invalid date format for filter. Please use YYYY-MM-DD.", "warning")
 
-        if match_status and match_date and match_search:
-            filtered_bookings.append(b)
+    if search_filter:
+        search_pattern = f"%{search_filter}%" # For LIKE queries
+        query = query.filter(
+            (Booking.name.ilike(search_pattern)) | # Case-insensitive LIKE for name
+            (Booking.id.ilike(search_pattern))    # Case-insensitive LIKE for id
+        )
 
-    # Manual pagination logic (if not using Flask-SQLAlchemy-Pagination)
+    # Order by creation date descending
+    query = query.order_by(Booking.created_at.desc())
+
+    # Manual pagination logic (using Flask-SQLAlchemy's paginate)
     page = request.args.get('page', 1, type=int)
-    per_page = 10  # Number of bookings per page
-    total_bookings = len(filtered_bookings)
-    total_pages = (total_bookings + per_page - 1) // per_page
-    start_index = (page - 1) * per_page
-    end_index = start_index + per_page
-    paginated_bookings = filtered_bookings[start_index:end_index]
+    per_page = 10
+    paginated_bookings = query.paginate(page=page, per_page=per_page, error_out=False)
 
-    # --- NEW ADDITION: Get gallery images here ---
+    # REVERTED: Get gallery images from local UPLOAD_FOLDER
     gallery_images = []
-    # Ensure UPLOAD_FOLDER is configured correctly in app.py at the top
-    # e.g., UPLOAD_FOLDER = os.path.join('static', 'gallery_uploads')
-    # app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
     if os.path.exists(app.config['UPLOAD_FOLDER']):
         for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-            # Check for allowed extensions before adding to the list
-            if '.' in filename and filename.rsplit('.', 1)[1].lower() in ALLOWED_EXTENSIONS:
+            if allowed_file(filename):
                 gallery_images.append(filename)
-    gallery_images.sort(reverse=True) # Optional: sort by newest first
+    gallery_images.sort(reverse=True)
 
     return render_template('admin_dashboard.html',
-                           bookings=paginated_bookings,
-                           current_page=page,
-                           total_pages=total_pages,
+                           bookings=paginated_bookings.items,
+                           current_page=paginated_bookings.page,
+                           total_pages=paginated_bookings.pages,
                            datetime=datetime,
-                           gallery_images=gallery_images) # <-- Pass the gallery_images list
+                           gallery_images=gallery_images) # Now passes filenames again
 
 @app.route('/admin/confirm_booking', methods=['POST'])
 @login_required
 def confirm_booking():
     appointment_id = request.form.get('appointment_id')
-    bookings = load_bookings()
-    confirmed_booking = None
+    booking = Booking.query.get(appointment_id) # Fetch from DB
 
-    for booking in bookings:
-        if booking['id'] == appointment_id:
-            booking['status'] = 'Confirmed'
-            confirmed_booking = booking
-            break
+    if booking:
+        booking.status = 'Confirmed' # Update status
+        db.session.commit() # Commit to save
 
-    save_bookings(bookings)
-
-    if confirmed_booking:
         msg = Message(
             subject="Your Appointment is Confirmed",
-            recipients=[confirmed_booking['email']]
+            recipients=[booking.email]
         )
-        msg.body = f"""Dear {confirmed_booking['name']},
+        msg.body = f"""Dear {booking.name},
 
 Your appointment has been confirmed.
 
 Details:
-Service: {confirmed_booking['service']}
-Date: {confirmed_booking['date']}
-Time: {confirmed_booking['time']}
-Appointment ID: {confirmed_booking['id']}
-Payment Status: {confirmed_booking.get('payment_status', 'N/A')}
-Booked on: {confirmed_booking.get('created_at', 'N/A')}
+Service: {booking.service}
+Date: {booking.date}
+Time: {booking.time}
+Appointment ID: {booking.id}
+Payment Status: {booking.payment_status}
+Booked on: {booking.created_at.strftime("%Y-%m-%d %H:%M:%S")}
 
 Best regards,
 Mou's Makeup & Nails
@@ -353,22 +342,26 @@ Mou's Makeup & Nails
             mail.send(msg)
         except Exception as e:
             print(f"❌ Error sending confirmation email: {str(e)}")
-
-    flash('Booking Confirmed.', 'success')
+        flash('Booking Confirmed.', 'success')
+    else:
+        flash('Booking not found.', 'danger')
     return redirect(url_for('admin_dashboard'))
 
 @app.route('/admin/delete_booking', methods=['POST'])
 @login_required
 def delete_booking():
     appointment_id = request.form.get('appointment_id')
-    bookings = load_bookings()
-    bookings = [b for b in bookings if b['id'] != appointment_id]
-    save_bookings(bookings)
+    booking = Booking.query.get(appointment_id) # Fetch from DB
 
-    flash('Booking deleted successfully.', 'success')
+    if booking:
+        db.session.delete(booking) # Delete from DB
+        db.session.commit() # Commit to save
+        flash('Booking deleted successfully.', 'success')
+    else:
+        flash('Booking not found.', 'danger')
     return redirect(url_for('admin_dashboard'))
 
-# Admin login and logout
+# Admin login and logout (no change)
 @app.route('/admin/login', methods=['GET', 'POST'])
 def login():
     if request.method == 'POST':
@@ -385,7 +378,7 @@ def login():
             flash('Invalid credentials. Please try again.', 'danger')
             return redirect(url_for('login'))
 
-    return render_template('admin_login.html', datetime=datetime) # Pass datetime
+    return render_template('admin_login.html', datetime=datetime)
 
 @app.route('/admin/logout')
 @login_required
@@ -396,42 +389,35 @@ def logout():
 
 @app.route('/terms_of_sale')
 def terms_of_sale():
-    return render_template('terms_of_sale.html', datetime=datetime) # Pass datetime
+    return render_template('terms_of_sale.html', datetime=datetime)
 
-# Services page
+# Services page (no change)
 @app.route('/services')
 def services():
-    return render_template('services.html', datetime=datetime) # Pass datetime
+    return render_template('services.html', datetime=datetime)
 
-# --- NEW/UPDATED GALLERY & UPLOAD ROUTES ---
-# app.py (Find your existing upload_image route)
-
-# ... (keep existing imports and code)
-
+# REVERTED: Upload Image Route (to local UPLOAD_FOLDER)
 @app.route('/admin/upload_image', methods=['GET', 'POST'])
 @login_required
 def upload_image():
     if request.method == 'POST':
-        # Check if the post request has the file part
-        if 'files[]' not in request.files: # Changed from 'file' to 'files[]'
+        if 'files[]' not in request.files:
             flash('No file part', 'danger')
             return redirect(request.url)
 
-        files = request.files.getlist('files[]') # Use getlist for multiple files
+        files = request.files.getlist('files[]')
         uploaded_count = 0
         skipped_count = 0
 
         for file in files:
-            # If the user does not select a file for a given input field,
-            # the browser submits an empty file without a filename.
             if file.filename == '':
                 skipped_count += 1
-                continue # Skip empty file input
+                continue
 
-            if file and allowed_file(file.filename):
+            if file and allowed_file(file.filename): # Use allowed_file check
                 filename = secure_filename(file.filename)
                 try:
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename))
+                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)) # Save to local folder
                     uploaded_count += 1
                 except Exception as e:
                     flash(f'Error uploading "{filename}": {e}', 'warning')
@@ -445,39 +431,36 @@ def upload_image():
         if skipped_count > 0:
             flash(f'{skipped_count} image(s) skipped due to errors or invalid file types.', 'info')
 
-        return redirect(url_for('gallery')) # Redirect to gallery to see the new images
+        return redirect(url_for('gallery'))
 
     return render_template('admin_upload_image.html', datetime=datetime)
+
+# REINTRODUCED: Route to serve uploaded files from local folder
 @app.route('/static/gallery_uploads/<filename>')
 def uploaded_file(filename):
     return send_from_directory(app.config['UPLOAD_FOLDER'], filename)
 
-# app.py additions
-# ... (keep your existing imports and code above)
-
-import os # Ensure this is already imported at the top, if not add it.
-# ...
-
+# REVERTED: Delete Image Route (from local UPLOAD_FOLDER)
 @app.route('/admin/delete_image/<filename>', methods=['POST'])
 @login_required
 def delete_image(filename):
-    if session.get('role') != 'admin': # Optional: additional check for admin role
+    if session.get('role') != 'admin':
         flash('Unauthorized access.', 'danger')
         return redirect(url_for('admin_dashboard'))
 
-    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename)
+    filepath = os.path.join(app.config['UPLOAD_FOLDER'], filename) # Path to local file
     if os.path.exists(filepath):
         try:
-            os.remove(filepath)
+            os.remove(filepath) # Delete local file
             flash(f'Image "{filename}" deleted successfully.', 'success')
         except Exception as e:
             flash(f'Error deleting image "{filename}": {e}', 'danger')
     else:
         flash(f'Image "{filename}" not found.', 'danger')
 
-    return redirect(url_for('admin_dashboard')) # Redirect back to admin dashboard
+    return redirect(url_for('admin_dashboard'))
 
-# Prevent cached pages for admin panel after logout
+# Prevent cached pages for admin panel after logout (no change)
 @app.after_request
 def no_cache(response):
     response.headers['Cache-Control'] = 'no-store'
@@ -486,4 +469,8 @@ def no_cache(response):
     return response
 
 if __name__ == '__main__':
+    # Create database tables if they don't exist
+    with app.app_context():
+        db.create_all() # This creates the Booking table (GalleryImage is removed)
+
     app.run(debug=True)
