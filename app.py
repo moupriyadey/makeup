@@ -786,16 +786,7 @@ def no_cache(response):
     return response
 
 if __name__ == '__main__':
-    # Create database tables if they don't exist
     with app.app_context():
-        # Drop the dependent table first to avoid foreign key errors
-        if 'invoice_service' in db.metadata.tables:
-            db.metadata.tables['invoice_service'].drop(db.engine)
-        
-        # Now drop the main invoice table
-        if 'invoice' in db.metadata.tables:
-            db.metadata.tables['invoice'].drop(db.engine)
-            
-        # Recreate all tables
+        # This will create tables if they don't exist, but will not delete existing data.
         db.create_all()
-    app.run(debug=True)
+    app.run(debug=True, host='0.0.0.0', port=5000)
