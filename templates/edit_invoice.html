@@ -1,0 +1,184 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Edit Invoice - {{ invoice.invoice_number }}</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+    <style>
+        body {
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #fff0f5, #ffe6f0);
+            color: #333;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        .container {
+            max-width: 800px;
+            margin-top: 2rem;
+            margin-bottom: 2rem;
+            padding: 2rem;
+            background-color: #fff;
+            border-radius: .5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .btn-primary {
+            background: #d63384;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #c2185b;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1 class="text-center fw-bold text-dark mb-4">Edit Invoice #{{ invoice.invoice_number }}</h1>
+        <form id="invoiceForm" action="{{ url_for('edit_invoice', invoice_id=invoice.id) }}" method="POST">
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="customer_name" class="form-label">Customer Name</label>
+                    <input type="text" class="form-control" id="customer_name" name="customer_name" value="{{ invoice.customer_name }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="customer_phone" class="form-label">Customer Phone (Optional)</label>
+                    <input type="text" class="form-control" id="customer_phone" name="customer_phone" value="{{ invoice.customer_phone or '' }}">
+                </div>
+                <div class="col-12">
+                    <label for="customer_address" class="form-label">Customer Address</label>
+                    <input type="text" class="form-control" id="customer_address" name="customer_address" value="{{ invoice.customer_address }}" required>
+                </div>
+                <div class="col-md-6">
+                    <label for="due_date" class="form-label">Due Date (Optional)</label>
+                    <input type="date" class="form-control" id="due_date" name="due_date" value="{{ invoice.due_date.strftime('%Y-%m-%d') if invoice.due_date else '' }}">
+                </div>
+            </div>
+            <hr>
+            <h5>Services Provided</h5>
+            <div id="services-container">
+                {% for service in services %}
+                <div class="row g-3 service-row mb-2">
+                    <div class="col-md-8">
+                        <input type="text" class="form-control" name="service_description[]" placeholder="Description" value="{{ service.description }}" required>
+                    </div>
+                    <div class="col-md-3">
+                        <input type="number" class="form-control service-amount" name="service_amount[]" placeholder="Amount (₹)" min="0" step="any" value="{{ service.amount }}" required>
+                    </div>
+                    <div class="col-md-1">
+                        <button type="button" class="btn btn-danger btn-sm remove-service-row"><i class="bi bi-x"></i></button>
+                    </div>
+                </div>
+                {% endfor %}
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-3">
+                <button type="button" class="btn btn-info btn-sm" id="addServiceRow">Add Another Service</button>
+                <div class="text-end">
+                    <strong>Total Amount: ₹<span id="displayTotalAmount"></span></strong>
+                </div>
+            </div>
+            <hr>
+            <div class="row g-3">
+                <div class="col-md-6">
+                    <label for="advance_amount" class="form-label">Advance Amount (Optional)</label>
+                    <input type="number" class="form-control" id="advance_amount" name="advance_amount" value="{{ invoice.advance_amount or 0 }}" min="0" step="any">
+                </div>
+                <div class="col-md-6 text-end d-flex align-items-center justify-content-end mt-4">
+                    <strong>Due Amount: ₹<span id="displayDueAmount"></span></strong>
+                </div>
+            </div>
+            <div class="d-flex justify-content-between align-items-center mt-4">
+                <button type="submit" class="btn btn-success">Update Invoice</button>
+                <a href="{{ url_for('manage_invoices') }}" class="btn btn-secondary">Cancel</a>
+            </div>
+        </form>
+    </div>
+
+    <div class="row g-3 service-row-template mb-2" style="display: none;">
+        <div class="col-md-8">
+            <input type="text" class="form-control" name="service_description[]" placeholder="Description" required>
+        </div>
+        <div class="col-md-3">
+            <input type="number" class="form-control service-amount" name="service_amount[]" placeholder="Amount (₹)" min="0" step="any" required>
+        </div>
+        <div class="col-md-1">
+            <button type="button" class="btn btn-danger btn-sm remove-service-row"><i class="bi bi-x"></i></button>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', function() {
+            const servicesContainer = document.getElementById('services-container');
+            const addServiceRowBtn = document.getElementById('addServiceRow');
+            const displayTotalAmount = document.getElementById('displayTotalAmount');
+            const advanceAmountInput = document.getElementById('advance_amount');
+            const displayDueAmount = document.getElementById('displayDueAmount');
+
+            // Function to update totals
+            function updateTotals() {
+                let total = 0;
+                document.querySelectorAll('.service-amount').forEach(input => {
+                    const amount = parseFloat(input.value) || 0;
+                    total += amount;
+                });
+                displayTotalAmount.textContent = total.toFixed(2);
+                
+                const advance = parseFloat(advanceAmountInput.value) || 0;
+                const due = total - advance;
+                displayDueAmount.textContent = due.toFixed(2);
+            }
+
+            // Initial calculation
+            updateTotals();
+
+            // Add a new service row
+            addServiceRowBtn.addEventListener('click', function() {
+                const template = document.querySelector('.service-row-template');
+                const newRow = template.cloneNode(true);
+                newRow.classList.remove('service-row-template');
+                newRow.classList.add('service-row');
+                newRow.style.display = 'flex'; // Make it visible
+                servicesContainer.appendChild(newRow);
+
+                // Add event listeners to the new row
+                newRow.querySelector('.service-amount').addEventListener('input', updateTotals);
+                newRow.querySelector('.remove-service-row').addEventListener('click', function() {
+                    newRow.remove();
+                    updateTotals();
+                });
+            });
+
+            // Event listeners for existing rows
+            servicesContainer.querySelectorAll('.service-amount').forEach(input => {
+                input.addEventListener('input', updateTotals);
+            });
+
+            // Event listeners for remove buttons
+            servicesContainer.querySelectorAll('.remove-service-row').forEach(button => {
+                button.addEventListener('click', function() {
+                    button.closest('.service-row').remove();
+                    updateTotals();
+                });
+            });
+
+            // Event listener for advance amount
+            advanceAmountInput.addEventListener('input', updateTotals);
+        });
+    </script>
+</body>
+</html>

@@ -35,7 +35,7 @@ deactivate () {
 # unset irrelevant variables
 deactivate nondestructive
 
-VIRTUAL_ENV="C:\Users\subha\Documents\MOU\makeup_booking_with_tracking_and_dashboard\.venv"
+VIRTUAL_ENV="C:\Users\subha\Documents\MOU\MAKEUP_BOOKING_RECOVERED\makeup\.venv"
 export VIRTUAL_ENV
 
 _OLD_VIRTUAL_PATH="$PATH"

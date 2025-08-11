@@ -1,0 +1,846 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice & Schedules - Mou's Makeup & Nails</title>
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <style>
+        body {
+            margin: 0;
+            padding-top: 20px;
+            font-family: 'Roboto', sans-serif;
+            background: linear-gradient(to right, #fff0f5, #ffe6f0);
+            color: #333;
+            position: relative;
+        }
+        h1, h2, h3 {
+            font-family: 'Playfair Display', serif;
+        }
+        .dashboard-header {
+            margin-bottom: 2rem;
+            text-align: center;
+        }
+        .dashboard-header h1 {
+            color: #d63384;
+        }
+        .card {
+            border: none;
+            border-radius: .5rem;
+            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+        }
+        .card-header {
+            background-color: #d63384;
+            color: #fff;
+            font-weight: bold;
+        }
+        .btn-primary {
+            background: #d63384;
+            border: none;
+        }
+        .btn-primary:hover {
+            background: #c2185b;
+        }
+        .btn-success {
+            background-color: #28a745;
+            border-color: #28a745;
+        }
+        .btn-danger {
+            background-color: #dc3545;
+            border-color: #dc3545;
+        }
+        .btn-info {
+            background-color: #17a2b8;
+            border-color: #17a2b8;
+        }
+        .table thead th {
+            background-color: #d63384;
+            color: #fff;
+        }
+        .table tbody tr:nth-child(even) {
+            background-color: #fff0f5;
+        }
+        .floating-animation {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            pointer-events: none;
+            z-index: 1;
+            overflow: hidden;
+        }
+        .symbol {
+            position: absolute;
+            font-size: 1.2rem;
+            color: #d63384;
+            opacity: 0.4;
+            animation: float 8s linear forwards;
+            user-select: none;
+            transform: translateX(var(--offset-x, 0));
+        }
+        @keyframes float {
+            0% {
+                transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg);
+                opacity: 0.4;
+            }
+            100% {
+                transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg);
+                opacity: 0;
+            }
+        }
+        @media (prefers-reduced-motion: reduce) {
+            .symbol {
+                animation: none;
+                display: none;
+            }
+        }
+        .footer {
+            text-align: center;
+            padding: 2rem 0;
+            color: #777;
+            font-size: .9rem;
+        }
+        .footer a {
+            color: #d63384;
+            text-decoration: none;
+            margin: 0 .5rem;
+        }
+        .footer a:hover {
+            color: #a02a64;
+        }
+        
+        .calendar-grid {
+            display: grid;
+            grid-template-columns: repeat(7, 1fr);
+            gap: 1px;
+            background-color: #e9ecef;
+            border: 1px solid #dee2e6;
+        }
+        .calendar-header, .calendar-day {
+            text-align: center;
+            padding: 0.5rem;
+            font-weight: bold;
+            background-color: #d63384;
+            color: white;
+        }
+        .calendar-day {
+            background-color: #fff;
+            color: #495057;
+            min-height: 80px;
+            position: relative;
+            overflow: hidden;
+        }
+        .calendar-day.current-month {
+            background-color: #f8f9fa;
+        }
+        .calendar-day-number {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: #adb5bd;
+            position: absolute;
+            top: 5px;
+            left: 5px;
+        }
+        .calendar-day.has-event {
+            background-color: #d4edda;
+            cursor: pointer;
+            border: 2px solid #28a745;
+        }
+        .calendar-day.has-event .calendar-day-number {
+            color: #28a745;
+        }
+        .event-details {
+            font-size: 0.75rem;
+            text-align: left;
+            margin-top: 30px;
+            padding: 0 5px;
+        }
+        .modal-body ul {
+            list-style-type: none;
+            padding-left: 0;
+        }
+        .service-row-template {
+            display: none; /* Hide the template row initially */
+        }
+        /* Invoice styling for preview */
+        .invoice-preview {
+            font-family: 'Playfair Display', serif;
+            color: #333;
+            background-color: #fcfcfc;
+            padding: 2rem;
+            border: 1px solid #eee;
+            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
+            max-width: 800px;
+            margin: auto;
+            position: relative;
+        }
+        .invoice-header-logo {
+            width: 150px;
+            height: auto;
+        }
+        .invoice-details table {
+            width: 100%;
+            margin-top: 1rem;
+        }
+        .invoice-details th, .invoice-details td {
+            padding: 0.5rem;
+            text-align: left;
+        }
+        .invoice-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 2rem;
+        }
+        .invoice-table th, .invoice-table td {
+            border: 1px solid #ddd;
+            padding: 1rem;
+        }
+        .invoice-table thead th {
+            background-color: #d63384;
+            color: white;
+        }
+        .invoice-table tfoot td {
+            font-weight: bold;
+            text-align: right;
+        }
+        .total-in-words {
+            font-style: italic;
+            font-size: 0.9rem;
+            margin-top: 1rem;
+        }
+        .invoice-note {
+            margin-top: 2rem;
+            font-size: 0.9rem;
+            color: #666;
+        }
+    </style>
+</head>
+<body>
+    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <div class="container-fluid">
+            <a class="navbar-brand" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
+            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+                <span class="navbar-toggler-icon"></span>
+            </button>
+            <div class="collapse navbar-collapse" id="navbarNav">
+                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('book') }}">Book Appointment</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('services') }}">Services</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('gallery') }}">Gallery</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('testimonials') }}">Testimonials</a></li>
+                    <li class="nav-item"><a class="nav-link" href="{{ url_for('terms_of_sale') }}">Terms of Sale</a></li>
+                </ul>
+                <ul class="navbar-nav ms-auto">
+                    {% if current_user.is_authenticated %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_invoices') }}">Manage Invoices</a></li>
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
+                    {% else %}
+                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
+                    {% endif %}
+                </ul>
+            </div>
+        </div>
+    </nav>
+    <div class="container py-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+        {% if messages %}
+            {% for category, message in messages %}
+            <div class="alert alert-{{ category }} alert-dismissible fade show" role="alert">
+                {{ message }}
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
+            {% endfor %}
+        {% endif %}
+        {% endwith %}
+
+        <div class="dashboard-header">
+            <h1 class="fw-bold">Invoice & Revenue Management</h1>
+            <p class="text-muted">Generate invoices, track revenue, and view your schedule.</p>
+        </div>
+
+        <div class="row">
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">Revenue Overview</div>
+                    <div class="card-body">
+                        <h4 class="card-title">Total Revenue: ₹{{ "{:,.2f}".format(total_revenue) }}</h4>
+                        <canvas id="revenueChart"></canvas>
+                    </div>
+                </div>
+            </div>
+            <div class="col-md-6 mb-4">
+                <div class="card h-100">
+                    <div class="card-header">Schedule Calendar</div>
+                    <div class="card-body">
+                        <div class="calendar-header d-flex justify-content-between align-items-center mb-3">
+                            <button id="prevMonth" class="btn btn-outline-light btn-sm">&lt;</button>
+                            <h5 id="currentMonthYear" class="text-light mb-0"></h5>
+                            <button id="nextMonth" class="btn btn-outline-light btn-sm">&gt;</button>
+                        </div>
+                        <div id="calendar" class="calendar-grid"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="card mb-4">
+            <div class="card-header">
+                <h4>Generate New Invoice</h4>
+            </div>
+            <div class="card-body">
+                <form id="invoiceForm" action="{{ url_for('manage_invoices') }}" method="POST">
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="customer_name" class="form-label">Customer Name</label>
+                            <input type="text" class="form-control" id="customer_name" name="customer_name" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="customer_phone" class="form-label">Customer Phone (Optional)</label>
+                            <input type="text" class="form-control" id="customer_phone" name="customer_phone">
+                        </div>
+                        <div class="col-12">
+                            <label for="customer_address" class="form-label">Customer Address</label>
+                            <input type="text" class="form-control" id="customer_address" name="customer_address" placeholder="e.g., 55, Abhay Vidyalaya Lankar Road, Kolkata - 700060" required>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="due_date" class="form-label">Due Date (Optional)</label>
+                            <input type="date" class="form-control" id="due_date" name="due_date">
+                        </div>
+                    </div>
+                    <hr>
+                    <h5>Services Provided</h5>
+                    <div id="services-container">
+                        <div class="row g-3 service-row mb-2">
+                            <div class="col-md-8">
+                                <input type="text" class="form-control" name="service_description[]" placeholder="Description" required>
+                            </div>
+                            <div class="col-md-3">
+                                <input type="number" class="form-control service-amount" name="service_amount[]" placeholder="Amount (₹)" min="0" step="any" required>
+                            </div>
+                            <div class="col-md-1">
+                                <button type="button" class="btn btn-danger btn-sm remove-service-row"><i class="bi bi-x"></i></button>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-3">
+                        <button type="button" class="btn btn-info btn-sm" id="addServiceRow">Add Another Service</button>
+                        <div class="text-end">
+                            <strong>Total Amount: ₹<span id="displayTotalAmount">0.00</span></strong>
+                        </div>
+                    </div>
+                    <hr>
+                    <div class="row g-3">
+                        <div class="col-md-6">
+                            <label for="advance_amount" class="form-label">Advance Amount (Optional)</label>
+                            <input type="number" class="form-control" id="advance_amount" name="advance_amount" value="0" min="0" step="any">
+                        </div>
+                        <div class="col-md-6 text-end d-flex align-items-center justify-content-end mt-4">
+                            <strong>Due Amount: ₹<span id="displayDueAmount">0.00</span></strong>
+                        </div>
+                    </div>
+                    <div class="d-flex justify-content-between align-items-center mt-4">
+                        <button type="submit" class="btn btn-success">Create Invoice</button>
+                        <button type="button" class="btn btn-primary" data-bs-toggle="modal" data-bs-target="#previewModal" id="previewButton">Preview Invoice</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+
+        <h3 class="mt-5 mb-3">All Invoices</h3>
+        <div class="table-responsive">
+            <table class="table table-bordered table-hover shadow-sm">
+                <thead>
+                    <tr>
+                        <th>#</th>
+                        <th>Invoice Number</th>
+                        <th>Customer Name</th>
+                        <th>Total Amount</th>
+                        <th>Due Amount</th>
+                        <th>Invoice Date</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {% for invoice in invoices %}
+                    <tr>
+                        <td>{{ loop.index }}</td>
+                        <td>{{ invoice.invoice_number }}</td>
+                        <td>{{ invoice.customer_name }}</td>
+                        <td>₹{{ "{:,.2f}".format(invoice.total_amount) }}</td>
+                        <td>₹{{ "{:,.2f}".format(invoice.due_amount) }}</td>
+                        <td>{{ invoice.invoice_date.strftime('%d-%b-%Y') }}</td>
+                        <td>
+    <div class="btn-group" role="group">
+        <a href="{{ url_for('view_invoice', invoice_id=invoice.id) }}" class="btn btn-info btn-sm" target="_blank">View</a>
+        <a href="{{ url_for('edit_invoice', invoice_id=invoice.id) }}" class="btn btn-primary btn-sm">Edit</a>
+        <form action="{{ url_for('delete_invoice', invoice_id=invoice.id) }}" method="POST" onsubmit="return confirm('Are you sure you want to delete this invoice?');" style="display:inline;">
+            <button type="submit" class="btn btn-danger btn-sm">Delete</button>
+        </form>
+    </div>
+</td>
+                    </tr>
+                    {% else %}
+                    <tr>
+                        <td colspan="7" class="text-center text-muted">No invoices found.</td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
+
+        <div class="modal fade" id="eventModal" tabindex="-1" aria-labelledby="eventModalLabel" aria-hidden="true">
+            <div class="modal-dialog">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="eventModalLabel">Scheduled Events for <span id="eventDate"></span></h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <ul id="eventList" class="list-group">
+                            </ul>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="modal fade" id="previewModal" tabindex="-1" aria-labelledby="previewModalLabel" aria-hidden="true">
+            <div class="modal-dialog modal-xl">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h5 class="modal-title" id="previewModalLabel">Invoice Preview</h5>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body p-0">
+                        <div id="invoice-content" class="p-5"></div>
+                    </div>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button id="printInvoice" class="btn btn-info">Print Invoice</button>
+                        <button id="downloadInvoice" class="btn btn-success">Download Invoice (PDF)</button>
+                        
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <div class="text-center mt-4">
+            <a href="{{ url_for('admin_dashboard') }}" class="btn btn-outline-secondary">Back to Dashboard</a>
+        </div>
+    </div>
+
+    <div class="floating-animation"></div>
+
+    <footer class="footer">
+        <div class="mt-3">
+            <a href="https://www.instagram.com/glow_haven015/" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
+            <a href="https://www.facebook.com/moupriya.dey.463189/" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
+        </div>
+        <div class="container">© 2025 Mou's Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+
+    <script>
+        // Floating Animation
+        const animationContainer = document.querySelector(".floating-animation");
+        const symbols = ["♈", "♉", "♊", "♋", "♌", "♍", "♎", "♏", "♐", "♑", "♒", "♓", "💄", "🖌️", "💅", "💋"];
+        function createSymbol() {
+            const symbol = document.createElement("span");
+            symbol.className = "symbol";
+            symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+            symbol.style.left = `${Math.random() * 100}vw`;
+            const duration = 6 + Math.random() * 4;
+            symbol.style.animationDuration = `${duration}s`;
+            const offset = (Math.random() - 0.5) * 100;
+            symbol.style.setProperty("--offset-x", `${offset}px`);
+            animationContainer.appendChild(symbol);
+            symbol.addEventListener("animationend", () => symbol.remove());
+        }
+        setInterval(createSymbol, 500 + Math.random() * 500);
+
+        // Function to convert number to words
+        const numberToWords = (n) => {
+            const a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 'fifteen ', 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen '];
+            const b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety'];
+
+            const inWords = (num) => {
+                let str = '';
+                if (num < 20) str = a[num];
+                else str = b[Math.floor(num / 10)] + (num % 10 !== 0 ? ' ' + a[num % 10] : '');
+                return str;
+            };
+
+            const parse = (num) => {
+                if (num === 0) return '';
+                let str = '';
+                if (num >= 10000000) {
+                    str += inWords(Math.floor(num / 10000000)) + 'crore ';
+                    num %= 10000000;
+                }
+                if (num >= 100000) {
+                    str += inWords(Math.floor(num / 100000)) + 'lakh ';
+                    num %= 100000;
+                }
+                if (num >= 1000) {
+                    str += inWords(Math.floor(num / 1000)) + 'thousand ';
+                    num %= 1000;
+                }
+                if (num >= 100) {
+                    str += inWords(Math.floor(num / 100)) + 'hundred ';
+                    num %= 100;
+                }
+                if (num > 0) {
+                    if (str !== '') str += 'and ';
+                    str += inWords(num);
+                }
+                return str;
+            };
+
+            const [intPart, decPart] = String(n.toFixed(2)).split('.');
+            let words = parse(parseInt(intPart));
+            if (parseInt(decPart) > 0) {
+                words += `and ${inWords(parseInt(decPart))}paise`;
+            }
+
+            return words.trim().replace(/\s+/g, ' ');
+        };
+
+
+        // Invoice Form Logic
+        const invoiceForm = document.getElementById('invoiceForm');
+        const servicesContainer = document.getElementById('services-container');
+        const addServiceRowBtn = document.getElementById('addServiceRow');
+        const displayTotalAmount = document.getElementById('displayTotalAmount');
+        const displayDueAmount = document.getElementById('displayDueAmount');
+        const advanceAmountInput = document.getElementById('advance_amount');
+
+        const calculateTotal = () => {
+            let total = 0;
+            document.querySelectorAll('.service-amount').forEach(input => {
+                total += parseFloat(input.value) || 0;
+            });
+            displayTotalAmount.textContent = total.toFixed(2);
+            calculateDue();
+        };
+
+        const calculateDue = () => {
+            const total = parseFloat(displayTotalAmount.textContent) || 0;
+            const advance = parseFloat(advanceAmountInput.value) || 0;
+            const due = total - advance;
+            displayDueAmount.textContent = due.toFixed(2);
+        };
+
+        const addServiceRow = () => {
+            const newRow = document.createElement('div');
+            newRow.className = 'row g-3 service-row mb-2';
+            newRow.innerHTML = `
+                <div class="col-md-8">
+                    <input type="text" class="form-control" name="service_description[]" placeholder="Description" required>
+                </div>
+                <div class="col-md-3">
+                    <input type="number" class="form-control service-amount" name="service_amount[]" placeholder="Amount (₹)" min="0" step="any" required>
+                </div>
+                <div class="col-md-1">
+                    <button type="button" class="btn btn-danger btn-sm remove-service-row"><i class="bi bi-x"></i></button>
+                </div>
+            `;
+            servicesContainer.appendChild(newRow);
+            newRow.querySelector('.service-amount').addEventListener('input', calculateTotal);
+            newRow.querySelector('.remove-service-row').addEventListener('click', () => {
+                newRow.remove();
+                calculateTotal();
+            });
+        };
+
+        addServiceRowBtn.addEventListener('click', addServiceRow);
+        servicesContainer.addEventListener('input', (e) => {
+            if (e.target.classList.contains('service-amount')) {
+                calculateTotal();
+            }
+        });
+        servicesContainer.addEventListener('click', (e) => {
+            if (e.target.closest('.remove-service-row')) {
+                e.target.closest('.service-row').remove();
+                calculateTotal();
+            }
+        });
+        advanceAmountInput.addEventListener('input', calculateDue);
+        
+        // Initial call
+        calculateTotal();
+
+        // Invoice Preview Logic
+        const previewButton = document.getElementById('previewButton');
+        const previewModal = new bootstrap.Modal(document.getElementById('previewModal'));
+        const invoiceContent = document.getElementById('invoice-content');
+
+        previewButton.addEventListener('click', (e) => {
+            e.preventDefault();
+            const customerName = document.getElementById('customer_name').value;
+            const customerAddress = document.getElementById('customer_address').value;
+            const customerPhone = document.getElementById('customer_phone').value;
+            const dueDate = document.getElementById('due_date').value;
+            const totalAmount = parseFloat(displayTotalAmount.textContent);
+            const advanceAmount = parseFloat(advanceAmountInput.value);
+            const dueAmount = parseFloat(displayDueAmount.textContent);
+            const invoiceDate = new Date().toLocaleDateString('en-GB');
+
+            // Collect services
+            let services = [];
+            document.querySelectorAll('.service-row').forEach(row => {
+                const desc = row.querySelector('[name="service_description[]"]').value;
+                const amount = parseFloat(row.querySelector('[name="service_amount[]"]').value);
+                if (desc && amount) {
+                    services.push({ description: desc, amount: amount });
+                }
+            });
+
+            // Generate the invoice HTML
+            let servicesHtml = services.map(service => `
+                <tr>
+                    <td>${service.description}</td>
+                    <td>₹${service.amount.toFixed(2)}</td>
+                    <td></td>
+                    <td></td>
+                </tr>
+            `).join('');
+
+            // Add the total, advance, and due row
+            servicesHtml += `
+                <tr>
+                    <td colspan="2" class="text-end"><strong>Advance:</strong></td>
+                    <td colspan="2">₹${advanceAmount.toFixed(2)}</td>
+                </tr>
+                <tr>
+                    <td colspan="2" class="text-end"><strong>Due:</strong></td>
+                    <td colspan="2">₹${dueAmount.toFixed(2)}</td>
+                </tr>
+            `;
+
+            const invoiceHtml = `
+            <div class="invoice-preview">
+                <div class="row align-items-center">
+                    <div class="col-4 text-center">
+                        <img src="{{ url_for('static', filename='logo.png') }}" alt="Mou's Makeup & Nails" class="invoice-header-logo">
+                    </div>
+                    <div class="col-8">
+                        <h1 class="text-end" style="color: #d63384;">INVOICE</h1>
+                        <p class="text-end mb-0"><strong>Invoice Date:</strong> ${invoiceDate}</p>
+                        <p class="text-end mb-0"><strong>Due Date:</strong> ${dueDate || 'N/A'}</p>
+                    </div>
+                </div>
+                <hr>
+                <div class="row">
+                    <div class="col-6">
+                        <p><strong>Billed To:</strong></p>
+                        <p><strong>Name:</strong> ${customerName}</p>
+                        <p><strong>Address:</strong> ${customerAddress}</p>
+                        <p><strong>Phone:</strong> ${customerPhone || 'N/A'}</p>
+                    </div>
+                    <div class="col-6 text-end">
+                        <p><strong>From:</strong></p>
+                        <p><strong>Mou's Makeup & Nails</strong></p>
+                        <p>226/M, Jayrampur Jala Road, BG Press Market, Kolkata</p>
+                        <p>Phone: 9330482697 | deymoupriya12@gmail.com</p>
+                    </div>
+                </div>
+                <h3 class="mt-4">Services Provided</h3>
+                <table class="invoice-table mt-3">
+                    <thead>
+                        <tr>
+                            <th>Description</th>
+                            <th>Amount</th>
+                            <th>Advance</th>
+                            <th>Due</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        ${servicesHtml}
+                    </tbody>
+                </table>
+                <div class="text-end mt-3">
+                    <h4>Total: ₹${totalAmount.toFixed(2)}</h4>
+                    <p class="total-in-words">(Rupees ${numberToWords(totalAmount)} Only)</p>
+                </div>
+                <hr>
+                <div class="invoice-note text-center">
+                    <p>Thank you for your business!</p>
+                    <p>Visit us at <a href="https://makeup-booking.onrender.com/">makeup-booking.onrender.com</a></p>
+                </div>
+            </div>
+            `;
+            invoiceContent.innerHTML = invoiceHtml;
+        });
+
+        // Print Invoice Logic
+        document.getElementById('printInvoice').addEventListener('click', () => {
+            const printContent = invoiceContent.innerHTML;
+            const originalBody = document.body.innerHTML;
+            document.body.innerHTML = printContent;
+            window.print();
+            document.body.innerHTML = originalBody;
+            window.location.reload();
+        });
+
+        // Download Invoice Logic (PDF)
+        document.getElementById('downloadInvoice').addEventListener('click', () => {
+            const invoiceElement = document.querySelector('#invoice-content > .invoice-preview');
+            html2canvas(invoiceElement, { scale: 2 }).then(canvas => {
+                const imgData = canvas.toDataURL('image/png');
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF('p', 'mm', 'a4');
+                const imgProps = pdf.getImageProperties(imgData);
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = (imgProps.height * pdfWidth) / imgProps.width;
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                pdf.save('invoice.pdf');
+            });
+        });
+
+        // Calendar Logic
+        const scheduleData = {{ schedule_data|tojson }};
+        const calendarEl = document.getElementById('calendar');
+        const currentMonthYearEl = document.getElementById('currentMonthYear');
+        const prevMonthBtn = document.getElementById('prevMonth');
+        const nextMonthBtn = document.getElementById('nextMonth');
+
+        let currentDate = new Date();
+
+        function renderCalendar() {
+            calendarEl.innerHTML = '';
+            const year = currentDate.getFullYear();
+            const month = currentDate.getMonth();
+
+            const firstDay = new Date(year, month, 1);
+            const lastDay = new Date(year, month + 1, 0);
+
+            currentMonthYearEl.textContent = `${firstDay.toLocaleString('default', { month: 'long' })} ${year}`;
+
+            const startDayIndex = (firstDay.getDay() + 6) % 7; // Adjust for Monday start
+            const daysInMonth = lastDay.getDate();
+
+            const weekdays = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+            weekdays.forEach(day => {
+                const header = document.createElement('div');
+                header.className = 'calendar-header';
+                header.textContent = day;
+                calendarEl.appendChild(header);
+            });
+
+            // Fill leading empty days
+            for (let i = 0; i < startDayIndex; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                calendarEl.appendChild(dayEl);
+            }
+
+            // Fill actual days
+            for (let i = 1; i <= daysInMonth; i++) {
+                const dayEl = document.createElement('div');
+                dayEl.className = 'calendar-day';
+                dayEl.classList.add('current-month');
+                
+                const dateKey = `${year}-${String(month + 1).padStart(2, '0')}-${String(i).padStart(2, '0')}`;
+                
+                if (scheduleData[dateKey]) {
+                    dayEl.classList.add('has-event');
+                    dayEl.setAttribute('data-bs-toggle', 'modal');
+                    dayEl.setAttribute('data-bs-target', '#eventModal');
+                    dayEl.setAttribute('data-date', dateKey);
+
+                    // Add a small preview of events
+                    const eventPreview = document.createElement('div');
+                    eventPreview.className = 'event-details';
+                    scheduleData[dateKey].forEach(event => {
+                         const eventItem = document.createElement('p');
+                         eventItem.innerHTML = `<strong>${event.customer_name}</strong><br>${event.details.split(',')[0]}`;
+                         eventPreview.appendChild(eventItem);
+                    });
+                    dayEl.appendChild(eventPreview);
+                }
+
+                const dayNumberEl = document.createElement('div');
+                dayNumberEl.className = 'calendar-day-number';
+                dayNumberEl.textContent = i;
+                dayEl.appendChild(dayNumberEl);
+                
+                calendarEl.appendChild(dayEl);
+            }
+        }
+
+        prevMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() - 1);
+            renderCalendar();
+        });
+
+        nextMonthBtn.addEventListener('click', () => {
+            currentDate.setMonth(currentDate.getMonth() + 1);
+            renderCalendar();
+        });
+
+        const eventModal = document.getElementById('eventModal');
+        eventModal.addEventListener('show.bs.modal', function (event) {
+            const button = event.relatedTarget;
+            const date = button.getAttribute('data-date');
+            const modalTitle = eventModal.querySelector('.modal-title #eventDate');
+            modalTitle.textContent = date;
+
+            const eventList = eventModal.querySelector('#eventList');
+            eventList.innerHTML = '';
+            
+            const events = scheduleData[date] || [];
+            events.forEach(event => {
+                const li = document.createElement('li');
+                li.className = 'list-group-item';
+                li.innerHTML = `
+                    <strong>Type:</strong> ${event.type}<br>
+                    <strong>Customer:</strong> ${event.customer_name}<br>
+                    <strong>Details:</strong> ${event.details}
+                `;
+                eventList.appendChild(li);
+            });
+        });
+
+        renderCalendar();
+
+        // Revenue Chart
+        const revenueData = {{ revenue_data|tojson }};
+        const chartData = {
+            labels: Object.keys(revenueData).reverse(),
+            datasets: [{
+                label: 'Revenue',
+                data: Object.values(revenueData).reverse(),
+                backgroundColor: 'rgba(214, 51, 132, 0.5)',
+                borderColor: 'rgba(214, 51, 132, 1)',
+                borderWidth: 1
+            }]
+        };
+
+        const config = {
+            type: 'bar',
+            data: chartData,
+            options: {
+                responsive: true,
+                scales: {
+                    y: {
+                        beginAtZero: true
+                    }
+                }
+            }
+        };
+
+        const revenueChart = new Chart(
+            document.getElementById('revenueChart'),
+            config
+        );
+    </script>
+</body>
+</html>

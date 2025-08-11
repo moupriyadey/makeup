@@ -3,14 +3,13 @@ import json
 import uuid
 import qrcode
 import random
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory # send_from_directory is back for local files
+from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory
 from flask_mail import Mail, Message
 from dotenv import load_dotenv
 from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
-from datetime import datetime
+from datetime import datetime, timedelta
 from werkzeug.utils import secure_filename
-from flask_sqlalchemy import SQLAlchemy # For database integration
-
+from flask_sqlalchemy import SQLAlchemy
 # REMOVED: Cloudinary imports
 
 # Load environment variables
@@ -83,16 +82,113 @@ class Booking(db.Model):
 
     def __repr__(self):
         return f"<Booking {self.id}>"
+    
 
 # REMOVED: GalleryImage Model (since images are local, not in DB metadata)
+# Invoice Model
+# Invoice model for database storage
+class Invoice(db.Model):
+    id = db.Column(db.String(50), primary_key=True, unique=True, nullable=False)
+    invoice_number = db.Column(db.String(50), unique=True, nullable=False)
+    customer_name = db.Column(db.String(100), nullable=False)
+    customer_address = db.Column(db.String(200), nullable=True)
+    customer_phone = db.Column(db.String(20), nullable=True)
+    invoice_date = db.Column(db.Date, nullable=False)
+    due_date = db.Column(db.Date, nullable=True)
+    total_amount = db.Column(db.Float, nullable=False)
+    advance_amount = db.Column(db.Float, nullable=True, default=0.0)
+    due_amount = db.Column(db.Float, nullable=True)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
 
-# Function to generate unique numerical ID (checks DB)
+    def __repr__(self):
+        return f"<Invoice {self.invoice_number}>"
+
+# Services model associated with an Invoice
+class InvoiceService(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    invoice_id = db.Column(db.String(50), db.ForeignKey('invoice.id'), nullable=False)
+    description = db.Column(db.String(200), nullable=False)
+    amount = db.Column(db.Float, nullable=False)
+    invoice = db.relationship('Invoice', backref=db.backref('services', lazy=True))# Function to generate unique numerical ID (checks DB)
+
 def generate_unique_numerical_id():
     while True:
         new_id = str(random.randint(100000, 99999999))
         if not Booking.query.filter_by(id=new_id).first(): # Check if ID exists in DB
             return new_id
+        
+# Function to convert number to words
+def number_to_words(number):
+    # This is a simplified version. A more robust one may be needed for very large numbers or different currencies.
+    # We will use the same JS logic from the template for consistency
+    num_str = "{:,.2f}".format(number)
+    parts = num_str.split('.')
+    integer_part = int(parts[0].replace(',', ''))
+    decimal_part = int(parts[1]) if len(parts) > 1 else 0
 
+    def in_words(num):
+        a = ['', 'one ', 'two ', 'three ', 'four ', 'five ', 'six ', 'seven ', 'eight ', 'nine ', 'ten ', 'eleven ', 'twelve ', 'thirteen ', 'fourteen ', 'fifteen ', 'sixteen ', 'seventeen ', 'eighteen ', 'nineteen ']
+        b = ['', '', 'twenty', 'thirty', 'forty', 'fifty', 'sixty', 'seventy', 'eighty', 'ninety']
+        if num < 20:
+            return a[num]
+        else:
+            return b[num // 10] + (a[num % 10] if num % 10 != 0 else '')
+
+    def parse(num):
+        if num == 0:
+            return ''
+        
+        words = ''
+        if num >= 10000000:
+            words += in_words(num // 10000000) + 'crore '
+            num %= 10000000
+        if num >= 100000:
+            words += in_words(num // 100000) + 'lakh '
+            num %= 100000
+        if num >= 1000:
+            words += in_words(num // 1000) + 'thousand '
+            num %= 1000
+        if num >= 100:
+            words += in_words(num // 100) + 'hundred '
+            num %= 100
+        if num > 0:
+            if words: words += 'and '
+            words += in_words(num)
+        return words
+
+    words = parse(integer_part)
+    if decimal_part > 0:
+        if words: words += ' and '
+        words += in_words(decimal_part) + 'paise'
+
+    return words.strip() or "Zero"
+
+# Add a context processor to make the function available in all templates
+@app.context_processor
+def utility_processor():
+    return dict(number_to_words=number_to_words)
+
+# Add this function somewhere in your app.py, outside of any route.
+
+# Function to generate unique sequential invoice number
+# Function to generate unique sequential invoice number
+def generate_invoice_number():
+    current_year_suffix = datetime.utcnow().strftime('%y')
+    
+    # Check for the last invoice from the current year
+    last_invoice = Invoice.query.filter(Invoice.invoice_number.ilike(f'%/{current_year_suffix}')).order_by(Invoice.created_at.desc()).first()
+
+    if last_invoice:
+        last_number = int(last_invoice.invoice_number.split('/')[1])
+        new_number = last_number + 1
+    else:
+        # Check if the current year is 25 to start at 23, otherwise start at 1
+        if current_year_suffix == '25':
+            new_number = 23
+        else:
+            new_number = 1
+
+    return f"MDB/{new_number:03d}/{current_year_suffix}"
 # Context processor to add enumerate to templates
 @app.context_processor
 def inject_enumerate():
@@ -309,6 +405,209 @@ def admin_dashboard():
                            datetime=datetime,
                            gallery_images=gallery_images) # Now passes filenames again
 
+
+@app.route('/admin/invoices', methods=['GET', 'POST'])
+@login_required
+def manage_invoices():
+    if request.method == 'POST':
+        # Handle invoice creation
+        customer_name = request.form['customer_name']
+        customer_address = request.form['customer_address']
+        customer_phone = request.form.get('customer_phone')
+        due_date_str = request.form.get('due_date')
+        
+        # Parse services data from form
+        service_descriptions = request.form.getlist('service_description[]')
+        service_amounts = request.form.getlist('service_amount[]')
+        
+        total_amount = 0.0
+        services_to_add = [] # Temporary list to hold service data
+        
+        for desc, amount in zip(service_descriptions, service_amounts):
+            if desc and amount:
+                amount_float = float(amount)
+                services_to_add.append({"description": desc, "amount": amount_float})
+                total_amount += amount_float
+        
+        advance_amount = float(request.form.get('advance_amount', 0))
+        due_amount = total_amount - advance_amount
+
+        # Generate unique invoice number and ID
+        invoice_number = generate_invoice_number()
+        invoice_id = str(uuid.uuid4())
+        
+        # Parse due date
+        due_date = None
+        if due_date_str:
+            try:
+                due_date = datetime.strptime(due_date_str, "%Y-%m-%d").date()
+            except ValueError:
+                flash("Invalid due date format. Please use YYYY-MM-DD.", "danger")
+                return redirect(url_for('manage_invoices'))
+
+        new_invoice = Invoice(
+            id=invoice_id,
+            invoice_number=invoice_number,
+            customer_name=customer_name,
+            customer_address=customer_address,
+            customer_phone=customer_phone,
+            total_amount=total_amount,
+            advance_amount=advance_amount,
+            due_amount=due_amount,
+            due_date=due_date,
+            invoice_date=datetime.utcnow()
+        )
+        
+        db.session.add(new_invoice)
+        
+        # Now create and link the InvoiceService entries
+        for service_data in services_to_add:
+            new_service = InvoiceService(
+                invoice_id=new_invoice.id,
+                description=service_data['description'],
+                amount=service_data['amount']
+            )
+            db.session.add(new_service)
+            
+        db.session.commit()
+        
+        flash(f'Invoice {invoice_number} created successfully!', 'success')
+        return redirect(url_for('manage_invoices'))
+
+    # Handle GET request to display invoices
+    invoices = Invoice.query.order_by(Invoice.created_at.desc()).all()
+    
+    # Calculate total revenue
+    total_revenue = db.session.query(db.func.sum(Invoice.total_amount)).scalar() or 0
+    
+    # Data for revenue chart (last 7 days)
+    revenue_data = {}
+    today = datetime.utcnow().date()
+    for i in range(7):
+        day = today - timedelta(days=i)
+        day_total = db.session.query(db.func.sum(Invoice.total_amount)).filter(db.func.date(Invoice.invoice_date) == day).scalar() or 0
+        revenue_data[day.strftime('%Y-%m-%d')] = day_total
+        
+    # Data for schedule calendar
+    schedule_data = {}
+    
+    # Fetch all confirmed bookings and invoices with due dates
+    all_bookings = Booking.query.filter(Booking.status == 'Confirmed').all()
+    all_invoices = Invoice.query.all()
+    
+    # Process bookings
+    for booking in all_bookings:
+        try:
+            date_obj = datetime.strptime(booking.date, '%d/%m/%Y').date()
+            date_key = date_obj.strftime('%Y-%m-%d')  # Convert to string key
+            if date_key not in schedule_data:
+                schedule_data[date_key] = []
+            schedule_data[date_key].append({
+                'type': 'Booking',
+                'customer_name': booking.name,
+                'details': f"Service: {booking.service}, Time: {booking.time}",
+                'amount': 0
+            })
+        except ValueError:
+            continue
+    
+    # Process invoices
+    for invoice in all_invoices:
+        if invoice.due_date:
+            date_key = invoice.due_date.strftime('%Y-%m-%d')  # Convert to string key
+            if date_key not in schedule_data:
+                schedule_data[date_key] = []
+            schedule_data[date_key].append({
+                'type': 'Invoice',
+                'customer_name': invoice.customer_name,
+                'details': f"Invoice: {invoice.invoice_number}, Total: ₹{invoice.total_amount:,.2f}, Due: ₹{invoice.due_amount:,.2f}",
+                'amount': invoice.total_amount
+            })
+    
+    return render_template('admin_invoices.html',
+                            invoices=invoices,
+                            total_revenue=total_revenue,
+                            revenue_data=revenue_data,
+                            schedule_data=schedule_data,
+                            datetime=datetime)
+
+@app.route('/admin/delete_invoice/<invoice_id>', methods=['POST'])
+@login_required
+def delete_invoice(invoice_id):
+    invoice = Invoice.query.get_or_404(invoice_id)
+    try:
+        # First, delete all services associated with the invoice
+        InvoiceService.query.filter_by(invoice_id=invoice.id).delete()
+        # Then, delete the invoice itself
+        db.session.delete(invoice)
+        db.session.commit()
+        flash('Invoice deleted successfully!', 'success')
+    except Exception as e:
+        db.session.rollback()
+        flash(f'Error deleting invoice: {str(e)}', 'danger')
+    return redirect(url_for('manage_invoices'))
+
+# Route to edit an existing invoice
+@app.route('/edit_invoice/<invoice_id>', methods=['GET', 'POST'])
+@login_required
+def edit_invoice(invoice_id):
+    invoice = Invoice.query.get_or_404(invoice_id)
+    if request.method == 'POST':
+        # Update invoice details from the form
+        invoice.customer_name = request.form['customer_name']
+        invoice.customer_address = request.form['customer_address']
+        invoice.customer_phone = request.form.get('customer_phone')
+        due_date_str = request.form.get('due_date')
+        invoice.due_date = datetime.strptime(due_date_str, '%Y-%m-%d') if due_date_str else None
+        
+        # Calculate total, advance, and due amounts
+        service_descriptions = request.form.getlist('service_description[]')
+        service_amounts = request.form.getlist('service_amount[]')
+        total_amount = sum(float(amount) for amount in service_amounts if amount)
+        advance_amount = float(request.form.get('advance_amount', 0))
+        due_amount = total_amount - advance_amount
+        
+        invoice.total_amount = total_amount
+        invoice.advance_amount = advance_amount
+        invoice.due_amount = due_amount
+        
+        # Clear existing services and add new ones
+        InvoiceService.query.filter_by(invoice_id=invoice.id).delete()
+        for desc, amount in zip(service_descriptions, service_amounts):
+            if desc and amount:
+                new_service = InvoiceService(invoice_id=invoice.id, description=desc, amount=float(amount))
+                db.session.add(new_service)
+        
+        db.session.commit()
+        flash('Invoice updated successfully!', 'success')
+        return redirect(url_for('manage_invoices'))
+
+    return render_template('edit_invoice.html', invoice=invoice, services=invoice.services)
+
+@app.route('/admin/view_invoice/<invoice_id>')
+@login_required
+def view_invoice(invoice_id):
+    invoice = Invoice.query.get(invoice_id)
+    if not invoice:
+        flash('Invoice not found.', 'danger')
+        return redirect(url_for('manage_invoices'))
+    
+    # Fetch services linked to this invoice via the relationship
+    services = invoice.services
+    
+    return render_template('view_invoice.html', invoice=invoice, services=services)
+
+@app.route('/invoice/<invoice_id>')
+def view_public_invoice(invoice_id):
+    invoice = Invoice.query.get(invoice_id)
+    if not invoice:
+        return "Invoice not found", 404
+
+    # Fetch services linked to this invoice via the relationship
+    services = invoice.services
+
+    return render_template('view_invoice.html', invoice=invoice, services=services)
+
 @app.route('/admin/confirm_booking', methods=['POST'])
 @login_required
 def confirm_booking():
@@ -471,6 +770,14 @@ def no_cache(response):
 if __name__ == '__main__':
     # Create database tables if they don't exist
     with app.app_context():
-        db.create_all() # This creates the Booking table (GalleryImage is removed)
-
+        # Drop the dependent table first to avoid foreign key errors
+        if 'invoice_service' in db.metadata.tables:
+            db.metadata.tables['invoice_service'].drop(db.engine)
+        
+        # Now drop the main invoice table
+        if 'invoice' in db.metadata.tables:
+            db.metadata.tables['invoice'].drop(db.engine)
+            
+        # Recreate all tables
+        db.create_all()
     app.run(debug=True)

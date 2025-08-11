@@ -8,7 +8,7 @@ if defined _OLD_CODEPAGE (
     "%SystemRoot%\System32\chcp.com" 65001 > nul
 )
 
-set VIRTUAL_ENV=C:\Users\subha\Documents\MOU\makeup_booking_with_tracking_and_dashboard\.venv
+set VIRTUAL_ENV=C:\Users\subha\Documents\MOU\MAKEUP_BOOKING_RECOVERED\makeup\.venv
 
 if not defined PROMPT set PROMPT=$P$G
 
