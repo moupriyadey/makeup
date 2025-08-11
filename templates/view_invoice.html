@@ -6,16 +6,24 @@
     <title>Invoice {{ invoice.invoice_number }}</title>
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+    <link href="https://fonts.googleapis.com/css2?family=Merriweather&display=swap" rel="stylesheet">
+    
     <style>
+
+        .invoice-header h1 {
+    font-family: 'Merriweather', serif; /* Or any other font from the list */
+    color: #1d2fef;
+    font-weight: 700;
+                            }
         body {
-            background-color: #f8f9fa;
+            background-color: #ffffff;
             font-family: 'Roboto', sans-serif;
             color: #333;
         }
         .invoice-container {
             max-width: 800px;
             margin: 2rem auto;
-            background-color: #fff;
+            background-color: #f1f4f8;
             padding: 2rem;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
@@ -30,6 +38,12 @@
         }
         .invoice-info, .billing-info {
             font-size: 0.9rem;
+
+        .invoice-info {
+        margin-bottom: 0.05rem; /* Adjust this value as needed */
+        padding-bottom: 0;
+                }
+
         }
         .invoice-table {
             width: 100%;
@@ -38,7 +52,7 @@
             font-size: 0.9rem;
         }
         .invoice-table th, .invoice-table td {
-            border: 1px solid #ddd;
+            border: 1px solid #74a6f0;
             padding: 1rem;
             text-align: left;
         }
@@ -60,7 +74,7 @@
         .invoice-footer-note {
             margin-top: 2rem;
             font-size: 0.9rem;
-            color: #666;
+            color: #7c01ff;
             text-align: center;
         }
         @media print {
@@ -166,9 +180,10 @@
 
         <hr>
         <div class="invoice-footer-note">
-            <p>Thank you for your business!</p>
-            <p>Visit us at <a href="https://makeup-booking.onrender.com/">https://makeup-booking.onrender.com/</a></p>
-        </div>
+    <p style="margin-bottom: 5px;">THANK YOU FOR CHOOSING US!!</p>
+    <p style="margin-bottom: 5px;">PLEASE SHARE YOUR EXPERIENCE AT GOOGLE REVIEW</p>
+    <p style="margin-bottom: 5px;">Visit us at <a href="https://makeup-booking.onrender.com/">https://makeup-booking.onrender.com/</a></p>
+</div>
     </div>
     
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>

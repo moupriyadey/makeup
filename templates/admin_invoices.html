@@ -9,215 +9,105 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
-        body {
-            margin: 0;
-            padding-top: 20px;
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(to right, #fff0f5, #ffe6f0);
-            color: #333;
-            position: relative;
-        }
-        h1, h2, h3 {
-            font-family: 'Playfair Display', serif;
-        }
-        .dashboard-header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        .dashboard-header h1 {
-            color: #d63384;
-        }
-        .card {
-            border: none;
-            border-radius: .5rem;
-            box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-        }
-        .card-header {
-            background-color: #d63384;
-            color: #fff;
-            font-weight: bold;
-        }
-        .btn-primary {
-            background: #d63384;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #c2185b;
-        }
-        .btn-success {
-            background-color: #28a745;
-            border-color: #28a745;
-        }
-        .btn-danger {
-            background-color: #dc3545;
-            border-color: #dc3545;
-        }
-        .btn-info {
-            background-color: #17a2b8;
-            border-color: #17a2b8;
-        }
-        .table thead th {
-            background-color: #d63384;
-            color: #fff;
-        }
-        .table tbody tr:nth-child(even) {
-            background-color: #fff0f5;
-        }
-        .floating-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-        .symbol {
-            position: absolute;
-            font-size: 1.2rem;
-            color: #d63384;
-            opacity: 0.4;
-            animation: float 8s linear forwards;
-            user-select: none;
-            transform: translateX(var(--offset-x, 0));
-        }
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg);
-                opacity: 0.4;
-            }
-            100% {
-                transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .symbol {
-                animation: none;
-                display: none;
-            }
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: #777;
-            font-size: .9rem;
-        }
-        .footer a {
-            color: #d63384;
-            text-decoration: none;
-            margin: 0 .5rem;
-        }
-        .footer a:hover {
-            color: #a02a64;
-        }
-        
-        .calendar-grid {
-            display: grid;
-            grid-template-columns: repeat(7, 1fr);
-            gap: 1px;
-            background-color: #e9ecef;
-            border: 1px solid #dee2e6;
-        }
-        .calendar-header, .calendar-day {
-            text-align: center;
-            padding: 0.5rem;
-            font-weight: bold;
-            background-color: #d63384;
-            color: white;
+    /* Add this to your existing styles or replace the calendar section */
+    .calendar-container {
+        max-width: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        gap: 5px;
+    }
+    .day-header {
+        font-weight: bold;
+        color: #d63384;
+        font-size: 14px;
+        padding: 5px 0;
+    }
+    .calendar-day {
+        position: relative;
+        padding: 10px 5px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+        font-size: 14px;
+        background-color: #f8f9fa;
+        color: #333;
+        border: 1px solid #e9ecef;
+        min-height: 50px;
+    }
+    .calendar-day:hover {
+        background-color: #e9ecef;
+    }
+    .calendar-day.current-day {
+        background-color: #d63384;
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .calendar-day.has-event {
+        border-bottom: 3px solid #d63384;
+    }
+    .calendar-day span {
+        display: block;
+        font-size: 1.2em;
+        margin-bottom: 5px;
+    }
+    .event-dot {
+        height: 8px;
+        width: 8px;
+        background-color: #d63384;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    /* Mobile-specific styles */
+    @media (max-width: 576px) {
+        .day-header {
+            font-size: 12px;
         }
         .calendar-day {
-            background-color: #fff;
-            color: #495057;
-            min-height: 80px;
-            position: relative;
-            overflow: hidden;
+            font-size: 12px;
+            padding: 5px 2px;
+            min-height: 40px;
         }
-        .calendar-day.current-month {
-            background-color: #f8f9fa;
-        }
-        .calendar-day-number {
-            font-size: 1.5rem;
-            font-weight: 700;
-            color: #adb5bd;
-            position: absolute;
-            top: 5px;
-            left: 5px;
-        }
-        .calendar-day.has-event {
-            background-color: #d4edda;
-            cursor: pointer;
-            border: 2px solid #28a745;
-        }
-        .calendar-day.has-event .calendar-day-number {
-            color: #28a745;
-        }
-        .event-details {
-            font-size: 0.75rem;
-            text-align: left;
-            margin-top: 30px;
-            padding: 0 5px;
-        }
-        .modal-body ul {
-            list-style-type: none;
-            padding-left: 0;
-        }
-        .service-row-template {
-            display: none; /* Hide the template row initially */
-        }
-        /* Invoice styling for preview */
-        .invoice-preview {
-            font-family: 'Playfair Display', serif;
-            color: #333;
-            background-color: #fcfcfc;
-            padding: 2rem;
-            border: 1px solid #eee;
-            box-shadow: 0 0 10px rgba(0, 0, 0, 0.05);
-            max-width: 800px;
-            margin: auto;
-            position: relative;
-        }
-        .invoice-header-logo {
-            width: 150px;
-            height: auto;
-        }
-        .invoice-details table {
-            width: 100%;
-            margin-top: 1rem;
-        }
-        .invoice-details th, .invoice-details td {
-            padding: 0.5rem;
-            text-align: left;
-        }
-        .invoice-table {
-            width: 100%;
-            border-collapse: collapse;
-            margin-top: 2rem;
-        }
-        .invoice-table th, .invoice-table td {
-            border: 1px solid #ddd;
-            padding: 1rem;
-        }
-        .invoice-table thead th {
-            background-color: #d63384;
-            color: white;
-        }
-        .invoice-table tfoot td {
-            font-weight: bold;
-            text-align: right;
-        }
-        .total-in-words {
-            font-style: italic;
-            font-size: 0.9rem;
-            margin-top: 1rem;
-        }
-        .invoice-note {
-            margin-top: 2rem;
-            font-size: 0.9rem;
-            color: #666;
-        }
-    </style>
+    }
+</style>
+
+<div class="card p-3 shadow-sm mb-4">
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
+            <h4 id="monthYear" class="mb-0"></h4>
+            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+        <div class="calendar-grid">
+            <div class="day-header"><span class="d-none d-sm-inline">Sunday</span><span class="d-sm-none">Su</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Monday</span><span class="d-sm-none">Mo</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Tuesday</span><span class="d-sm-none">Tu</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Wednesday</span><span class="d-sm-none">We</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Thursday</span><span class="d-sm-none">Th</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Friday</span><span class="d-sm-none">Fr</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Saturday</span><span class="d-sm-none">Sa</span></div>
+        </div>
+        <div id="calendar-days" class="calendar-grid">
+            </div>
+    </div>
+</div>
 </head>
 <body>
     <nav class="navbar navbar-expand-lg navbar-light bg-light">

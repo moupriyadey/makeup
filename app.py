@@ -204,6 +204,15 @@ def inject_datetime():
 def index():
     return render_template('index.html', datetime=datetime)
 
+@app.route('/ping')
+def ping_db():
+    try:
+        # A simple query to wake up the database
+        db.session.execute(db.text('SELECT 1'))
+        return 'Database is awake!', 200
+    except Exception as e:
+        return f'Database connection error: {e}', 500
+
 # Booking route - UPDATED FOR DB (no change from previous DB integration)
 @app.route('/book', methods=['GET', 'POST'])
 def book():
@@ -354,6 +363,7 @@ def payment_success(appointment_id):
     return render_template('payment_success.html', booking=booking_details, datetime=datetime)
 
 # Admin dashboard - UPDATED FOR DB & REVERTED FOR LOCAL IMAGES
+# Admin dashboard - UPDATED FOR DB & REVERTED FOR LOCAL IMAGES
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
@@ -361,7 +371,6 @@ def admin_dashboard():
     date_filter = request.args.get('date')
     search_filter = request.args.get('search')
 
-    # Query all bookings from the database (no change from previous DB integration)
     query = Booking.query
 
     if status_filter:
@@ -382,13 +391,24 @@ def admin_dashboard():
             (Booking.id.ilike(search_pattern))    # Case-insensitive LIKE for id
         )
 
-    # Order by creation date descending
     query = query.order_by(Booking.created_at.desc())
 
-    # Manual pagination logic (using Flask-SQLAlchemy's paginate)
     page = request.args.get('page', 1, type=int)
     per_page = 10
     paginated_bookings = query.paginate(page=page, per_page=per_page, error_out=False)
+
+    # **CRITICAL FIX: CONVERT DATE STRINGS TO DATETIME OBJECTS**
+    # The 'date' column is stored as a string in the DB, so we must convert it
+    # to a datetime object before passing it to the template for strftime().
+    for booking in paginated_bookings.items:
+        try:
+            # The date is stored as "DD/MM/YYYY", so we parse it with that format.
+            booking.date = datetime.strptime(booking.date, "%d/%m/%Y").date()
+        except (ValueError, TypeError) as e:
+            # Handle cases where the date string is malformed or None
+            print(f"Error converting date for booking {booking.id}: {e}")
+            booking.date = None
+    # End of critical fix
 
     # REVERTED: Get gallery images from local UPLOAD_FOLDER
     gallery_images = []
@@ -403,9 +423,7 @@ def admin_dashboard():
                            current_page=paginated_bookings.page,
                            total_pages=paginated_bookings.pages,
                            datetime=datetime,
-                           gallery_images=gallery_images) # Now passes filenames again
-
-
+                           gallery_images=gallery_images)
 @app.route('/admin/invoices', methods=['GET', 'POST'])
 @login_required
 def manage_invoices():

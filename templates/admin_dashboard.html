@@ -9,153 +9,209 @@
     <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
     <style>
-        body {
-            margin: 0;
-            padding-top: 20px; /* Adjusted for no top-bar */
-            font-family: 'Roboto', sans-serif;
-            background: linear-gradient(to right, #fff0f5, #ffe6f0);
-            color: #333;
-            position: relative;
+    body {
+        margin: 0;
+        padding-top: 20px;
+        font-family: 'Roboto', sans-serif;
+        background: linear-gradient(to right, #fff0f5, #ffe6f0);
+        color: #333;
+        position: relative;
+    }
+    h1, h2, h3 {
+        font-family: 'Playfair Display', serif;
+    }
+    .dashboard-header {
+        margin-bottom: 2rem;
+        text-align: center;
+    }
+    .dashboard-header h1 {
+        color: #d63384;
+    }
+    .filter-form {
+        background: #fff;
+        padding: 1rem;
+        border-radius: .5rem;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        margin-bottom: 1.5rem;
+    }
+    .table {
+        background: #fff;
+        border-radius: .5rem;
+        overflow: hidden;
+    }
+    .table th {
+        background: #d63384;
+        color: #fff;
+        font-weight: 600;
+    }
+    .table tbody tr:nth-child(even) {
+        background: #fff0f5;
+    }
+    .table tbody tr:hover {
+        background: #ffe6f0;
+    }
+    .table th.sortable {
+        cursor: pointer;
+        position: relative;
+    }
+    .table th.sortable::after {
+        content: '\2195';
+        position: absolute;
+        right: .5rem;
+        opacity: 0.5;
+    }
+    .table th.sort-asc::after {
+        content: '\2191';
+        opacity: 1;
+    }
+    .table th.sort-desc::after {
+        content: '\2193';
+        opacity: 1;
+    }
+    .btn-primary {
+        background: #d63384;
+        border: none;
+    }
+    .btn-primary:hover {
+        background: #c2185b;
+    }
+    .btn-confirm {
+        background: #28a745;
+        color: #fff;
+    }
+    .btn-confirm:hover {
+        background: #218838;
+    }
+    .btn-delete {
+        background: #dc3545;
+        color: #fff;
+    }
+    .btn-delete:hover {
+        background: #c82333;
+    }
+    .pagination {
+        justify-content: center;
+        margin-top: 1.5rem;
+    }
+    .floating-animation {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        pointer-events: none;
+        z-index: 1;
+        overflow: hidden;
+    }
+    .symbol {
+        position: absolute;
+        font-size: 1.2rem;
+        color: #d63384;
+        opacity: 0.4;
+        animation: float 8s linear forwards;
+        user-select: none;
+        transform: translateX(var(--offset-x, 0));
+    }
+    @keyframes float {
+        0% { transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg); opacity: 0.4; }
+        100% { transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg); opacity: 0; }
+    }
+    @media (prefers-reduced-motion: reduce) {
+        .symbol { animation: none; display: none; }
+    }
+    .footer {
+        text-align: center;
+        padding: 2rem 0;
+        color: #777;
+        font-size: .9rem;
+    }
+    .footer a {
+        color: #d63384;
+        text-decoration: none;
+        margin: 0 .5rem;
+    }
+    .footer a:hover {
+        color: #a02a64;
+    }
+    /* Calendar Styling */
+    .calendar-container {
+        max-width: 100%;
+        margin: 0 auto;
+        background: #fff;
+        border-radius: 10px;
+        padding: 15px;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
+    }
+    .calendar-header {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        margin-bottom: 15px;
+    }
+    .calendar-grid {
+        display: grid;
+        grid-template-columns: repeat(7, 1fr);
+        text-align: center;
+        gap: 5px;
+    }
+    .day-header {
+        font-weight: bold;
+        color: #d63384;
+        font-size: 14px;
+        padding: 5px 0;
+    }
+    .calendar-day {
+        position: relative;
+        padding: 10px 5px;
+        border-radius: 5px;
+        transition: background-color 0.3s;
+        cursor: pointer;
+        font-size: 14px;
+        background-color: #f8f9fa;
+        color: #333;
+        border: 1px solid #e9ecef;
+        min-height: 50px;
+    }
+    .calendar-day:hover {
+        background-color: #e9ecef;
+    }
+    .calendar-day.current-day {
+        background-color: #d63384;
+        color: #fff;
+        font-weight: bold;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
+    }
+    .calendar-day.has-event {
+        border-bottom: 3px solid #d63384;
+    }
+    .calendar-day span {
+        display: block;
+        font-size: 1.2em;
+        margin-bottom: 5px;
+    }
+    .event-dot {
+        height: 8px;
+        width: 8px;
+        background-color: #d63384;
+        border-radius: 50%;
+        position: absolute;
+        bottom: 5px;
+        left: 50%;
+        transform: translateX(-50%);
+    }
+    /* Mobile-specific styles */
+    @media (max-width: 576px) {
+        .day-header {
+            font-size: 12px;
         }
-        h1, h2 {
-            font-family: 'Playfair Display', serif;
+        .calendar-day {
+            font-size: 12px;
+            padding: 5px 2px;
+            min-height: 40px;
         }
-        /* Removed marquee styling to prevent vertical text arrangement */
-        .dashboard-header {
-            margin-bottom: 2rem;
-            text-align: center;
-        }
-        .dashboard-header h1 {
-            color: #d63384;
-        }
-        .filter-form {
-            background: #fff;
-            padding: 1rem;
-            border-radius: .5rem;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-            margin-bottom: 1.5rem;
-        }
-        .table {
-            background: #fff;
-            border-radius: .5rem;
-            overflow: hidden;
-        }
-        .table th {
-            background: #d63384;
-            color: #fff;
-            font-weight: 600;
-        }
-        .table tbody tr:nth-child(even) {
-            background: #fff0f5;
-        }
-        .table tbody tr:hover {
-            background: #ffe6f0;
-        }
-        .table th.sortable {
-            cursor: pointer;
-            position: relative;
-        }
-        .table th.sortable::after {
-            content: '\2195';
-            position: absolute;
-            right: .5rem;
-            opacity: 0.5;
-        }
-        .table th.sort-asc::after {
-            content: '\2191';
-            opacity: 1;
-        }
-        .table th.sort-desc::after {
-            content: '\2193';
-            opacity: 1;
-        }
-        .btn-primary {
-            background: #d63384;
-            border: none;
-        }
-        .btn-primary:hover {
-            background: #c2185b;
-        }
-        .btn-confirm {
-            background: #28a745;
-            color: #fff;
-        }
-        .btn-confirm:hover {
-            background: #218838;
-        }
-        .btn-delete {
-            background: #dc3545;
-            color: #fff;
-        }
-        .btn-delete:hover {
-            background: #c82333;
-        }
-        .pagination {
-            justify-content: center;
-            margin-top: 1.5rem;
-        }
-        .floating-animation {
-            position: fixed;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            pointer-events: none;
-            z-index: 1;
-            overflow: hidden;
-        }
-        .symbol {
-            position: absolute;
-            font-size: 1.2rem;
-            color: #d63384;
-            opacity: 0.4;
-            animation: float 8s linear forwards;
-            user-select: none;
-            transform: translateX(var(--offset-x, 0));
-        }
-        @keyframes float {
-            0% {
-                transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg);
-                opacity: 0.4;
-            }
-            100% {
-                transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg);
-                opacity: 0;
-            }
-        }
-        @media (prefers-reduced-motion: reduce) {
-            .symbol {
-                animation: none;
-                display: none;
-            }
-        }
-        .footer {
-            text-align: center;
-            padding: 2rem 0;
-            color: #777;
-            font-size: .9rem;
-        }
-        .footer a {
-            color: #d63384;
-            text-decoration: none;
-            margin: 0 .5rem;
-        }
-        .footer a:hover {
-            color: #a02a64;
-        }
-        @media (max-width: 576px) {
-            .filter-form .col-md-3 {
-                margin-bottom: .5rem;
-            }
-            .table-responsive {
-                font-size: .9rem;
-            }
-            .btn-group .btn {
-                font-size: .8rem;
-                padding: .25rem .5rem;
-            }
-        }
-    </style>
+    }
+</style>
+
 </head>
 <body>
     <body>
@@ -194,6 +250,26 @@
             </div>
         </div>
     </nav>
+    <div class="card p-3 shadow-sm mb-4">
+    <div class="calendar-container">
+        <div class="calendar-header">
+            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
+            <h4 id="monthYear" class="mb-0"></h4>
+            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
+        </div>
+        <div class="calendar-grid">
+            <div class="day-header"><span class="d-none d-sm-inline">Sunday</span><span class="d-sm-none">Su</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Monday</span><span class="d-sm-none">Mo</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Tuesday</span><span class="d-sm-none">Tu</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Wednesday</span><span class="d-sm-none">We</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Thursday</span><span class="d-sm-none">Th</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Friday</span><span class="d-sm-none">Fr</span></div>
+            <div class="day-header"><span class="d-none d-sm-inline">Saturday</span><span class="d-sm-none">Sa</span></div>
+        </div>
+        <div id="calendar-days" class="calendar-grid">
+            </div>
+    </div>
+</div>
     <div class="container">
     <!-- Removed marquee top-bar due to vertical text arrangement issue -->
     <div class="container">
@@ -296,7 +372,7 @@
                             <td>{{ booking.mobile }}</td>
                             <td>{{ booking.email }}</td>
                             <td>{{ booking.service }}</td>
-                            <td>{{ booking.date }}</td>
+                            <td>{{ booking.date.strftime('%d-%m-%Y') }}</td>
                             <td>{{ booking.time }}</td>
                             <td>
                                 {% if booking.status == 'Confirmed' %}
@@ -312,7 +388,7 @@
                                     <span class="badge bg-warning text-dark">Unpaid</span>
                                 {% endif %}
                             </td>
-                            <td>{{ booking.created_at|default('N/A') }}</td>
+                            <td>{{ booking.created_at.strftime('%d-%m-%Y') if booking.created_at else 'N/A' }}</td>
                             <td>
                                 <div class="btn-group" role="group">
                                     {% if booking.status != 'Confirmed' %}
