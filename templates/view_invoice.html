@@ -23,7 +23,7 @@
         .invoice-container {
             max-width: 800px;
             margin: 2rem auto;
-            background-color: #f1f4f8;
+            background-color: rgb(241, 244, 248);
             padding: 2rem;
             box-shadow: 0 0 10px rgba(0,0,0,0.1);
         }
@@ -92,6 +92,26 @@
                 display: none !important;
             }
         }
+
+        .invoice-header-logo-small {
+    max-width: 120px;          /* smaller size than default 150px */
+    height: auto;              /* keep aspect ratio */
+    border-radius: 15px;       /* rounded corners for softness */
+    box-shadow: 
+        2px 2px 5px rgba(0, 0, 0, 0.1),   /* subtle outer shadow for depth */
+        inset 0 0 8px rgba(255, 255, 255, 0.6); /* light inner emboss effect */
+    filter: drop-shadow(0 0 6px rgba(241, 244, 248, 0.6)); /* blurred edges matching bg */
+    transition: transform 0.3s ease;
+}
+
+/* Optional hover effect */
+.invoice-header-logo-small:hover {
+    transform: scale(1.05);
+    box-shadow: 
+        4px 4px 10px rgba(0, 0, 0, 0.15),
+        inset 0 0 12px rgba(255, 255, 255, 0.8);
+}
+
     </style>
 </head>
 <body>
@@ -112,22 +132,28 @@
             <div class="col-4 text-center">
                 <img src="{{ url_for('static', filename='logo.png') }}" alt="Mou's Makeup & Nails" class="invoice-header-logo">
             </div>
+             <!-- --------------logomou-
+            <div class="col-4 text-center">
+            <img src="{{ url_for('static', filename='logomou.jpg') }}" alt="Mou's Makeup & Nails" class="invoice-header-logo invoice-header-logo-small">
+            </div>
+                         ------logomou -->
+                         
             <div class="col-8">
-                <h1 class="text-end mb-0">INVOICE</h1>
-                <p class="text-end mb-0"><strong>INVOICE #:</strong> {{ invoice.invoice_number }}</p>
-                <p class="text-end mb-0"><strong>DATE:</strong> {{ invoice.invoice_date.strftime('%d %b %Y') }}</p>
+                <h1 class="text-end mb-0" style="color: #413bea;">INVOICE</h1>
+                <p class="text-end mb-0" style="color: #413bea;"><strong>INVOICE #:</strong> {{ invoice.invoice_number }}</p>
+                <p class="text-end mb-0" style="color: #413bea;"><strong>DATE:</strong> {{ invoice.invoice_date.strftime('%d %b %Y') }}</p>
                 {% if invoice.due_date %}
-                <p class="text-end mb-0"><strong>DUE DATE:</strong> {{ invoice.due_date.strftime('%d %b %Y') }}</p>
+                <p class="text-end mb-0" style="color: #a103f6;"><strong>DUE DATE:</strong> {{ invoice.due_date.strftime('%d %b %Y') }}</p>
                 {% endif %}
             </div>
         </div>
         <hr>
         <div class="row mb-4">
             <div class="col-6">
-                <p class="billing-info"><strong>TO:</strong></p>
-                <h5 class="billing-info">{{ invoice.customer_name }}</h5>
-                <p class="billing-info">{{ invoice.customer_address }}</p>
-                <p class="billing-info">Phone: {{ invoice.customer_phone or 'N/A' }}</p>
+                <p class="billing-info" style="color: #4c10ff;"><strong>TO:</strong></p>
+                <h5 class="billing-info" style="color: #ff10cb;"><strong>{{ invoice.customer_name }}</h5></strong>
+                <p class="billing-info" style="color: #4c10ff;">{{ invoice.customer_address }}</p>
+                <p class="billing-info" style="color: #4c10ff;">Phone: {{ invoice.customer_phone or 'N/A' }}</p>
             </div>
             <div class="col-6 text-end">
                 <p class="invoice-info"><strong>FROM:</strong></p>
@@ -137,59 +163,53 @@
             </div>
         </div>
 
-        <table class="invoice-table">
-            <thead>
-                <tr>
-                    <th>Description</th>
-                    <th>Amount</th>
-                    <th>Advance</th>
-                    <th>Due</th>
-                </tr>
-            </thead>
-
-   <tbody>
-    {% for service in services %}
+<table class="invoice-table">
+    <thead>
         <tr>
-            <td>{{ service.description }}</td>
-            <td>₹{{ "{:,.2f}".format(service.amount) }}</td>
-            <td>
-                {% if service.advance is defined %}
-                    ₹{{ "{:,.2f}".format(service.advance) }}
-                {% else %}
-                    ₹{{ "{:,.2f}".format(invoice.advance_amount if services|length == 1 else 0) }}
-                {% endif %}
-            </td>
-            <td>
-                {% if service.advance is defined %}
-                    ₹{{ "{:,.2f}".format(service.amount - service.advance) }}
-                {% else %}
-                    ₹{{ "{:,.2f}".format(service.amount - (invoice.advance_amount if services|length == 1 else 0)) }}
-                {% endif %}
-            </td>
+            <th>Description</th>
+            <th>Amount</th>
         </tr>
-    {% endfor %}
-</tbody>
+    </thead>
+
+    {% for service in services %}
+<tr>
+    <td>{{ service.description }}</td>
+    <td style="text-align:center;">₹{{ "{:,.2f}".format(service.amount) }}</td>
+</tr>
+{% endfor %}
 
 
-            <tfoot>
-                <tr>
-                    <td colspan="2" class="text-end"><strong>Advance Paid:</strong></td>
-                    <td colspan="2">₹{{ "{:,.2f}".format(invoice.advance_amount) }}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="text-end"><strong>Due Amount:</strong></td>
-                    <td colspan="2">₹{{ "{:,.2f}".format(invoice.due_amount) }}</td>
-                </tr>
-                <tr>
-                    <td colspan="2" class="text-end"><strong>Total Amount:</strong></td>
-                    <td colspan="2">₹{{ "{:,.2f}".format(invoice.total_amount) }}</td>
-                </tr>
-            </tfoot>
-        </table>
+    <tfoot>
+        <tr>
+            <td class="text-end"><strong>Total Amount:</strong></td>
+            <td class="text-center">₹{{ "{:,.2f}".format(invoice.total_amount) }}</td>
+        </tr>
+        <tr>
+            <td class="text-end"><strong>Advance Paid:</strong></td>
+            <td class="text-center">₹{{ "{:,.2f}".format(invoice.advance_amount) }}</td>
+        </tr>
+        <tr>
+            <td class="text-end"><strong>Due Amount:</strong></td>
+            <td class="text-center">₹{{ "{:,.2f}".format(invoice.due_amount) }}</td>
+        </tr>
+        
+    </tfoot>
+</table>
 
-        <div class="text-end mt-3">
-            <p class="total-in-words">Amount in words: {{ number_to_words(invoice.total_amount) }} Only</p>
-        </div>
+         <!-- -------------- -->
+
+   <div class="text-end" style="margin-top: 0; margin-bottom: 0; padding: 0;">
+    <p class="total-in-words" style="text-align: left; margin: 0;">
+        Total Amount in words: {{ number_to_words(invoice.total_amount) }} Only
+    </p>
+</div>
+<div class="text-end" style="margin-top: 0; margin-bottom: 0; padding: 0;">
+    <p class="total-in-words" style="text-align: left; margin: 0;">
+        Due Amount in words: {{ number_to_words(invoice.due_amount) }} Only
+    </p>
+</div>
+
+
 
         <hr>
         <div class="invoice-footer-note">
