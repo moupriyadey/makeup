@@ -9,7 +9,48 @@
     <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
+    
+
     /* Add this to your existing styles or replace the calendar section */
+        /* Calendar header background and layout */
+/* Change only navbar colors */
+
+
+        .card.mb-4 {
+    background-color: #d2eef8; /* light pastel pink */
+}
+.card.mb-4 .card-header {
+    background-color: #04b998; /* deep pink header */
+    color: white;
+    font-weight: bold;
+}
+
+
+        .calendar-header {
+    background-color: #d63384; /* deep pink */
+    padding: 8px;
+    border-radius: 6px;
+}
+
+/* Month-year text color */
+#currentMonthYear {
+    color: white;
+    font-weight: bold;
+}
+
+/* Navigation buttons inside the calendar header */
+.calendar-header .btn {
+    background-color: white;
+    color: #d63384;
+    border: none;
+    font-weight: bold;
+}
+.calendar-header .btn:hover {
+    background-color: #f8d7e0; /* light pink hover */
+    color: #a1225d;
+}
+
+
     .calendar-container {
         max-width: 100%;
         margin: 0 auto;
@@ -32,7 +73,7 @@
     }
     .day-header {
         font-weight: bold;
-        color: #d63384;
+        color: #3dce9c;
         font-size: 14px;
         padding: 5px 0;
     }
@@ -43,22 +84,22 @@
         transition: background-color 0.3s;
         cursor: pointer;
         font-size: 14px;
-        background-color: #f8f9fa;
+        background-color: #a3e2c0;
         color: #333;
-        border: 1px solid #e9ecef;
+        border: 1px solid #8c7af3;
         min-height: 50px;
     }
     .calendar-day:hover {
         background-color: #e9ecef;
     }
     .calendar-day.current-day {
-        background-color: #d63384;
+        background-color: #f3ca02;
         color: #fff;
         font-weight: bold;
         box-shadow: 0 2px 4px rgba(0,0,0,0.2);
     }
     .calendar-day.has-event {
-        border-bottom: 3px solid #d63384;
+        border-bottom: 3px solid #ff3d03;
     }
     .calendar-day span {
         display: block;
@@ -67,8 +108,8 @@
     }
     .event-dot {
         height: 8px;
-        width: 8px;
-        background-color: #d63384;
+        width: 10px;
+        background-color: #9733d6;
         border-radius: 50%;
         position: absolute;
         bottom: 5px;
@@ -256,6 +297,7 @@
                         <th>Actions</th>
                     </tr>
                 </thead>
+                
                 <tbody>
                     {% for invoice in invoices %}
                     <tr>

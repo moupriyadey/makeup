@@ -147,16 +147,29 @@
                 </tr>
             </thead>
 
-    <tbody>
-        {% for service in services %}
-            <tr>
-                <td>{{ service.description }}</td>
-                <td>₹{{ "{:,.2f}".format(service.amount) }}</td>
-                <td></td>
-                <td></td>
-            </tr>
-        {% endfor %}
-    </tbody>
+   <tbody>
+    {% for service in services %}
+        <tr>
+            <td>{{ service.description }}</td>
+            <td>₹{{ "{:,.2f}".format(service.amount) }}</td>
+            <td>
+                {% if service.advance is defined %}
+                    ₹{{ "{:,.2f}".format(service.advance) }}
+                {% else %}
+                    ₹{{ "{:,.2f}".format(invoice.advance_amount if services|length == 1 else 0) }}
+                {% endif %}
+            </td>
+            <td>
+                {% if service.advance is defined %}
+                    ₹{{ "{:,.2f}".format(service.amount - service.advance) }}
+                {% else %}
+                    ₹{{ "{:,.2f}".format(service.amount - (invoice.advance_amount if services|length == 1 else 0)) }}
+                {% endif %}
+            </td>
+        </tr>
+    {% endfor %}
+</tbody>
+
 
             <tfoot>
                 <tr>
