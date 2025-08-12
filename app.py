@@ -1,16 +1,23 @@
 import os
 import json
 import uuid
-import qrcode
 import random
-from flask import Flask, render_template, request, redirect, url_for, session, flash, make_response, send_from_directory
-from flask_mail import Mail, Message
-from dotenv import load_dotenv
-from flask_login import LoginManager, UserMixin, login_required, login_user, logout_user, current_user
 from datetime import datetime, timedelta
+
+import pandas as pd  # pip install pandas openpyxl
+import qrcode
+from dotenv import load_dotenv
+from flask import (
+    Flask, render_template, request, redirect, url_for,
+    session, flash, make_response, send_from_directory, send_file
+)
+from flask_mail import Mail, Message
+from flask_login import (
+    LoginManager, UserMixin, login_required, login_user,
+    logout_user, current_user
+)
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
-# REMOVED: Cloudinary imports
 
 # Load environment variables
 load_dotenv()
@@ -203,6 +210,86 @@ def inject_datetime():
 @app.route('/')
 def index():
     return render_template('index.html', datetime=datetime)
+
+
+
+# 1️⃣ Backup function
+def backup_invoices():
+    """Create a backup JSON file of all invoices and their services in two locations."""
+    try:
+        invoices = Invoice.query.all()
+        backup_data = []
+        for inv in invoices:
+            backup_data.append({
+                "invoice_number": inv.invoice_number,
+                "customer_name": inv.customer_name,
+                "customer_address": inv.customer_address,
+                "customer_phone": inv.customer_phone,
+                "invoice_date": inv.invoice_date.strftime("%Y-%m-%d"),
+                "due_date": inv.due_date.strftime("%Y-%m-%d") if inv.due_date else None,
+                "total_amount": inv.total_amount,
+                "advance_amount": inv.advance_amount,
+                "due_amount": inv.due_amount,
+                "services": [
+                    {"description": s.description, "amount": s.amount}
+                    for s in inv.services
+                ]
+            })
+
+        # Timestamp for backup file name
+        timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+        filename = f"invoices_backup_{timestamp}.json"
+
+        # 1) Project's backups folder
+        project_backup_folder = os.path.join("backups")
+        os.makedirs(project_backup_folder, exist_ok=True)
+        project_backup_path = os.path.join(project_backup_folder, filename)
+
+        # 2) External local backup folder
+        local_backup_folder = r"D:\InvoiceBackups"  # change if needed
+        os.makedirs(local_backup_folder, exist_ok=True)
+        local_backup_path = os.path.join(local_backup_folder, filename)
+
+        for path in [project_backup_path, local_backup_path]:
+            with open(path, "w", encoding="utf-8") as f:
+                json.dump(backup_data, f, indent=4, ensure_ascii=False)
+
+        print(f"✅ Backup created: {project_backup_path} and {local_backup_path}")
+    except Exception as e:
+        print(f"❌ Backup failed: {e}")
+
+
+
+# 3️⃣ Export to Excel route
+@app.route('/admin/invoices/export')
+@login_required
+def export_invoices_excel():
+    invoices = Invoice.query.all()
+    data = []
+    for inv in invoices:
+        for service in inv.services:
+            data.append({
+                "Invoice Number": inv.invoice_number,
+                "Customer Name": inv.customer_name,
+                "Customer Address": inv.customer_address,
+                "Customer Phone": inv.customer_phone,
+                "Invoice Date": inv.invoice_date.strftime("%Y-%m-%d"),
+                "Due Date": inv.due_date.strftime("%Y-%m-%d") if inv.due_date else None,
+                "Service Description": service.description,
+                "Service Amount": service.amount,
+                "Total Amount": inv.total_amount,
+                "Advance Amount": inv.advance_amount,
+                "Due Amount": inv.due_amount
+            })
+
+    df = pd.DataFrame(data)
+    export_folder = os.path.join("exports")
+    os.makedirs(export_folder, exist_ok=True)
+    file_path = os.path.join(export_folder, f"invoices_{datetime.now().strftime('%Y%m%d_%H%M%S')}.xlsx")
+    df.to_excel(file_path, index=False)
+
+    return send_file(file_path, as_attachment=True)
+
 
 @app.route('/ping')
 def ping_db():
@@ -548,6 +635,15 @@ def manage_invoices():
                             revenue_data=revenue_data,
                             schedule_data=schedule_data,
                             datetime=datetime)
+@app.route('/admin/invoices/backup')
+@login_required
+def backup_invoices_route():
+    if session.get('role') != 'admin':
+        flash('Unauthorized access.', 'danger')
+        return redirect(url_for('login'))
+    backup_invoices()
+    flash('Invoices backup created successfully in both local and project backup folders.', 'success')
+    return redirect(url_for('manage_invoices'))
 
 @app.route('/admin/delete_invoice/<invoice_id>', methods=['POST'])
 @login_required

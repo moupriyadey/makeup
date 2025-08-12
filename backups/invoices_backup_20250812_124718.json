@@ -1,0 +1,57 @@
+[
+    {
+        "invoice_number": "MDB/023/25",
+        "customer_name": "RUPA DEY",
+        "customer_address": "BEHALA, KOLKATA, PIN 700053",
+        "customer_phone": "9123700057",
+        "invoice_date": "2025-08-11",
+        "due_date": "2025-08-14",
+        "total_amount": 2000.0,
+        "advance_amount": 500.0,
+        "due_amount": 1500.0,
+        "services": [
+            {
+                "description": "PARTY MAKEUP",
+                "amount": 1500.0
+            },
+            {
+                "description": "NAIL ART",
+                "amount": 500.0
+            }
+        ]
+    },
+    {
+        "invoice_number": "MDB/024/25",
+        "customer_name": "Puja Das ",
+        "customer_address": "73/2D J.J ROAD KOLKATA 700060",
+        "customer_phone": "9831843729",
+        "invoice_date": "2025-08-11",
+        "due_date": "2025-09-28",
+        "total_amount": 540.0,
+        "advance_amount": 100.0,
+        "due_amount": 440.0,
+        "services": [
+            {
+                "description": "Gel nail extension with 2 finger marble art ",
+                "amount": 540.0
+            }
+        ]
+    },
+    {
+        "invoice_number": "MDB/025/25",
+        "customer_name": "Aritri Mitra ",
+        "customer_address": "18, Becharam Chatterjee Road kolkata 700034",
+        "customer_phone": "6289322259",
+        "invoice_date": "2025-08-11",
+        "due_date": "2025-09-23",
+        "total_amount": 1000.0,
+        "advance_amount": 100.0,
+        "due_amount": 900.0,
+        "services": [
+            {
+                "description": "Gel extension with cat eye and isolated chrome ",
+                "amount": 1000.0
+            }
+        ]
+    }
+]

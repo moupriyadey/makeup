@@ -50,6 +50,19 @@
     color: #a1225d;
 }
 
+@media (max-width: 400px) {
+    .calendar-grid {
+        font-size: 10px;
+    }
+}
+
+@media (max-width: 576px) {
+    .service-row > div {
+        flex: 0 0 100%;
+        max-width: 100%;
+    }
+}
+
 
     .calendar-container {
         max-width: 100%;
@@ -284,6 +297,12 @@
         </div>
 
         <h3 class="mt-5 mb-3">All Invoices</h3>
+        <div class="mb-3">
+        <a href="{{ url_for('export_invoices_excel') }}" class="btn btn-success">📥 Export to Excel</a>
+        <a href="{{ url_for('export_invoices_excel') }}" class="btn btn-success">📥 Download Excel</a>
+        <a href="{{ url_for('backup_invoices_route') }}" class="btn btn-warning">💾 Create Backup</a>
+        </div>
+
         <div class="table-responsive">
             <table class="table table-bordered table-hover shadow-sm">
                 <thead>
