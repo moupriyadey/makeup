@@ -137,7 +137,19 @@ def generate_unique_numerical_id():
         new_id = str(random.randint(100000, 99999999))
         if not Booking.query.filter_by(id=new_id).first(): # Check if ID exists in DB
             return new_id
-        
+def cloudinary_public_id_from_url(url):
+    """
+    Extract the public_id from a Cloudinary URL without the file extension.
+    Example:
+        https://res.cloudinary.com/demo/image/upload/v1234567890/foldername/imagefile.jpg
+        => foldername/imagefile
+    """
+    import re
+    match = re.search(r'upload/(?:v\d+/)?(.+?)\.[a-zA-Z]+$', url)
+    if match:
+        return match.group(1)
+    return None
+      
 # Function to convert number to words
 def number_to_words(number):
     # This is a simplified version. A more robust one may be needed for very large numbers or different currencies.
@@ -801,6 +813,41 @@ def login():
             return redirect(url_for('login'))
 
     return render_template('admin_login.html', datetime=datetime)
+@app.route('/bulk_delete_gallery', methods=['POST'])
+@login_required
+def bulk_delete_gallery():
+    if session.get('role') != 'admin':
+        flash("Unauthorized", "danger")
+        return redirect(url_for('gallery'))
+
+    ids = request.form.getlist('selected_images')
+    if not ids:
+        flash("No images selected", "warning")
+        return redirect(url_for('gallery'))
+
+    images = GalleryImage.query.filter(GalleryImage.id.in_(ids)).all()
+
+    deleted = 0
+    import cloudinary.uploader
+    for img in images:
+        # Prefer stored public_id; fall back to extracting from URL
+        pid = cloudinary_public_id_from_url(img.url)
+
+        try:
+            if pid:
+                cloudinary.uploader.destroy(pid)
+        except Exception as e:
+            # If Cloudinary deletion fails, we still remove DB record to keep UI clean.
+            # (Optional) flash a warning if you want.
+            print("Cloudinary deletion error:", e)
+
+        db.session.delete(img)
+        deleted += 1
+
+    db.session.commit()
+    flash(f"{deleted} image(s) deleted", "success")
+    return redirect(url_for('gallery'))
+
 
 @app.route('/admin/logout')
 @login_required
