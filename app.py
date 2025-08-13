@@ -401,13 +401,8 @@ def testimonials():
 # Gallery route - REVERTED TO READ FROM LOCAL UPLOAD_FOLDER
 @app.route('/gallery')
 def gallery():
-    gallery_images = []
-    # This now reads from the local filesystem (UPLOAD_FOLDER)
-    if os.path.exists(app.config['UPLOAD_FOLDER']): # Check if folder exists
-        for filename in os.listdir(app.config['UPLOAD_FOLDER']):
-            if allowed_file(filename): # Use allowed_file for validation
-                gallery_images.append(filename)
-    gallery_images.sort(reverse=True) # Sort to show newest first
+    # Fetch images from database (Cloudinary URLs)
+    gallery_images = GalleryImage.query.order_by(GalleryImage.uploaded_at.desc()).all()
     return render_template('gallery.html', images=gallery_images, datetime=datetime)
 
 # Thank you page after booking - UPDATED FOR DB (no change from previous DB integration)
