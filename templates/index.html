@@ -17,6 +17,19 @@
   <meta name="author" content="Mou's Makeup & Nails">
 
   <style>
+
+.o_grid_mode {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+}
+.o_grid_item iframe {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+}
+
+
     body {
       margin: 0;
       padding-top: 100px;
@@ -604,6 +617,33 @@
     <a href="{{ url_for('testimonials') }}" class="btn btn-outline-secondary mx-2">Testimonials</a>
     <a href="{{ url_for('services') }}" class="btn btn-outline-secondary mx-2">All Services</a>
   </section>
+
+  <!-- YouTube Video Grid -->
+<section class="container my-5">
+  <h2 class="section-title text-center">@dey_moupriya_15</h2>
+  <div class="row g-4">
+    <div class="col-12 col-md-4">
+      <div class="ratio ratio-16x9">
+        <iframe src="https://www.youtube.com/embed/WC8m003XOH4?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=WC8m003XOH4" 
+                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="ratio ratio-16x9">
+        <iframe src="https://www.youtube.com/embed/xpKawYQoj3s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=xpKawYQoj3s" 
+                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="ratio ratio-16x9">
+        <iframe src="https://www.youtube.com/embed/lXZiK6c9w8s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=lXZiK6c9w8s" 
+                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+
 
   <!-- Address -->
   <section class="address text-center mb-5">
