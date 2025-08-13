@@ -119,13 +119,14 @@
             <h1 class="text-center mb-5">Our Work Gallery</h1>
             <div class="row row-cols-1 row-cols-sm-2 row-cols-md-3 g-4">
                 {% if images %}
-                    {% for image_filename in images %}
-                    <div class="col">
-                        <div class="card gallery-card h-100">
-                            <img src="{{ url_for('uploaded_file', filename=image_filename) }}" class="card-img-top" alt="Gallery Image">
-                            </div>
-                    </div>
-                    {% endfor %}
+                    {% for img in images %}
+<div class="col">
+    <div class="card gallery-card h-100">
+        <img src="{{ img.url }}" class="card-img-top" alt="{{ img.filename }}">
+    </div>
+</div>
+{% endfor %}
+
                 {% else %}
                     <div class="col-12 text-center py-5">
                         <p class="lead">No images in the gallery yet. Please check back soon!</p>

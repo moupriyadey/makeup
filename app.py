@@ -4,6 +4,9 @@ import uuid
 import random
 from datetime import datetime, timedelta
 
+import cloudinary
+import cloudinary.uploader
+import cloudinary.api
 import pandas as pd  # pip install pandas openpyxl
 import qrcode
 from dotenv import load_dotenv
@@ -42,8 +45,12 @@ app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
 
-# REMOVED: Cloudinary Configuration
-
+# Cloudinary Configuration
+cloudinary.config(
+    cloud_name=os.getenv('CLOUDINARY_CLOUD_NAME'),
+    api_key=os.getenv('CLOUDINARY_API_KEY'),
+    api_secret=os.getenv('CLOUDINARY_API_SECRET')
+)
 # File paths and QR folder setup
 QR_FOLDER = os.path.join('static', 'qr_codes')
 os.makedirs(QR_FOLDER, exist_ok=True)
@@ -92,6 +99,13 @@ class Booking(db.Model):
     
 
 # REMOVED: GalleryImage Model (since images are local, not in DB metadata)
+class GalleryImage(db.Model):
+    id = db.Column(db.Integer, primary_key=True)
+    url = db.Column(db.String(500), nullable=False)
+    filename = db.Column(db.String(255), nullable=True)
+    uploaded_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+
 # Invoice Model
 # Invoice model for database storage
 class Invoice(db.Model):
@@ -827,22 +841,33 @@ def upload_image():
                 skipped_count += 1
                 continue
 
-            if file and allowed_file(file.filename): # Use allowed_file check
-                filename = secure_filename(file.filename)
+            if file and allowed_file(file.filename):
                 try:
-                    file.save(os.path.join(app.config['UPLOAD_FOLDER'], filename)) # Save to local folder
+                    # Upload to Cloudinary inside "site1/gallery_uploads"
+                    upload_result = cloudinary.uploader.upload(
+                        file,
+                        folder="site1/gallery_uploads"
+                    )
+                    image_url = upload_result.get('secure_url')
+
+                    # Save URL to Neon DB
+                    new_image = GalleryImage(url=image_url, filename=file.filename)
+                    db.session.add(new_image)
+
                     uploaded_count += 1
                 except Exception as e:
-                    flash(f'Error uploading "{filename}": {e}', 'warning')
+                    flash(f'Error uploading "{file.filename}": {e}', 'warning')
                     skipped_count += 1
             else:
                 flash(f'Skipped "{file.filename}": Allowed image types are png, jpg, jpeg, gif', 'warning')
                 skipped_count += 1
 
+        db.session.commit()
+
         if uploaded_count > 0:
-            flash(f'{uploaded_count} image(s) successfully uploaded!', 'success')
+            flash(f'{uploaded_count} image(s) successfully uploaded to Cloudinary!', 'success')
         if skipped_count > 0:
-            flash(f'{skipped_count} image(s) skipped due to errors or invalid file types.', 'info')
+            flash(f'{skipped_count} image(s) skipped.', 'info')
 
         return redirect(url_for('gallery'))
 
