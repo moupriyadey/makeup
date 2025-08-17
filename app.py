@@ -44,6 +44,8 @@ mail = Mail(app)
 app.config['SQLALCHEMY_DATABASE_URI'] = os.getenv('DATABASE_URL')
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 db = SQLAlchemy(app)
+# Temporary line to create tables
+
 
 # Cloudinary Configuration
 cloudinary.config(
