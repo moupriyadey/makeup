@@ -5,7 +5,7 @@ from app import Booking, Invoice, InvoiceService, db as local_db
 
 # Configuration
 LOCAL_MYSQL_URI = 'mysql+pymysql://root:15416761@localhost/mou_makeup_db'
-SUPABASE_POSTGRES_URI = 'postgresql://postgres:15416761@db.nhjwjkficlnfuiujjrdc.supabase.co:5432/postgres'
+SUPABASE_POSTGRES_URI = 'postgresql://postgres.lrnuxykwyhbghaxdhaib:15416761@aws-1-us-west-1.pooler.supabase.com:6543/postgres'
 
 def migrate_data():
     try:
