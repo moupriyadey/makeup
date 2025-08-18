@@ -210,20 +210,23 @@ def utility_processor():
 def generate_invoice_number():
     current_year_suffix = datetime.utcnow().strftime('%y')
     
-    # Check for the last invoice from the current year
-    last_invoice = Invoice.query.filter(Invoice.invoice_number.ilike(f'%/{current_year_suffix}')).order_by(Invoice.created_at.desc()).first()
+    # Get the last invoice number from the database, regardless of the year
+    last_invoice = Invoice.query.order_by(Invoice.created_at.desc()).first()
 
     if last_invoice:
-        last_number = int(last_invoice.invoice_number.split('/')[1])
-        new_number = last_number + 1
-    else:
-        # Check if the current year is 25 to start at 23, otherwise start at 1
-        if current_year_suffix == '25':
-            new_number = 23
-        else:
+        try:
+            # Extract the numerical part from the last invoice number
+            last_number = int(last_invoice.invoice_number.split('/')[1])
+            new_number = last_number + 1
+        except (IndexError, ValueError):
+            # Fallback in case of an unusual invoice number format
             new_number = 1
+    else:
+        # If no invoices exist in the database, start at 1
+        new_number = 1
 
     return f"MDB/{new_number:03d}/{current_year_suffix}"
+
 # Context processor to add enumerate to templates
 @app.context_processor
 def inject_enumerate():
