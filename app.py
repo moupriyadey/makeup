@@ -122,6 +122,7 @@ class Invoice(db.Model):
     advance_amount = db.Column(db.Float, nullable=True, default=0.0)
     due_amount = db.Column(db.Float, nullable=True)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    appointment_time = db.Column(db.String(50), nullable=True)
 
     def __repr__(self):
         return f"<Invoice {self.invoice_number}>"
@@ -586,7 +587,8 @@ def manage_invoices():
             advance_amount=advance_amount,
             due_amount=due_amount,
             due_date=due_date,
-            invoice_date=datetime.utcnow()
+            invoice_date=datetime.utcnow(),
+            appointment_time=request.form['appointment_time']
         )
         
         db.session.add(new_invoice)
@@ -645,12 +647,13 @@ def manage_invoices():
     # Process invoices
     for invoice in all_invoices:
         if invoice.due_date:
-            date_key = invoice.due_date.strftime('%Y-%m-%d')  # Convert to string key
+            date_key = invoice.due_date.strftime('%Y-%m-%d')
             if date_key not in schedule_data:
                 schedule_data[date_key] = []
             schedule_data[date_key].append({
                 'type': 'Invoice',
                 'customer_name': invoice.customer_name,
+                'appointment_time': invoice.appointment_time, # <-- ADD THIS LINE
                 'details': f"Invoice: {invoice.invoice_number}, Total: ₹{invoice.total_amount:,.2f}, Due: ₹{invoice.due_amount:,.2f}",
                 'amount': invoice.total_amount
             })
