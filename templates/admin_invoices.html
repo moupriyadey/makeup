@@ -778,6 +778,7 @@ th {
 
         // Calendar Logic
         const scheduleData = {{ schedule_data|tojson }};
+            console.log("Schedule Data:", scheduleData);
         const calendarEl = document.getElementById('calendar');
         const currentMonthYearEl = document.getElementById('currentMonthYear');
         const prevMonthBtn = document.getElementById('prevMonth');

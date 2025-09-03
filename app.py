@@ -657,7 +657,8 @@ def manage_invoices():
                 'details': f"Invoice: {invoice.invoice_number}, Total: ₹{invoice.total_amount:,.2f}, Due: ₹{invoice.due_amount:,.2f}",
                 'amount': invoice.total_amount
             })
-    
+    print("DEBUG schedule_data:", schedule_data)
+
     return render_template('admin_invoices.html',
                             invoices=invoices,
                             total_revenue=total_revenue,
@@ -957,7 +958,8 @@ def no_cache(response):
     return response
 
 if __name__ == '__main__':
-    with app.app_context():
-        # This will create tables if they don't exist, but will not delete existing data.
-        db.create_all()
+    if os.environ.get("FLASK_ENV") == "development":
+        with app.app_context():
+            db.create_all()
+
     app.run(debug=True, host='0.0.0.0', port=5000)
