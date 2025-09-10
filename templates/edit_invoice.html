@@ -67,6 +67,10 @@
                     <label for="due_date" class="form-label">Due Date (Optional)</label>
                     <input type="date" class="form-control" id="due_date" name="due_date" value="{{ invoice.due_date.strftime('%Y-%m-%d') if invoice.due_date else '' }}">
                 </div>
+                <div class="col-md-6">
+                    <label for="appointment_time" class="form-label">Appointment Time</label>
+                    <input type="text" class="form-control" id="appointment_time" name="appointment_time" value="{{ invoice.appointment_time or '' }}" placeholder="e.g., 10:00 AM">
+                </div>
             </div>
             <hr>
             <h5>Services Provided</h5>

@@ -608,7 +608,7 @@ def manage_invoices():
         return redirect(url_for('manage_invoices'))
 
     # Handle GET request to display invoices
-    invoices = Invoice.query.order_by(Invoice.created_at.desc()).all()
+    invoices = Invoice.query.order_by(Invoice.invoice_date.desc()).all()
     
     # Calculate total revenue
     total_revenue = db.session.query(db.func.sum(Invoice.total_amount)).scalar() or 0
@@ -703,7 +703,8 @@ def edit_invoice(invoice_id):
         invoice.customer_phone = request.form.get('customer_phone')
         due_date_str = request.form.get('due_date')
         invoice.due_date = datetime.strptime(due_date_str, '%Y-%m-%d') if due_date_str else None
-        
+        invoice.appointment_time = request.form.get('appointment_time')
+
         # Calculate total, advance, and due amounts
         service_descriptions = request.form.getlist('service_description[]')
         service_amounts = request.form.getlist('service_amount[]')

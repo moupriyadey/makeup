@@ -430,8 +430,8 @@ th {
         <th style="color: #800080; border-bottom: 2px solid #0000FF;">Customer Name</th>
         <th class="numeric" style="color: #800080; border-bottom: 2px solid #0000FF;">Total Amount</th>
         <th class="numeric" style="color: #800080; border-bottom: 2px solid #0000FF;">Due Amount</th>
-        <th class="numeric" style="color: #800080; border-bottom: 2px solid #0000FF;">Date of Creating Invoice</th>
-        <th id="date-header" data-direction="desc" class="date-column" style="color: #800080; border-bottom: 2px solid #0000FF;">Invoice Date</th>
+        
+        <th class="numeric" style="color: #800080; border-bottom: 2px solid #0000FF;">Due Date</th>
         <th style="color: #800080; border-bottom: 2px solid #0000FF;">Actions</th>
     </tr>
 </thead>       
@@ -443,8 +443,8 @@ th {
                         <td>{{ invoice.customer_name }}</td>
                         <td>₹{{ "{:,.2f}".format(invoice.total_amount) }}</td>
                         <td>₹{{ "{:,.2f}".format(invoice.due_amount) }}</td>
-                        <td>{{ invoice.created_at.strftime('%d-%b-%Y') }}</td>
-                        <td>{{ invoice.invoice_date.strftime('%d-%b-%Y') }}</td>
+                        
+                        <td>{{ invoice.due_date.strftime('%d-%b-%Y') if invoice.due_date else 'N/A' }}</td>
                         <td>
     <div class="btn-group" role="group">
         <a href="{{ url_for('view_invoice', invoice_id=invoice.id) }}" class="btn btn-info btn-sm" target="_blank">View</a>
