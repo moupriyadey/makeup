@@ -859,28 +859,35 @@ th {
         });
 
         const eventModal = document.getElementById('eventModal');
-        eventModal.addEventListener('show.bs.modal', function (event) {
-            const button = event.relatedTarget;
-            const date = button.getAttribute('data-date');
-            const modalTitle = eventModal.querySelector('.modal-title #eventDate');
-            modalTitle.textContent = date;
+eventModal.addEventListener('show.bs.modal', function (event) {
+    const button = event.relatedTarget;
+    const date = button.getAttribute('data-date');
+    const modalTitle = eventModal.querySelector('.modal-title #eventDate');
+    modalTitle.textContent = date;
 
-            const eventList = eventModal.querySelector('#eventList');
-            eventList.innerHTML = '';
-            
-            const events = scheduleData[date] || [];
-            events.forEach(event => {
-                const li = document.createElement('li');
-                li.className = 'list-group-item';
-                li.innerHTML = `
-                    <strong>Type:</strong> ${event.type}<br>
-                    <strong>Customer:</strong> ${event.customer_name}<br>
-                    <strong>Time:</strong> ${event.appointment_time || 'N/A'}<br>
-                    <strong>Details:</strong> ${event.details}
-                `;
-                eventList.appendChild(li);
-            });
-        });
+    const eventList = eventModal.querySelector('#eventList');
+    eventList.innerHTML = '';
+    
+    const events = scheduleData[date] || [];
+    events.forEach(event => {
+        const li = document.createElement('li');
+        li.className = 'list-group-item';
+
+        let detailsText = event.details;
+        const totalDueMatch = detailsText.match(/Total: ₹([\d.]+), Due: ₹([\d.]+)/);
+        if (totalDueMatch && parseFloat(totalDueMatch[2]) === 0) {
+            detailsText = 'Job Completed';
+        }
+
+        li.innerHTML = `
+            <strong>Type:</strong> ${event.type}<br>
+            <strong>Customer:</strong> ${event.customer_name}<br>
+            <strong>Time:</strong> ${event.appointment_time || 'N/A'}<br>
+            <strong>Details:</strong> ${detailsText}
+        `;
+        eventList.appendChild(li);
+    });
+});
 
         renderCalendar();
 
@@ -960,6 +967,42 @@ th {
             });
         });
     });
+
+    document.addEventListener('DOMContentLoaded', function() {
+    const paidButtons = document.querySelectorAll('.paid-button');
+
+    paidButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const row = this.closest('tr');
+            if (row) {
+                const invoiceNumber = row.querySelector('td:nth-child(2)').textContent.trim();
+                const dueAmountCell = row.querySelector('td:nth-child(5)');
+
+                // Update the table display
+                if (dueAmountCell) {
+                    dueAmountCell.textContent = '₹0.00';
+                    row.classList.add('paid-invoice');
+                    this.disabled = true;
+                    this.textContent = 'Paid';
+                }
+
+                // Update the underlying scheduleData object
+                for (const date in scheduleData) {
+                    scheduleData[date].forEach(event => {
+                        if (event.details.includes(invoiceNumber)) {
+                            // Split the details string and update the due amount
+                            const parts = event.details.split(', ');
+                            const totalPart = parts[0];
+                            const newDetails = `${totalPart}, Due: ₹0.00`;
+                            event.details = newDetails;
+                            console.log(`Updated schedule data for ${invoiceNumber}: ${event.details}`);
+                        }
+                    });
+                }
+            }
+        });
+    });
+});
     </script>
 </body>
 </html>
