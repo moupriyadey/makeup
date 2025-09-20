@@ -1,275 +1,246 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Mou's Schedules - Mou's Makeup & Nails</title>
-    <!-- Bootstrap & Icons -->
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
-    <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
-    <style>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Mou's Schedules - Mou's Makeup & Nails</title>
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+  <style>
     body {
-        margin: 0;
-        padding-top: 20px;
-        font-family: 'Roboto', sans-serif;
-        background: linear-gradient(to right, #fff0f5, #ffe6f0);
-        color: #333;
-        position: relative;
+      margin: 0;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(135deg, #fff0f5, #ffe6f0, #fff0f5);
+      color: #333;
+      position: relative;
     }
-    h1, h2, h3 {
-        font-family: 'Playfair Display', serif;
+    h1, h2, h3, h4 {
+      font-family: 'Playfair Display', serif;
     }
+
+    /* Navbar */
+    .navbar {
+      background: linear-gradient(90deg, #d63384, #ff80ab);
+      box-shadow: 0 4px 10px rgba(0,0,0,0.15);
+    }
+    .navbar .nav-link, .navbar-brand {
+      color: #fff !important;
+      font-weight: 500;
+    }
+    .navbar .nav-link:hover {
+      color: #ffeef6 !important;
+    }
+
+    /* Dashboard header */
     .dashboard-header {
-        margin-bottom: 2rem;
-        text-align: center;
+      margin: 2rem 0;
+      text-align: center;
     }
     .dashboard-header h1 {
-        color: #d63384;
+      color: #d63384;
+      text-shadow: 1px 1px 3px rgba(214,51,132,0.3);
     }
+
+    /* Card Enhancements */
+    .card {
+      border: none;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.08);
+    }
+    .card-header {
+      border-radius: 1rem 1rem 0 0 !important;
+      background: linear-gradient(90deg, #d63384, #ff80ab);
+      box-shadow: inset 0 -2px 4px rgba(0,0,0,0.1);
+    }
+
+    /* Filter Form */
     .filter-form {
-        background: #fff;
-        padding: 1rem;
-        border-radius: .5rem;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-        margin-bottom: 1.5rem;
+      background: #fff;
+      padding: 1.2rem;
+      border-radius: 1rem;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+      margin-bottom: 2rem;
     }
+
+    /* Table Styling */
     .table {
-        background: #fff;
-        border-radius: .5rem;
-        overflow: hidden;
+      background: #fff;
+      border-radius: 0.8rem;
+      overflow: hidden;
     }
     .table th {
-        background: #d63384;
-        color: #fff;
-        font-weight: 600;
+      background: linear-gradient(90deg, #d63384, #ff80ab);
+      color: #fff;
+      font-weight: 600;
     }
     .table tbody tr:nth-child(even) {
-        background: #fff0f5;
+      background: #fff8fb;
     }
     .table tbody tr:hover {
-        background: #ffe6f0;
-    }
-    .table th.sortable {
-        cursor: pointer;
-        position: relative;
+      background: #ffe6f0;
+      box-shadow: inset 0 0 8px rgba(214,51,132,0.15);
     }
     .table th.sortable::after {
-        content: '\2195';
-        position: absolute;
-        right: .5rem;
-        opacity: 0.5;
+      opacity: 0.6;
     }
-    .table th.sort-asc::after {
-        content: '\2191';
-        opacity: 1;
-    }
-    .table th.sort-desc::after {
-        content: '\2193';
-        opacity: 1;
-    }
+
+    /* Buttons */
     .btn-primary {
-        background: #d63384;
-        border: none;
+      background: linear-gradient(90deg, #d63384, #ff80ab);
+      border: none;
+      font-weight: 500;
+      box-shadow: 0 2px 6px rgba(214,51,132,0.25);
     }
     .btn-primary:hover {
-        background: #c2185b;
+      background: linear-gradient(90deg, #c2185b, #e75480);
     }
     .btn-confirm {
-        background: #28a745;
-        color: #fff;
-    }
-    .btn-confirm:hover {
-        background: #218838;
+      background: linear-gradient(90deg, #28a745, #60d394);
+      border: none;
     }
     .btn-delete {
-        background: #dc3545;
-        color: #fff;
+      background: linear-gradient(90deg, #dc3545, #ff6f61);
+      border: none;
     }
-    .btn-delete:hover {
-        background: #c82333;
-    }
-    .pagination {
-        justify-content: center;
-        margin-top: 1.5rem;
-    }
-    .floating-animation {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        pointer-events: none;
-        z-index: 1;
-        overflow: hidden;
-    }
-    .symbol {
-        position: absolute;
-        font-size: 1.2rem;
-        color: #d63384;
-        opacity: 0.4;
-        animation: float 8s linear forwards;
-        user-select: none;
-        transform: translateX(var(--offset-x, 0));
-    }
-    @keyframes float {
-        0% { transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg); opacity: 0.4; }
-        100% { transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg); opacity: 0; }
-    }
-    @media (prefers-reduced-motion: reduce) {
-        .symbol { animation: none; display: none; }
-    }
+
+    /* Footer */
     .footer {
-        text-align: center;
-        padding: 2rem 0;
-        color: #777;
-        font-size: .9rem;
+      text-align: center;
+      padding: 2rem 0;
+      color: #fff;
+      font-size: .9rem;
+      background: linear-gradient(90deg, #d63384, #ff80ab);
+      margin-top: 3rem;
+      box-shadow: 0 -2px 6px rgba(0,0,0,0.1);
     }
     .footer a {
-        color: #d63384;
-        text-decoration: none;
-        margin: 0 .5rem;
+      color: #fff;
+      text-decoration: none;
+      margin: 0 .5rem;
+      font-weight: 500;
     }
     .footer a:hover {
-        color: #a02a64;
+      color: #ffeef6;
     }
-    /* Calendar Styling */
-    .calendar-container {
-        max-width: 100%;
-        margin: 0 auto;
-        background: #fff;
-        border-radius: 10px;
-        padding: 15px;
-        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
-    }
-    .calendar-header {
-        display: flex;
-        justify-content: space-between;
-        align-items: center;
-        margin-bottom: 15px;
-    }
-    .calendar-grid {
-        display: grid;
-        grid-template-columns: repeat(7, 1fr);
-        text-align: center;
-        gap: 5px;
-    }
-    .day-header {
-        font-weight: bold;
-        color: #d63384;
-        font-size: 14px;
-        padding: 5px 0;
-    }
-    .calendar-day {
-        position: relative;
-        padding: 10px 5px;
-        border-radius: 5px;
-        transition: background-color 0.3s;
-        cursor: pointer;
-        font-size: 14px;
-        background-color: #f8f9fa;
-        color: #333;
-        border: 1px solid #e9ecef;
-        min-height: 50px;
-    }
-    .calendar-day:hover {
-        background-color: #e9ecef;
-    }
-    .calendar-day.current-day {
-        background-color: #d63384;
-        color: #fff;
-        font-weight: bold;
-        box-shadow: 0 2px 4px rgba(0,0,0,0.2);
-    }
-    .calendar-day.has-event {
-        border-bottom: 3px solid #d63384;
-    }
-    .calendar-day span {
-        display: block;
-        font-size: 1.2em;
-        margin-bottom: 5px;
-    }
-    .event-dot {
-        height: 8px;
-        width: 8px;
-        background-color: #d63384;
-        border-radius: 50%;
-        position: absolute;
-        bottom: 5px;
-        left: 50%;
-        transform: translateX(-50%);
-    }
-    /* Mobile-specific styles */
-    @media (max-width: 576px) {
-        .day-header {
-            font-size: 12px;
-        }
-        .calendar-day {
-            font-size: 12px;
-            padding: 5px 2px;
-            min-height: 40px;
-        }
-    }
-</style>
+
+    .navbar-gradient {
+  background: linear-gradient(90deg, #d63384, #ff80ab);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+  padding: 0.8rem 1rem;
+}
+
+.navbar-brand {
+  font-size: 1.35rem;
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #fff !important;
+}
+
+.navbar-nav .nav-link {
+  font-size: 1rem;
+  font-weight: 500;
+  color: #fff !important;
+  padding: 0.3rem 0;
+  position: relative;
+  transition: color 0.3s ease;
+}
+
+.navbar-nav .nav-link:hover {
+  color: #ffeef6 !important;
+}
+
+/* Slim underline animation */
+.navbar-nav .nav-link::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: -2px;
+  width: 0%;
+  height: 2px;
+  background: #ffeef6;
+  transition: width 0.3s ease;
+}
+.navbar-nav .nav-link:hover::after,
+.navbar-nav .nav-link.active::after {
+  width: 100%;
+}
+
+/* Logout button distinct */
+.navbar-nav .btn {
+  font-size: 0.9rem;
+  background: #fff;
+  color: #d63384 !important;
+  border: none;
+  transition: all 0.3s ease;
+}
+.navbar-nav .btn:hover {
+  background: #ffeef6;
+  color: #c2185b !important;
+}
+
+  </style>
 
 </head>
 <body>
-    <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
-        <div class="container-fluid">
-            <a class="navbar-brand" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-            <div class="collapse navbar-collapse" id="navbarNav">
-                <ul class="navbar-nav me-auto mb-2 mb-lg-0">
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('index') }}">Home</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('book') }}">Book Appointment</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('services') }}">Services</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('gallery') }}">Gallery</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('testimonials') }}">Testimonials</a></li>
-                    <li class="nav-item"><a class="nav-link" href="{{ url_for('terms_of_sale') }}">Terms of Sale</a></li>
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
-                    {% endif %}
-                </ul>
-                <ul class="navbar-nav ms-auto">
-                    {% if current_user.is_authenticated %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a></li>
-                         <li class="nav-item"><a class="nav-link" href="{{ url_for('manage_invoices') }}">Manage Invoices</a></li>
-                          <li class="nav-item"><a class="nav-link" href="{{ url_for('logout') }}">Logout</a></li>
-                    {% else %}
-                        <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
-                    {% endif %}
-                </ul>
-            </div>
-        </div>
-    </nav>
-    <div class="card p-3 shadow-sm mb-4">
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
-            <h4 id="monthYear" class="mb-0"></h4>
-            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
-        </div>
-        <div class="calendar-grid">
-            <div class="day-header"><span class="d-none d-sm-inline">Sunday</span><span class="d-sm-none">Su</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Monday</span><span class="d-sm-none">Mo</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Tuesday</span><span class="d-sm-none">Tu</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Wednesday</span><span class="d-sm-none">We</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Thursday</span><span class="d-sm-none">Th</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Friday</span><span class="d-sm-none">Fr</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Saturday</span><span class="d-sm-none">Sa</span></div>
-        </div>
-        <div id="calendar-days" class="calendar-grid">
-            </div>
+
+    <nav class="navbar navbar-expand-lg navbar-gradient">
+  <div class="container">
+    <!-- Brand -->
+    <a class="navbar-brand fw-bold text-white" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
+
+    <!-- Mobile toggle -->
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+      aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <!-- Nav links -->
+    <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+      <ul class="navbar-nav align-items-center gap-3">
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'index' %}active{% endif %}" href="{{ url_for('index') }}">Home</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'book' %}active{% endif %}" href="{{ url_for('book') }}">Book Appointment</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'services' %}active{% endif %}" href="{{ url_for('services') }}">Services</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'gallery' %}active{% endif %}" href="{{ url_for('gallery') }}">Gallery</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'testimonials' %}active{% endif %}" href="{{ url_for('testimonials') }}">Testimonials</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'terms_of_sale' %}active{% endif %}" href="{{ url_for('terms_of_sale') }}">Terms of Sale</a>
+        </li>
+      </ul>
+
+      <ul class="navbar-nav align-items-center gap-2 ms-lg-3">
+        {% if current_user.is_authenticated %}
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'admin_dashboard' %}active{% endif %}" href="{{ url_for('admin_dashboard') }}">Admin Dashboard</a>
+        </li>
+        <li class="nav-item">
+          <a class="nav-link {% if request.endpoint == 'manage_invoices' %}active{% endif %}" href="{{ url_for('manage_invoices') }}">Manage Invoices</a>
+        </li>
+        <li class="nav-item">
+          <a class="btn btn-light fw-semibold px-3 py-1 rounded-pill" href="{{ url_for('logout') }}">Logout</a>
+        </li>
+        {% else %}
+        <li class="nav-item">
+          <a class="btn btn-light fw-semibold px-3 py-1 rounded-pill" href="{{ url_for('login') }}">Admin Login</a>
+        </li>
+        {% endif %}
+      </ul>
     </div>
-</div>
+  </div>
+</nav>
+
+    
     <div class="container">
     <!-- Removed marquee top-bar due to vertical text arrangement issue -->
     <div class="container">
