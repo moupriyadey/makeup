@@ -950,6 +950,56 @@ def delete_image(filename):
 
     return redirect(url_for('admin_dashboard'))
 
+from flask import (
+    Flask, render_template, request, redirect, url_for,
+    session, flash, make_response, send_from_directory, send_file, jsonify
+)
+
+@app.route('/admin/update_invoice_payment', methods=['POST'])
+@login_required
+def update_invoice_payment():
+    invoice_id = request.json.get('invoice_id')
+    if not invoice_id:
+        return jsonify({'status': 'error', 'message': 'Invoice ID is required'}), 400
+    
+    invoice = Invoice.query.get(invoice_id)
+    if not invoice:
+        return jsonify({'status': 'error', 'message': 'Invoice not found'}), 404
+    
+    invoice.due_amount = 0.0
+    try:
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': 'Invoice updated successfully'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+    
+@app.route('/admin/set_invoice_due_amount', methods=['POST'])
+@login_required
+def set_invoice_due_amount():
+    invoice_id = request.json.get('invoice_id')
+    new_amount = request.json.get('new_amount')
+
+    if not invoice_id or new_amount is None:
+        return jsonify({'status': 'error', 'message': 'Invoice ID and new amount are required'}), 400
+
+    try:
+        new_amount = float(new_amount)
+    except (ValueError, TypeError):
+        return jsonify({'status': 'error', 'message': 'Invalid amount provided'}), 400
+
+    invoice = Invoice.query.get(invoice_id)
+    if not invoice:
+        return jsonify({'status': 'error', 'message': 'Invoice not found'}), 404
+
+    invoice.due_amount = new_amount
+    try:
+        db.session.commit()
+        return jsonify({'status': 'success', 'message': f'Invoice due amount updated to ₹{new_amount:.2f}'})
+    except Exception as e:
+        db.session.rollback()
+        return jsonify({'status': 'error', 'message': str(e)}), 500
+
 # Prevent cached pages for admin panel after logout (no change)
 @app.after_request
 def no_cache(response):
