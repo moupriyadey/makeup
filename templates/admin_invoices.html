@@ -251,31 +251,99 @@ th {
 .paid-invoice {
     background-color: lightgoldenrodyellow !important;
 }
+
+/* Page background */
+body {
+  background: linear-gradient(135deg, #f5f7fa, #e4ebf0);
+  font-family: 'Segoe UI', sans-serif;
+  color: #333;
+}
+
+/* Container card look */
+.container {
+  background: linear-gradient(180deg, #ffffff, #f9fafc);
+  padding: 25px;
+  border-radius: 16px;
+  box-shadow: 0 6px 18px rgba(0, 0, 0, 0.08);
+}
+
+/* Headings with gradient text */
+h1, h2, h3, h4, h5 {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  font-weight: 700;
+}
+
+/* Service rows / blocks */
+.service-row, .table, .form-control, .btn {
+  border-radius: 10px;
+  box-shadow: 0 3px 6px rgba(0,0,0,0.05);
+}
+
+/* Buttons with gradient */
+.btn-primary {
+  background: linear-gradient(90deg, #4facfe, #00f2fe);
+  border: none;
+  color: white;
+  font-weight: 600;
+  transition: 0.3s ease;
+}
+.btn-primary:hover {
+  background: linear-gradient(90deg, #43e97b, #38f9d7);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+/* Invoice modal background */
+.modal-content {
+  background: linear-gradient(180deg, #ffffff, #f5f8ff);
+  border-radius: 20px;
+  box-shadow: 0 8px 20px rgba(0,0,0,0.12);
+}
+
+/* Tables with subtle shading */
+.table th {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  color: #fff;
+}
+.table td {
+  background: #fafbff;
+}
+
+/* Footer */
+footer {
+  background: linear-gradient(90deg, #434343, #000000);
+  color: #f1f1f1;
+  padding: 15px;
+  border-radius: 12px;
+  text-align: center;
+  margin-top: 20px;
+}
+.navbar-gradient {
+  background: linear-gradient(90deg, #6a11cb, #2575fc);
+  box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+.navbar-gradient .navbar-brand,
+.navbar-gradient .nav-link {
+  color: #fff !important;
+  font-weight: 600;
+}
+.navbar-gradient .nav-link:hover {
+  color: #ffd700 !important; /* gold hover */
+}
+.navbar {
+  box-shadow: 0 3px 10px rgba(0,0,0,0.1);
+}
+
 </style>
 
 <div class="card p-3 shadow-sm mb-4">
-    <div class="calendar-container">
-        <div class="calendar-header">
-            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(-1)"><i class="bi bi-chevron-left"></i></button>
-            <h4 id="monthYear" class="mb-0"></h4>
-            <button class="btn btn-sm btn-outline-secondary" onclick="changeMonth(1)"><i class="bi bi-chevron-right"></i></button>
-        </div>
-        <div class="calendar-grid">
-            <div class="day-header"><span class="d-none d-sm-inline">Sunday</span><span class="d-sm-none">Su</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Monday</span><span class="d-sm-none">Mo</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Tuesday</span><span class="d-sm-none">Tu</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Wednesday</span><span class="d-sm-none">We</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Thursday</span><span class="d-sm-none">Th</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Friday</span><span class="d-sm-none">Fr</span></div>
-            <div class="day-header"><span class="d-none d-sm-inline">Saturday</span><span class="d-sm-none">Sa</span></div>
-        </div>
-        <div id="calendar-days" class="calendar-grid">
-            </div>
-    </div>
+   
 </div>
 </head>
 <body>
-    <nav class="navbar navbar-expand-lg navbar-light bg-light">
+        <nav class="navbar navbar-expand-lg navbar-gradient">
+
         <div class="container-fluid">
             <a class="navbar-brand" href="{{ url_for('index') }}">Mou's Makeup & Nails</a>
             <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false" aria-label="Toggle navigation">
