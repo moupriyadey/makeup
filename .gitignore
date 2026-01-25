@@ -1,0 +1,14 @@
+# Secrets
+.env
+.env.*
+
+# Backups & exports
+backups/
+exports/
+
+# Python
+__pycache__/
+*.pyc
+
+# Virtual environment
+.venv/
