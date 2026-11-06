@@ -180,6 +180,40 @@
   color: #c2185b !important;
 }
 
+
+    /* Moupriya rental command-centre enhancement; existing theme rules remain intact. */
+    .rental-sidebar{position:fixed;left:0;top:76px;bottom:0;width:252px;z-index:1020;padding:1.15rem .85rem;background:linear-gradient(180deg,#542139,#8d315e 58%,#bd5683);color:#fff;box-shadow:5px 0 22px rgba(70,20,48,.18);overflow-y:auto;transition:width .28s ease,transform .28s ease}
+    .rental-sidebar .side-label{font-size:.72rem;text-transform:uppercase;letter-spacing:1.4px;opacity:.7;margin:1rem .7rem .45rem}
+    .rental-sidebar a{display:flex;align-items:center;gap:.75rem;color:#fff;text-decoration:none;padding:.72rem .8rem;border-radius:12px;margin:.18rem 0;transition:background .2s,transform .2s;white-space:nowrap}
+    .rental-sidebar a:hover,.rental-sidebar a.active{background:rgba(255,255,255,.18);transform:translateX(3px)}
+    .rental-sidebar .side-icon{width:22px;text-align:center;font-size:1.05rem}
+    .dashboard-content{margin-left:252px;transition:margin-left .28s ease;padding-top:1px}
+    body.sidebar-collapsed .rental-sidebar{width:76px}
+    body.sidebar-collapsed .dashboard-content{margin-left:76px}
+    body.sidebar-collapsed .rental-sidebar .side-text,body.sidebar-collapsed .rental-sidebar .side-label,body.sidebar-collapsed .rental-sidebar .side-brand{display:none}
+    body.sidebar-collapsed .rental-sidebar a{justify-content:center;padding:.8rem .3rem}
+    .sidebar-toggle{position:fixed;left:260px;top:88px;z-index:1030;border:0;border-radius:50%;width:38px;height:38px;background:#fff;color:#a52d65;box-shadow:0 4px 14px #54213933;transition:left .28s ease}
+    body.sidebar-collapsed .sidebar-toggle{left:84px}
+    .rental-hero{border-radius:22px;padding:1.5rem;color:#fff;background:linear-gradient(115deg,#62243f,#b43e78 52%,#ef8ab4);box-shadow:0 12px 30px rgba(130,39,85,.2);position:relative;overflow:hidden}
+    .rental-hero:after{content:'';position:absolute;width:230px;height:230px;border:1px solid #ffffff35;border-radius:50%;right:-65px;top:-105px;box-shadow:0 0 0 22px #ffffff0b,0 0 0 48px #ffffff08}
+    .rental-stat{border:0;border-radius:19px;min-height:142px;overflow:hidden;position:relative;box-shadow:0 8px 24px rgba(44,24,37,.09);transition:transform .25s,box-shadow .25s}
+    .rental-stat:hover{transform:translateY(-5px);box-shadow:0 14px 30px rgba(44,24,37,.15)}
+    .rental-stat .stat-icon{width:44px;height:44px;border-radius:14px;display:grid;place-items:center;background:#ffffff35;font-size:1.25rem}
+    .rental-stat .stat-number{font-size:1.8rem;font-weight:800;letter-spacing:-.5px}
+    .stat-pink{background:linear-gradient(135deg,#9f356b,#ee8ab7);color:#fff}.stat-blue{background:linear-gradient(135deg,#315e9a,#79b7ed);color:#fff}.stat-teal{background:linear-gradient(135deg,#167f79,#65cfc0);color:#fff}.stat-gold{background:linear-gradient(135deg,#a96a20,#f4c46d);color:#fff}
+    .rental-panel{background:#fff;border-radius:19px;padding:1.2rem;box-shadow:0 7px 24px rgba(38,20,30,.07);border:1px solid rgba(214,51,132,.07)}
+    .rental-panel-title{font-weight:700;color:#792c50}
+    .rental-table{font-size:.9rem}.rental-table thead th{position:sticky;top:0;z-index:2;white-space:nowrap;cursor:pointer}.rental-table td{vertical-align:middle;white-space:nowrap}
+    .rental-table tbody tr{transition:background .18s}.rental-table tbody tr:hover{background:#fff0f6}
+    .rental-tools .form-control{max-width:280px;border-radius:999px}
+    .rental-action{border-radius:999px;font-size:.78rem;padding:.32rem .7rem}
+    .chart-frame{min-height:270px;position:relative}.chart-frame canvas{width:100%!important;max-height:290px}
+    .rental-section{scroll-margin-top:90px;margin-bottom:1.6rem}
+    .quick-link{border-radius:13px;background:#fff7fb;border:1px solid #f4d7e5;padding:.85rem;text-decoration:none;color:#792c50;display:flex;align-items:center;gap:.65rem;font-weight:600}
+    .quick-link:hover{background:#ffe8f2;color:#8c2456}
+    @media(max-width:991.98px){.rental-sidebar{transform:translateX(-100%);width:252px}.dashboard-content,body.sidebar-collapsed .dashboard-content{margin-left:0}.sidebar-toggle{left:12px;top:86px}body.sidebar-open .rental-sidebar{transform:translateX(0)}body.sidebar-collapsed .rental-sidebar{width:252px}body.sidebar-collapsed .rental-sidebar .side-text,body.sidebar-collapsed .rental-sidebar .side-label{display:initial}body.sidebar-collapsed .rental-sidebar a{justify-content:flex-start}.dashboard-content>.container{padding-top:45px}}
+    @media print{.rental-sidebar,.sidebar-toggle,.navbar,.no-print,.footer{display:none!important}.dashboard-content{margin:0!important}.rental-panel,.card{box-shadow:none!important;break-inside:avoid}}
+
   </style>
 
 </head>
@@ -226,6 +260,8 @@
         </li>
         <li class="nav-item">
           <a class="nav-link {% if request.endpoint == 'manage_invoices' %}active{% endif %}" href="{{ url_for('manage_invoices') }}">Manage Invoices</a>
+          <a class="nav-link" href="{{ url_for('rental_admin_dashboard') }}">Rental Admin</a>
+          <a class="nav-link" href="{{ url_for('admin_homepage_settings') }}"><i class="bi bi-palette me-1"></i>Homepage Appearance</a>
         </li>
         <li class="nav-item">
           <a class="btn btn-light fw-semibold px-3 py-1 rounded-pill" href="{{ url_for('logout') }}">Logout</a>
@@ -239,6 +275,24 @@
     </div>
   </div>
 </nav>
+<aside class="rental-sidebar" id="rentalSidebar" aria-label="Admin navigation">
+  <div class="side-brand px-2 mb-3 fw-bold">MOUPRIYA <small class="d-block opacity-75 fw-normal">RENTAL CONTROL</small></div>
+  <div class="side-label">Rental workspace</div>
+  <a href="#rentalOverview" class="active"><span class="side-icon"><i class="bi bi-speedometer2"></i></span><span class="side-text">Overview</span></a>
+  <a href="#rentalAnalytics"><span class="side-icon"><i class="bi bi-bar-chart-line"></i></span><span class="side-text">Analytics</span></a>
+  <a href="#rentalInventory"><span class="side-icon"><i class="bi bi-box-seam"></i></span><span class="side-text">Inventory</span></a>
+  <a href="#rentalOrders"><span class="side-icon"><i class="bi bi-bag-check"></i></span><span class="side-text">Rental orders</span></a>
+  <a href="#rentalSchedule"><span class="side-icon"><i class="bi bi-calendar3"></i></span><span class="side-text">Schedule</span></a>
+  <div class="side-label">Existing management</div>
+  <a href="#makeupBookings"><span class="side-icon"><i class="bi bi-calendar-heart"></i></span><span class="side-text">Makeup bookings</span></a>
+  <a href="#galleryManagement"><span class="side-icon"><i class="bi bi-images"></i></span><span class="side-text">Gallery</span></a>
+  <div class="side-label">Actions</div>
+  <a href="{{ url_for('rental_admin_dashboard') }}"><span class="side-icon"><i class="bi bi-pencil-square"></i></span><span class="side-text">Rental management</span></a>
+  <a href="{{ url_for('manage_invoices') }}"><span class="side-icon"><i class="bi bi-receipt"></i></span><span class="side-text">Invoices</span></a>
+</aside>
+<button class="sidebar-toggle no-print" id="sidebarToggle" type="button" aria-label="Toggle sidebar"><i class="bi bi-layout-sidebar-inset"></i></button>
+<main class="dashboard-content">
+
 
     
     <div class="container">
@@ -255,6 +309,58 @@
             {% endfor %}
         {% endif %}
         {% endwith %}
+
+        <!-- Rental-first dashboard overview; existing makeup tools remain below. -->
+        <section id="rentalOverview" class="rental-section">
+          <div class="rental-hero mb-4 d-flex flex-wrap justify-content-between align-items-center gap-3">
+            <div><div class="small text-uppercase fw-semibold opacity-75">Moupriya · Kolkata</div><h1 class="mb-1">Rental Business Overview</h1><p class="mb-0 opacity-75">Inventory, enquiries, rental commitments and upcoming returns in one place.</p></div>
+            <div class="d-flex flex-wrap gap-2 no-print"><a class="btn btn-light fw-semibold" href="{{ url_for('rental_admin_dashboard') }}"><i class="bi bi-box-seam me-1"></i> Open Rental Management</a><a class="btn btn-outline-light" href="{{ url_for('rental_data_backup') }}"><i class="bi bi-cloud-download me-1"></i> Backup rental data</a></div>
+          </div>
+          <div class="row g-3 mb-4">
+            <div class="col-6 col-xl-3"><div class="card rental-stat stat-pink"><div class="card-body"><div class="d-flex justify-content-between"><span class="fw-semibold">Total inventory</span><span class="stat-icon"><i class="bi bi-box-seam"></i></span></div><div class="stat-number">{{ rental_products|length }}</div><small class="opacity-75">{{ rental_products|selectattr('status','equalto','Active')|list|length }} active products</small></div></div></div>
+            <div class="col-6 col-xl-3"><div class="card rental-stat stat-blue"><div class="card-body"><div class="d-flex justify-content-between"><span class="fw-semibold">Rental enquiries</span><span class="stat-icon"><i class="bi bi-chat-dots"></i></span></div><div class="stat-number">{{ rental_status_counts.get('Enquiry',0) }}</div><small class="opacity-75">Awaiting confirmation</small></div></div></div>
+            <div class="col-6 col-xl-3"><div class="card rental-stat stat-teal"><div class="card-body"><div class="d-flex justify-content-between"><span class="fw-semibold">Active rentals</span><span class="stat-icon"><i class="bi bi-bag-check"></i></span></div><div class="stat-number">{{ rental_status_counts.get('Confirmed',0) + rental_status_counts.get('Ready for pickup',0) + rental_status_counts.get('Rented',0) }}</div><small class="opacity-75">Confirmed · pickup · rented</small></div></div></div>
+            <div class="col-6 col-xl-3"><div class="card rental-stat stat-gold"><div class="card-body"><div class="d-flex justify-content-between"><span class="fw-semibold">Rental value</span><span class="stat-icon"><i class="bi bi-currency-rupee"></i></span></div><div class="stat-number">₹{{ '%.0f'|format(rental_active_value) }}</div><small class="opacity-75">Committed rental charges, not collections</small></div></div></div>
+          </div>
+          <div class="row g-3 mb-3">
+            <div class="col-md-4"><a class="quick-link" href="{{ url_for('rental_admin_dashboard') }}"><i class="bi bi-plus-circle fs-5"></i> Add / edit rental products</a></div>
+            <div class="col-md-4"><a class="quick-link" href="#rentalOrders"><i class="bi bi-list-check fs-5"></i> Review rental enquiries</a></div>
+            <div class="col-md-4"><a class="quick-link" href="#rentalSchedule"><i class="bi bi-calendar2-week fs-5"></i> View upcoming schedule</a></div>
+          </div>
+        </section>
+
+        <section id="rentalAnalytics" class="rental-section">
+          <div class="d-flex justify-content-between align-items-center mb-3"><h2 class="h4 rental-panel-title mb-0">Rental analytics</h2><span class="small text-muted">Charts load when this section is viewed</span></div>
+          <div class="row g-3">
+            <div class="col-lg-7"><div class="rental-panel h-100"><h3 class="h6">Order status distribution</h3><div class="chart-frame"><canvas id="rentalStatusChart" loading="lazy" aria-label="Rental order status chart"></canvas></div></div></div>
+            <div class="col-lg-5"><div class="rental-panel h-100"><h3 class="h6">Inventory by category</h3><div class="chart-frame"><canvas id="rentalCategoryChart" loading="lazy" aria-label="Inventory category chart"></canvas></div></div></div>
+          </div>
+          <div class="rental-panel mt-3"><h3 class="h6">Monthly committed rental value <small class="text-muted">(not collected revenue)</small></h3><div class="chart-frame"><canvas id="rentalValueChart" loading="lazy" aria-label="Monthly committed rental value chart"></canvas></div></div>
+        </section>
+
+        <section id="rentalInventory" class="rental-section rental-panel">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3"><div><h2 class="h4 rental-panel-title mb-1">Rental inventory</h2><small class="text-muted">{{ rental_products|length }} products in the catalogue</small></div><div class="d-flex flex-wrap gap-2 no-print"><input id="inventorySearch" class="form-control form-control-sm" placeholder="Search inventory…"><a class="btn btn-primary btn-sm" href="{{ url_for('rental_admin_dashboard') }}"><i class="bi bi-plus-lg"></i> Add / edit items</a><button class="btn btn-outline-secondary btn-sm" onclick="exportTableCsv('inventoryTable','moupriya_inventory.csv')">CSV</button><button class="btn btn-outline-secondary btn-sm" onclick="printSection('rentalInventory')">Print</button></div></div>
+          <div class="table-responsive"><table class="table table-hover rental-table" id="inventoryTable"><thead><tr><th data-sort>Code ↕</th><th data-sort>Product ↕</th><th data-sort>Category ↕</th><th data-sort>Rental price ↕</th><th data-sort>Deposit ↕</th><th data-sort>Status ↕</th><th class="no-print">Action</th></tr></thead><tbody>
+          {% for p in rental_products %}<tr><td>{{ p.code }}</td><td>{{ p.name }}</td><td>{{ p.category }}</td><td data-value="{{ p.rental_price|float }}">₹{{ '%.2f'|format(p.rental_price|float) }}</td><td data-value="{{ p.refundable_deposit|float }}">₹{{ '%.2f'|format(p.refundable_deposit|float) }}</td><td><span class="badge {{ 'bg-success' if p.status=='Active' else 'bg-secondary' }}">{{ p.status }}</span></td><td class="no-print"><button type="button" class="btn btn-outline-info rental-action" onclick="showRecordDetails(this)" data-title="{{ p.name|e }}" data-details="Code: {{ p.code|e }}&#10;Category: {{ p.category|e }}&#10;Rental: ₹{{ p.rental_price|float }}&#10;Deposit: ₹{{ p.refundable_deposit|float }}&#10;Status: {{ p.status|e }}">View</button><a class="btn btn-outline-primary rental-action" href="{{ url_for('rental_product_edit',product_id=p.id) }}">Edit</a><a class="btn btn-outline-secondary rental-action" href="{{ url_for('rental_admin_dashboard') }}">Manage</a></td></tr>{% else %}<tr><td colspan="7" class="text-center text-muted">No rental products yet. Use Add / edit items to create your first listing.</td></tr>{% endfor %}
+          </tbody></table></div>
+        </section>
+
+        <section id="rentalOrders" class="rental-section rental-panel">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3"><div><h2 class="h4 rental-panel-title mb-1">Rental enquiries & orders</h2><small class="text-muted">All rental records · {{ rental_orders|length }} total</small></div><div class="d-flex flex-wrap gap-2 no-print"><input id="ordersSearch" class="form-control form-control-sm" placeholder="Search customer / reference…"><a class="btn btn-primary btn-sm" href="{{ url_for('rental_admin_dashboard') }}">Manage orders</a><button class="btn btn-outline-secondary btn-sm" onclick="exportTableCsv('ordersTable','moupriya_rental_orders.csv')">CSV</button><button class="btn btn-outline-secondary btn-sm" onclick="printSection('rentalOrders')">Print</button><button class="btn btn-outline-secondary btn-sm" onclick="shareDashboard()"><i class="bi bi-share"></i> Share</button></div></div>
+          <div class="table-responsive"><table class="table table-hover rental-table" id="ordersTable"><thead><tr><th data-sort>Reference ↕</th><th data-sort>Product ↕</th><th data-sort>Customer ↕</th><th>Phone</th><th data-sort>Event date ↕</th><th>Pickup → Return</th><th data-sort>Rental value ↕</th><th data-sort>Status ↕</th><th class="no-print">Action</th></tr></thead><tbody>
+          {% for o in rental_orders %}<tr><td>{{ o.order_code }}</td><td>{{ o.product.name if o.product else 'Product unavailable' }}</td><td>{{ o.customer_name }}</td><td>{{ o.phone }}</td><td data-value="{{ o.event_date.isoformat() }}">{{ o.event_date.strftime('%d-%m-%Y') }}</td><td>{{ o.pickup_date.strftime('%d-%m-%Y') }} → {{ o.return_date.strftime('%d-%m-%Y') }}</td><td data-value="{{ o.rental_price|float }}">₹{{ '%.2f'|format(o.rental_price|float) }}</td><td><span class="badge bg-light text-dark">{{ o.status }}</span></td><td class="no-print"><button type="button" class="btn btn-outline-info rental-action" onclick="showRecordDetails(this)" data-title="{{ o.order_code|e }}" data-details="Product: {{ (o.product.name if o.product else 'Unavailable')|e }}&#10;Customer: {{ o.customer_name|e }}&#10;Phone: {{ o.phone|e }}&#10;Email: {{ (o.email or '—')|e }}&#10;Event: {{ o.event_date.strftime('%d-%m-%Y') }}&#10;Pickup: {{ o.pickup_date.strftime('%d-%m-%Y') }}&#10;Return: {{ o.return_date.strftime('%d-%m-%Y') }}&#10;Rental: ₹{{ o.rental_price|float }}&#10;Deposit: ₹{{ o.refundable_deposit|float }}&#10;Status: {{ o.status|e }}&#10;Deposit status: {{ o.deposit_status|e }}">View</button><a class="btn btn-outline-primary rental-action" href="{{ url_for('rental_admin_dashboard') }}">Update</a></td></tr>{% else %}<tr><td colspan="9" class="text-center text-muted">No rental enquiries received yet.</td></tr>{% endfor %}
+          </tbody></table></div>
+        </section>
+
+        <section id="rentalSchedule" class="rental-section rental-panel">
+          <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3"><div><h2 class="h4 rental-panel-title mb-1">Upcoming rental schedule</h2><small class="text-muted">Pickup and return dates for active commitments</small></div><button class="btn btn-outline-secondary btn-sm no-print" onclick="printSection('rentalSchedule')"><i class="bi bi-printer"></i> Print schedule</button></div>
+          <div class="table-responsive"><table class="table table-hover rental-table"><thead><tr><th>Reference</th><th>Product</th><th>Customer</th><th>Pickup</th><th>Return</th><th>Status</th></tr></thead><tbody>{% for o in upcoming_rental_events %}<tr><td>{{ o.order_code }}</td><td>{{ o.product.name if o.product else '—' }}</td><td>{{ o.customer_name }}</td><td>{{ o.pickup_date.strftime('%d-%m-%Y') }}</td><td>{{ o.return_date.strftime('%d-%m-%Y') }}</td><td>{{ o.status }}</td></tr>{% else %}<tr><td colspan="6" class="text-center text-muted">No upcoming rental pickups or returns.</td></tr>{% endfor %}</tbody></table></div>
+        </section>
+        <section class="rental-section rental-panel" id="rentalCalendarPanel">
+          <div class="d-flex justify-content-between align-items-center mb-3"><div><h2 class="h4 rental-panel-title mb-1">Rental calendar</h2><small class="text-muted">Pickup and return dates · select a date to inspect its events</small></div><div class="d-flex align-items-center gap-2"><button class="btn btn-outline-secondary btn-sm" id="calendarPrev" aria-label="Previous month">‹</button><strong id="calendarMonthLabel"></strong><button class="btn btn-outline-secondary btn-sm" id="calendarNext" aria-label="Next month">›</button></div></div>
+          <div id="rentalCalendar" class="table-responsive"></div>
+          <div class="small text-muted mt-2"><span class="badge bg-success">Event</span> <span class="badge bg-primary">Pickup</span> <span class="badge bg-warning text-dark">Return</span></div>
+        </section>
 
         <!-- Dashboard header -->
         <div class="dashboard-header">
@@ -275,6 +381,7 @@
 
 
 
+ <section id="makeupBookings" class="rental-section">
  <!-- Filter & Search Form -->
         <form method="GET" action="{{ url_for('admin_dashboard') }}" class="row g-3 filter-form align-items-end">
             <div class="col-md-3">
@@ -411,6 +518,8 @@
         {% endif %}
 
 
+</section>
+<section id="galleryManagement" class="rental-section">
 <h2 class="mt-5 mb-3">Gallery Management</h2>
 <p><a href="{{ url_for('upload_image') }}" class="btn btn-info mb-3">Upload New Image</a></p>
 
@@ -442,6 +551,10 @@
             <a href="{{ url_for('index') }}" class="btn btn-outline-secondary">Back to Home</a>
         </div>
     </div>
+
+        </section>
+</main>
+    <div class="modal fade" id="recordDetailsModal" tabindex="-1" aria-hidden="true"><div class="modal-dialog modal-dialog-centered"><div class="modal-content"><div class="modal-header"><h5 class="modal-title" id="recordDetailsTitle">Record details</h5><button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button></div><div class="modal-body"><pre id="recordDetailsBody" class="mb-0 text-wrap" style="font-family:inherit;white-space:pre-wrap"></pre></div><div class="modal-footer"><button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button></div></div></div></div>
 
     <!-- Floating Animation -->
     <div class="floating-animation"></div>
@@ -543,6 +656,118 @@
             a.click();
             window.URL.revokeObjectURL(url);
         });
+
+
+        // Collapsible navigation: desktop collapse, mobile slide-in.
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        sidebarToggle?.addEventListener('click', () => {
+          if (window.matchMedia('(max-width: 991.98px)').matches) document.body.classList.toggle('sidebar-open');
+          else document.body.classList.toggle('sidebar-collapsed');
+        });
+        document.querySelectorAll('.rental-sidebar a[href^="#"]').forEach(link => link.addEventListener('click', () => {
+          document.querySelectorAll('.rental-sidebar a').forEach(a => a.classList.remove('active'));
+          link.classList.add('active'); document.body.classList.remove('sidebar-open');
+        }));
+
+        function filterTable(inputId, tableId) {
+          const input = document.getElementById(inputId), table = document.getElementById(tableId);
+          if (!input || !table) return;
+          input.addEventListener('input', () => {
+            const term = input.value.toLowerCase();
+            table.querySelectorAll('tbody tr').forEach(row => row.style.display = row.textContent.toLowerCase().includes(term) ? '' : 'none');
+          });
+        }
+        filterTable('inventorySearch','inventoryTable'); filterTable('ordersSearch','ordersTable');
+
+        document.querySelectorAll('.rental-table thead th[data-sort]').forEach((th, index) => {
+          th.addEventListener('click', () => {
+            const table = th.closest('table'), body = table.querySelector('tbody');
+            const asc = th.dataset.direction !== 'asc'; th.dataset.direction = asc ? 'asc' : 'desc';
+            const rows = Array.from(body.querySelectorAll('tr'));
+            rows.sort((a,b) => {
+              const ac = a.children[index], bc = b.children[index];
+              const av = ac?.dataset.value || ac?.textContent.trim() || '';
+              const bv = bc?.dataset.value || bc?.textContent.trim() || '';
+              const an = Number(av), bn = Number(bv);
+              const cmp = av !== '' && bv !== '' && Number.isFinite(an) && Number.isFinite(bn) ? an-bn : av.localeCompare(bv,undefined,{numeric:true,sensitivity:'base'});
+              return asc ? cmp : -cmp;
+            });
+            rows.forEach(row => body.appendChild(row));
+          });
+        });
+        function exportTableCsv(tableId, filename) {
+          const table = document.getElementById(tableId); if (!table) return;
+          const rows = Array.from(table.querySelectorAll('tr')).filter(r => r.style.display !== 'none');
+          const csv = rows.map(row => Array.from(row.children).filter(c => !c.classList.contains('no-print')).map(c => '"'+c.innerText.replace(/"/g,'""').trim()+'"').join(',')).join('\r\n');
+          const blob = new Blob(['\ufeff'+csv],{type:'text/csv;charset=utf-8;'}), url = URL.createObjectURL(blob);
+          const a = document.createElement('a'); a.href=url; a.download=filename; a.click(); URL.revokeObjectURL(url);
+        }
+        function printSection(id) {
+          const section = document.getElementById(id); if (!section) return;
+          const w = window.open('','_blank'); if (!w) { window.print(); return; }
+          w.document.write('<html><head><title>Moupriya report</title><style>body{font:14px Arial;padding:24px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #ccc;padding:8px;text-align:left}h2{color:#792c50}</style></head><body>'+section.innerHTML+'</body></html>');
+          w.document.close(); w.focus(); w.print();
+        }
+        async function shareDashboard() {
+          const data={title:'Moupriya Rental Dashboard',text:'Moupriya rental management dashboard',url:window.location.href};
+          if (navigator.share) { try { await navigator.share(data); } catch(e) {} }
+          else if (navigator.clipboard) { await navigator.clipboard.writeText(window.location.href); alert('Dashboard link copied.'); }
+          else alert('Copy this page URL to share the dashboard.');
+        }
+        function showRecordDetails(button) {
+          document.getElementById('recordDetailsTitle').textContent = button.dataset.title || 'Record details';
+          document.getElementById('recordDetailsBody').textContent = button.dataset.details || 'No additional details.';
+          bootstrap.Modal.getOrCreateInstance(document.getElementById('recordDetailsModal')).show();
+        }
+        const rentalCalendarEvents = {{ rental_calendar_events|tojson }};
+        let calendarCursor = new Date(); calendarCursor.setDate(1);
+        function renderRentalCalendar() {
+          const year=calendarCursor.getFullYear(), month=calendarCursor.getMonth();
+          document.getElementById('calendarMonthLabel').textContent=calendarCursor.toLocaleDateString('en-IN',{month:'long',year:'numeric'});
+          const first=new Date(year,month,1), days=new Date(year,month+1,0).getDate(), offset=first.getDay();
+          let html='<table class="table table-bordered text-center align-middle mb-0"><thead><tr>'+['Sun','Mon','Tue','Wed','Thu','Fri','Sat'].map(d=>'<th>'+d+'</th>').join('')+'</tr></thead><tbody><tr>';
+          for(let i=0;i<offset;i++) html+='<td class="bg-light" style="height:92px"></td>';
+          for(let day=1;day<=days;day++) {
+            const key=year+'-'+String(month+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+            const events=rentalCalendarEvents.filter(e=>e.date===key);
+            html+='<td style="height:92px;min-width:78px;vertical-align:top"><div class="fw-bold">'+day+'</div>'+events.map(e=>'<div class="small rounded px-1 mt-1 '+(e.kind==='Pickup'?'bg-primary text-white':(e.kind==='Event'?'bg-success text-white':'bg-warning text-dark'))+'" title="'+escapeHtml(e.title)+'">'+e.kind+': '+escapeHtml(e.title)+'</div>').join('')+'</td>';
+            if((offset+day)%7===0 && day!==days) html+='</tr><tr>';
+          }
+          const cells=(offset+days)%7; if(cells) for(let i=cells;i<7;i++) html+='<td class="bg-light" style="height:92px"></td>';
+          html+='</tr></tbody></table>'; document.getElementById('rentalCalendar').innerHTML=html;
+        }
+        function escapeHtml(value){return String(value).replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));}
+        document.getElementById('calendarPrev')?.addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()-1);renderRentalCalendar();});
+        document.getElementById('calendarNext')?.addEventListener('click',()=>{calendarCursor.setMonth(calendarCursor.getMonth()+1);renderRentalCalendar();});
+        renderRentalCalendar();
+
+        // Chart.js is loaded only when the analytics panel approaches the viewport.
+        let rentalChartsReady = false;
+        const analyticsPanel = document.getElementById('rentalAnalytics');
+        if (analyticsPanel && 'IntersectionObserver' in window) {
+          const chartObserver = new IntersectionObserver((entries, observer) => {
+            if (entries.some(entry => entry.isIntersecting) && !rentalChartsReady) {
+              rentalChartsReady = true; observer.disconnect();
+              const script = document.createElement('script'); script.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js';
+              script.onload = renderRentalCharts; document.head.appendChild(script);
+            }
+          },{rootMargin:'180px'}); chartObserver.observe(analyticsPanel);
+        } else if (analyticsPanel) {
+          const script=document.createElement('script'); script.src='https://cdn.jsdelivr.net/npm/chart.js@4.4.7/dist/chart.umd.min.js'; script.onload=renderRentalCharts; document.head.appendChild(script);
+        }
+        function renderRentalCharts() {
+          if (!window.Chart) return;
+          const statusData = {{ rental_status_counts|tojson }};
+          const categoryData = {{ rental_category_counts|tojson }};
+          const monthlyValueData = {{ rental_monthly_value|tojson }};
+          const palette=['#d63384','#6f42c1','#0d6efd','#20c997','#fd7e14','#6c757d','#e83e8c'];
+          const statusCanvas=document.getElementById('rentalStatusChart');
+          const categoryCanvas=document.getElementById('rentalCategoryChart');
+          if (statusCanvas) new Chart(statusCanvas,{type:'doughnut',data:{labels:Object.keys(statusData),datasets:[{data:Object.values(statusData),backgroundColor:palette,borderColor:'#fff',borderWidth:3,hoverOffset:12}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{position:'bottom'}}}});
+          if (categoryCanvas) new Chart(categoryCanvas,{type:'bar',data:{labels:Object.keys(categoryData),datasets:[{label:'Products',data:Object.values(categoryData),backgroundColor:palette,borderRadius:9,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true,ticks:{precision:0}}}}});
+          const valueCanvas=document.getElementById('rentalValueChart');
+          if (valueCanvas) new Chart(valueCanvas,{type:'bar',data:{labels:Object.keys(monthlyValueData),datasets:[{label:'Committed rental value (₹)',data:Object.values(monthlyValueData),backgroundColor:palette,borderRadius:9,borderSkipped:false}]},options:{responsive:true,maintainAspectRatio:false,plugins:{legend:{display:false}},scales:{y:{beginAtZero:true}}}});
+        }
 
         // Initialize Tooltips
         const tooltipTriggerList = document.querySelectorAll('[data-bs-toggle="tooltip"]');

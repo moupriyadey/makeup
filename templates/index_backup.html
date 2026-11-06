@@ -1,0 +1,950 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Moupriya | Fashion Rental & Beauty Services</title>
+
+  <!-- Bootstrap & Icons -->
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+  <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@500;700&family=Roboto&display=swap" rel="stylesheet">
+
+  <!-- Favicon & SEO -->
+  <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
+  <meta name="description" content="Moupriya - Fashion rentals, occasion wear and beauty services in Kolkata.">
+  <meta name="keywords" content="fashion rental, saree rental, lehenga rental, occasion wear, makeup, beauty services, Kolkata">
+  <meta name="author" content="Moupriya">
+
+  <style>
+
+.o_grid_mode {
+  display: grid;
+  grid-template-columns: repeat(12, 1fr);
+  gap: 10px;
+}
+.o_grid_item iframe {
+  width: 100%;
+  height: 200px;
+  border-radius: 10px;
+}
+
+
+    body {
+      margin: 0;
+      padding-top: 100px;
+      font-family: 'Roboto', sans-serif;
+      background: linear-gradient(to right, #fff0f5, #ffe6f0);
+      color: #333;
+      position: relative;
+    }
+    h1, h2, .brand {
+      font-family: 'Playfair Display', serif;
+    }
+
+    .top-bar {
+      position: fixed;
+      top: 0;
+      width: 100%;
+      background: #ba2da5;
+      color: #fff;
+      text-align: center;
+      padding: .3rem 0;
+      z-index: 1040;
+      font-weight: 600;
+      overflow: hidden;
+      white-space: nowrap;
+    }
+    .top-bar a {
+      color: #fff;
+      text-decoration: underline;
+    }
+    .top-bar a:hover {
+      color: #f0e6f0;
+    }
+    .marquee-content {
+      display: inline-block;
+  min-width: 200%; /* Important for smooth repeat */
+  animation: marquee 35s linear infinite;
+    }
+    .top-bar:hover .marquee-content {
+      animation-play-state: paused;
+    }
+    @keyframes marquee {
+      0% { transform: translateX(0); }
+      100% { transform: translateX(-100%); }
+    }
+    @media (max-width: 576px) {
+      .top-bar {
+        font-size: 0.85rem;
+        padding: .2rem 0;
+      }
+      .marquee-content {
+        animation-duration: 24s;
+      }
+    }
+
+    .navbar {
+      position: fixed;
+      top: 45px;
+      width: 100%;
+      background: #fff;
+      padding: .5rem 1rem;
+      box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+      z-index: 1030;
+    }
+    .navbar-brand {
+      font-family: 'Playfair Display', serif;
+      color: #d63384 !important;
+      font-size: 1.8rem;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+    }
+    .navbar-logo {
+      height: 40px;
+      margin-right: 0.5rem;
+      vertical-align: middle;
+      transition: all 0.3s ease;
+      position: relative;
+      z-index: 1030;
+      cursor: pointer;
+    }
+    .navbar-logo.enlarged {
+      position: fixed;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      height: auto;
+      max-width: 90vw;
+      max-height: 90vh;
+      z-index: 1050;
+      margin-right: 0;
+    }
+    @media (max-width: 576px) {
+      .navbar-logo {
+        height: 30px;
+      }
+      .navbar-brand {
+        font-size: 1.5rem;
+      }
+    }
+    .nav-link {
+      color: #555 !important;
+      margin: 0 .5rem;
+      font-weight: 500;
+      transition: color .2s;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: #d63384 !important;
+    }
+
+    .hero {
+      text-align: center;
+      padding: 3rem 1rem;
+      animation: fadeIn 1s ease-in;
+    }
+    .hero h1 {
+      color: #d63384;
+      font-size: 2.5rem;
+    }
+    .hero p {
+      color: #555;
+      margin-bottom: 1.5rem;
+    }
+    .btn-hero {
+      background: #d63384;
+      color: #fff;
+      padding: .75rem 2rem;
+      border: none;
+      border-radius: .5rem;
+      transition: background .2s, transform .2s;
+    }
+    .btn-hero:hover {
+      background: #c2185b;
+      transform: scale(1.05);
+    }
+
+    .section-title {
+      text-align: center;
+      color: #d63384;
+      font-size: 1.75rem;
+      margin: 3rem 0 1rem;
+      position: relative;
+      animation: fadeIn 1s ease-in;
+    }
+    .section-title::after {
+      content: '';
+      display: block;
+      width: 60px;
+      height: 4px;
+      background: #d63384;
+      margin: .5rem auto 0;
+      border-radius: 2px;
+    }
+
+    /* Services */
+    .service-item {
+      background: #fff;
+      border-radius: 1rem;
+      overflow: hidden;
+      box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+      transition: transform .3s, box-shadow .3s;
+      cursor: pointer;
+      position: relative;
+      animation: fadeIn 0.8s ease-in;
+    }
+    .service-item:hover {
+      transform: translateY(-8px);
+      box-shadow: 0 8px 24px rgba(0,0,0,0.1);
+    }
+    .service-header {
+      background: linear-gradient(120deg, #e91e63, #f50057);
+      text-align: center;
+      padding: 1.5rem;
+      cursor: pointer;
+    }
+    .service-icon {
+      color: #fff;
+      font-size: 2rem;
+      margin-bottom: .75rem;
+    }
+    .service-header h5 {
+      color: #fff;
+      margin: 0;
+      font-weight: 600;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      text-align: center;
+      width: 100%;
+      font-size: 1.1rem;
+    }
+    @media (max-width: 576px) {
+      .service-header {
+        padding: 1rem;
+        min-height: 4.5rem;
+      }
+      .service-header h5 {
+        font-size: 0.8rem;
+        white-space: normal;
+        line-height: 1.2;
+        max-height: 2.4rem;
+        overflow: hidden;
+      }
+    }
+    .service-body {
+      max-height: 0;
+      padding: 0 1.25rem;
+      opacity: 0;
+      transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
+    }
+    .service-item.show-desc .service-body {
+      padding: 1.25rem;
+      opacity: 1;
+      overflow: visible;
+    }
+    @media (max-width: 576px) {
+      .service-item .service-body {
+        transition: max-height 0.6s ease, padding 0.6s ease, opacity 0.6s ease;
+      }
+      .service-item.show-desc .service-body {
+        max-height: 500px;
+      }
+    }
+
+    /* Carousel */
+    .carousel-img {
+      width: 302px;
+      height: 378px;
+      object-fit: cover;
+      border-radius: .5rem;
+      box-shadow: 0 4px 6px rgba(0,0,0,0.2);
+      margin: 0 auto;
+      animation: fadeIn 1s ease-in;
+    }
+    .carousel-control-prev-icon,
+    .carousel-control-next-icon {
+      background-color: #d63384;
+      border-radius: 50%;
+    }
+
+    /* Buttons Hover Animations */
+    .btn-primary, .btn-success, .btn-outline-secondary {
+      transition: transform 0.3s ease;
+    }
+    .btn-primary:hover, .btn-success:hover, .btn-outline-secondary:hover {
+      transform: scale(1.05);
+    }
+
+    /* Address Links */
+    .address h5 i {
+      margin-right: .25rem;
+    }
+    .address a {
+      text-decoration: none;
+      color: #333;
+      transition: color 0.3s ease;
+    }
+    .address a:hover {
+      color: #d63384;
+    }
+    .address h5 a {
+      text-decoration: underline;
+      text-decoration-color: #007bff;
+    }
+
+    /* WhatsApp */
+    .whatsapp-float {
+      position: fixed;
+      bottom: 20px;
+      right: 20px;
+      background: #25d366;
+      color: #fff;
+      width: 56px;
+      height: 56px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.5rem;
+      box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+      z-index: 1000;
+      animation: fadeIn 1s ease-in;
+    }
+    .whatsapp-float:hover {
+      background: #20c95d;
+      transform: scale(1.1);
+    }
+
+    .footer {
+      text-align: center;
+      padding: 2rem 0;
+      color: #777;
+      font-size: .9rem;
+      animation: fadeIn 1s ease-in;
+    }
+    .footer a {
+      color: #d63384;
+      text-decoration: none;
+      margin: 0 .5rem;
+      transition: color 0.3s ease;
+    }
+    .footer a:hover {
+      color: #a02a64;
+    }
+
+    /* Floating Animation */
+    .zodiac-animation {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      pointer-events: none;
+      z-index: 1;
+      overflow: hidden;
+    }
+    .symbol {
+      position: absolute;
+      font-size: 1.2rem;
+      color: #d63384;
+      opacity: 0.4;
+      animation: float 8s linear forwards;
+      user-select: none;
+      transform: translateX(var(--offset-x, 0));
+    }
+    @keyframes float {
+      0% {
+        transform: translateY(100vh) translateX(var(--offset-x, 0)) rotate(0deg);
+        opacity: 0.4;
+      }
+      100% {
+        transform: translateY(-20vh) translateX(var(--offset-x, 0)) rotate(360deg);
+        opacity: 0;
+      }
+    }
+    @media (prefers-reduced-motion: reduce) {
+      .symbol {
+        animation: none;
+        display: none;
+      }
+    }
+
+    /* Fade-in Keyframes */
+    @keyframes fadeIn {
+      from { opacity: 0; }
+      to { opacity: 1; }
+    }
+
+
+    /* =====================================================
+       MOUPRIYA PREMIUM BOUTIQUE THEME - ADDITIVE OVERRIDES
+       Existing component styles and behaviour are retained.
+       ===================================================== */
+    :root {
+      --mou-plum: #54243f;
+      --mou-berry: #873c62;
+      --mou-rose: #b76e83;
+      --mou-gold: #bd9860;
+      --mou-ivory: #fffaf4;
+      --mou-ink: #30252b;
+    }
+    body {
+      background: var(--mou-ivory);
+      color: var(--mou-ink);
+    }
+    .top-bar {
+      background: linear-gradient(90deg, #3d1d32, #70405b, #3d1d32);
+      font-size: .82rem;
+      letter-spacing: .025em;
+      padding: .42rem 0;
+    }
+    .top-bar a { text-decoration: none; font-weight: 700; }
+    .navbar {
+      top: 34px;
+      min-height: 76px;
+      padding: .65rem clamp(.75rem, 3vw, 2.5rem);
+      background: rgba(255, 250, 244, .97);
+      border-bottom: 1px solid rgba(189, 152, 96, .28);
+      box-shadow: 0 8px 28px rgba(58, 32, 47, .09);
+      backdrop-filter: blur(14px);
+    }
+    .navbar-brand {
+      color: var(--mou-plum) !important;
+      font-size: clamp(1.15rem, 2vw, 1.65rem);
+      letter-spacing: -.035em;
+      gap: .25rem;
+    }
+    .navbar-logo { border-radius: 50%; object-fit: cover; }
+    .nav-link {
+      color: #51414a !important;
+      font-size: .88rem;
+      letter-spacing: .035em;
+      font-weight: 600;
+      padding: .7rem .85rem !important;
+      border-radius: 999px;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--mou-berry) !important;
+      background: #f5e9ed;
+    }
+    .nav-link.nav-rent {
+      color: #fff !important;
+      background: linear-gradient(135deg, #6d3454, #a85e79);
+      padding: .68rem 1.35rem !important;
+      box-shadow: 0 5px 14px rgba(109, 52, 84, .2);
+    }
+    .nav-link.nav-rent:hover { color: #fff !important; background: #54243f; }
+    .nav-link.nav-partner {
+      color: var(--mou-plum) !important;
+      border: 1px solid rgba(189, 152, 96, .65);
+    }
+    .navbar-toggler { border-color: rgba(84, 36, 63, .25); }
+    .navbar-toggler:focus { box-shadow: 0 0 0 .2rem rgba(135, 60, 98, .16); }
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      margin-top: 1.1rem;
+      padding: clamp(3.2rem, 7vw, 6.2rem) 1.25rem;
+      border: 1px solid rgba(189, 152, 96, .28);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(255,255,255,.9), transparent 32%),
+        radial-gradient(circle at 88% 80%, rgba(219,174,184,.28), transparent 30%),
+        linear-gradient(125deg, #fffaf4 0%, #f8edf0 52%, #f2e5e9 100%);
+      box-shadow: 0 20px 55px rgba(69, 38, 55, .08);
+    }
+    .hero::before, .hero::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      border: 1px solid rgba(189, 152, 96, .32);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero::before { width: 280px; height: 280px; right: -105px; top: -115px; }
+    .hero::after { width: 190px; height: 190px; left: -95px; bottom: -95px; }
+    .hero h1 {
+      max-width: 850px;
+      margin: .6rem auto 1rem;
+      color: var(--mou-plum);
+      font-size: clamp(2.25rem, 5vw, 4.1rem);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+    }
+    .hero p { max-width: 720px; margin-left: auto; margin-right: auto; line-height: 1.75; }
+    .hero .hero-eyebrow {
+      display: inline-block;
+      padding: .45rem .9rem;
+      border: 1px solid rgba(189, 152, 96, .55);
+      border-radius: 999px;
+      background: rgba(255,255,255,.58);
+      color: var(--mou-berry);
+      font-size: .76rem;
+    }
+    .btn-hero {
+      border-radius: 999px;
+      background: linear-gradient(135deg, #54243f, #9b5874);
+      padding: .9rem 1.65rem;
+      font-weight: 700;
+      box-shadow: 0 9px 22px rgba(84, 36, 63, .2);
+    }
+    .btn-hero:hover { background: #3d1d32; transform: translateY(-2px); }
+    .hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: .82rem 1.35rem;
+      margin: .35rem;
+      border: 1px solid rgba(84,36,63,.28);
+      border-radius: 999px;
+      color: var(--mou-plum);
+      text-decoration: none;
+      font-weight: 700;
+      background: rgba(255,255,255,.58);
+    }
+    .hero-secondary:hover { color: var(--mou-berry); background: #fff; }
+    .section-title, .hero + section h2, #rent-feature h2 {
+      color: var(--mou-plum);
+    }
+    @media (max-width: 991.98px) {
+      body { padding-top: 112px; }
+      .navbar { top: 34px; }
+      .navbar-collapse {
+        margin-top: .65rem;
+        padding: .7rem;
+        border: 1px solid rgba(189,152,96,.25);
+        border-radius: 16px;
+        background: var(--mou-ivory);
+      }
+      .navbar-nav { gap: .15rem; }
+      .nav-link { text-align: center; }
+    }
+    @media (max-width: 576px) {
+      body { padding-top: 105px; }
+      .top-bar { font-size: .72rem; }
+      .hero { border-radius: 20px; margin-left: .35rem; margin-right: .35rem; }
+      .hero h1 { font-size: 2.25rem; }
+    }
+
+
+    /* Admin-selectable whole-homepage themes */
+    body[data-home-theme="royal"] { --page-bg:#fffaf4; --surface:#fffdf9; --surface-soft:#f5e9ed; --ink:#30252b; --muted:#705e68; --accent:#54243f; --accent-2:#873c62; --highlight:#bd9860; --line:rgba(189,152,96,.35); --shadow:0 14px 38px rgba(58,32,47,.10); }
+    body[data-home-theme="glass"] { --page-bg:#f8f3f8; --surface:rgba(255,255,255,.78); --surface-soft:rgba(246,226,239,.72); --ink:#34283a; --muted:#756678; --accent:#8b4779; --accent-2:#c078a4; --highlight:#d9a8c7; --line:rgba(255,255,255,.78); --shadow:0 16px 42px rgba(102,65,104,.13); }
+    body[data-home-theme="emerald"] { --page-bg:#f5f7ef; --surface:#fffef8; --surface-soft:#e8efe4; --ink:#24372f; --muted:#5e7165; --accent:#145b46; --accent-2:#28785b; --highlight:#c6a45e; --line:rgba(198,164,94,.42); --shadow:0 14px 38px rgba(22,75,57,.12); }
+    body[data-home-theme] { background:var(--page-bg); color:var(--ink); transition:background .25s ease,color .25s ease; }
+    body[data-home-theme] .top-bar { background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent)); }
+    body[data-home-theme] .navbar { background:var(--surface); border-bottom:1px solid var(--line); box-shadow:var(--shadow); }
+    body[data-home-theme] .navbar-brand, body[data-home-theme] .hero h1, body[data-home-theme] .section-title, body[data-home-theme] .section-title h2, body[data-home-theme] #rent-feature h2, body[data-home-theme] #buy h2, body[data-home-theme] #beauty-services h2 { color:var(--accent)!important; }
+    body[data-home-theme] .nav-link { color:var(--ink)!important; }
+    body[data-home-theme] .nav-link:hover, body[data-home-theme] .nav-link.active { color:var(--accent-2)!important; background:var(--surface-soft); }
+    body[data-home-theme] .nav-link.nav-rent, body[data-home-theme] .btn-hero { color:#fff!important; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:var(--shadow); }
+    body[data-home-theme] .nav-link.nav-partner, body[data-home-theme] .hero-secondary { color:var(--accent)!important; border-color:var(--highlight); }
+    body[data-home-theme] .hero { background:radial-gradient(circle at 12% 15%,rgba(255,255,255,.85),transparent 32%),linear-gradient(125deg,var(--surface),var(--surface-soft)); border-color:var(--line); box-shadow:var(--shadow); }
+    body[data-home-theme] .hero p, body[data-home-theme] section p { color:var(--muted); }
+    body[data-home-theme] .hero-eyebrow { color:var(--accent); border-color:var(--highlight); }
+    body[data-home-theme] .service-item, body[data-home-theme] .service-card, body[data-home-theme] #buy, body[data-home-theme] #featured-services { background:var(--surface)!important; color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:20px; }
+    body[data-home-theme] .service-header { background:linear-gradient(125deg,var(--accent),var(--accent-2)); border-radius:14px; }
+    body[data-home-theme] .service-icon { color:#fff!important; }
+    body[data-home-theme] .btn-primary { background:var(--accent); border-color:var(--accent); }
+    body[data-home-theme] .btn-success { background:#21865c; border-color:#21865c; }
+    body[data-home-theme] .footer { color:var(--muted); }
+    body[data-home-theme] .footer a, body[data-home-theme] .address a { color:var(--accent); }
+    body[data-home-theme="glass"] .hero, body[data-home-theme="glass"] .service-card, body[data-home-theme="glass"] .service-item, body[data-home-theme="glass"] #buy, body[data-home-theme="glass"] #featured-services { backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.8); box-shadow:0 18px 45px rgba(118,75,126,.13),inset 0 1px 0 rgba(255,255,255,.8); }
+    body[data-home-theme="emerald"] .hero { background:radial-gradient(circle at 85% 20%,rgba(198,164,94,.20),transparent 30%),linear-gradient(125deg,#fffef8,#e8efe4); }
+    body[data-home-theme="emerald"] .service-card, body[data-home-theme="emerald"] .service-item { box-shadow:8px 8px 18px rgba(31,70,54,.09),-7px -7px 18px rgba(255,255,255,.9); }
+
+    /* Three independent navigation treatments */
+    body[data-navbar-style="floating"] .nav-link { border-radius:999px; transition:transform .22s,background .22s,box-shadow .22s; }
+    body[data-navbar-style="floating"] .nav-link:hover { transform:translateY(-2px); box-shadow:0 7px 16px rgba(84,36,63,.14); }
+    body[data-navbar-style="glass"] .navbar { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+    body[data-navbar-style="glass"] .nav-link:hover { box-shadow:inset 0 0 0 1px var(--highlight),0 0 16px rgba(113, 244, 25, 0.403); }
+    body[data-navbar-style="clay"] .nav-link { box-shadow:5px 5px 10px rgba(40,25,35,.08),-4px -4px 10px rgba(255,255,255,.8); margin:.2rem .35rem; }
+    body[data-navbar-style="clay"] .nav-link:active { box-shadow:inset 3px 3px 7px rgba(40,25,35,.14),inset -3px -3px 7px rgba(255,255,255,.7); }
+
+    /* Global scroll controls */
+    #moupriyaGoTop { position:fixed; right:22px; bottom:94px; z-index:1001; width:52px; height:52px; border:1px solid rgba(190,255,220,.8); border-radius:50%; display:grid; place-items:center; color:#fff; background:linear-gradient(145deg,#36d58a,#087746 72%); box-shadow:7px 7px 16px rgba(0,55,34,.25),inset 2px 2px 5px rgba(255,255,255,.38),inset -3px -3px 7px rgba(0,45,25,.22); opacity:0; visibility:hidden; transform:translateY(12px); transition:opacity .25s,transform .25s,visibility .25s; }
+    #moupriyaGoTop.is-visible { opacity:1; visibility:visible; transform:translateY(0); animation:mouTopPulse 2.8s ease-in-out infinite; }
+    #moupriyaGoTop:hover { transform:translateY(-4px); }
+    #moupriyaGoTop i { font-size:1.35rem; }
+    @keyframes mouTopPulse { 0%,100% { box-shadow:7px 7px 16px rgba(0,55,34,.25),inset 2px 2px 5px rgba(255,255,255,.38); } 50% { box-shadow:0 0 0 7px rgba(35,190,115,.12),7px 7px 18px rgba(0,55,34,.28); } }
+    .navbar.mou-nav-hidden { transform:translateY(-150%); transition:transform .28s ease; }
+    .navbar { transition:transform .28s ease; }
+    @media(max-width:991.98px) { .navbar-collapse { max-height:calc(100vh - 125px); overflow-y:auto; } #moupriyaGoTop { right:16px; bottom:88px; width:48px; height:48px; } }
+    @media(prefers-reduced-motion:reduce) { #moupriyaGoTop.is-visible { animation:none; } .navbar,.nav-link { transition:none!important; } }
+
+  </style>
+
+  <script>
+    document.addEventListener("DOMContentLoaded", function () {
+      // Service Item Script
+      const serviceItems = document.querySelectorAll(".service-item");
+      serviceItems.forEach((item) => {
+        const header = item.querySelector(".service-header");
+        const body = item.querySelector(".service-body");
+        const updateMaxHeight = () => {
+          setTimeout(() => {
+            if (item.classList.contains("show-desc")) {
+              body.style.maxHeight = `${body.scrollHeight + 20}px`;
+              body.style.overflow = "visible";
+            } else {
+              body.style.maxHeight = "0";
+              body.style.overflow = "hidden";
+            }
+          }, 0);
+        };
+        item.addEventListener("mouseenter", () => {
+          if (window.innerWidth > 576) {
+            item.classList.add("show-desc");
+            updateMaxHeight();
+          }
+        });
+        item.addEventListener("mouseleave", () => {
+          if (window.innerWidth > 576) {
+            item.classList.remove("show-desc");
+            updateMaxHeight();
+          }
+        });
+        header.addEventListener("click", () => {
+          if (window.innerWidth <= 576) {
+            serviceItems.forEach((otherItem) => {
+              if (otherItem !== item && otherItem.classList.contains("show-desc")) {
+                otherItem.classList.remove("show-desc");
+                otherItem.querySelector(".service-body").style.maxHeight = "0";
+                otherItem.querySelector(".service-body").style.overflow = "hidden";
+              }
+            });
+            item.classList.toggle("show-desc");
+            updateMaxHeight();
+          }
+        });
+        window.addEventListener("resize", () => {
+          if (item.classList.contains("show-desc")) {
+            updateMaxHeight();
+          }
+        });
+      });
+
+      // Floating Animation Script
+      const animationContainer = document.querySelector(".zodiac-animation");
+      const isHomePage = window.location.pathname === "/" ||
+                         window.location.pathname === "/index";
+      const symbols = [
+  "💄", // Lipstick
+  "💋", // Kiss mark
+  "💅", // Nail polish
+  "🖌️", // Paintbrush (makeup brush feel)
+  "🪞", // Mirror
+  "🧴", // Lotion bottle (skincare/cosmetic)
+  "👑", // Crown (glam)
+  "💍", // Ring (beauty + elegance)
+  "💎", // Diamond
+  "✨", // Sparkles
+  "🌟", // Glowing star
+  "🎀", // Ribbon (feminine touch)
+  "🌸", // Blossom (beauty)
+  "🌺", // Hibiscus
+  "🌷", // Tulip
+  "💖", // Sparkling heart
+  "💫", // Dizzy (sparkle/magic look)
+  "♈", "♉", "♊", "♋", "♌", "♍", // Zodiac 1–6
+  "♎", "♏", "♐", "♑", "♒", "♓", // Zodiac 7–12
+];
+      
+      function createSymbol() {
+        if (!animationContainer || !isHomePage) return;
+        const symbol = document.createElement("span");
+        symbol.className = "symbol";
+        symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
+        
+        symbol.style.left = `${Math.random() * 100}vw`;
+        const duration = 6 + Math.random() * 4;
+        symbol.style.animationDuration = `${duration}s`;
+        const offset = (Math.random() - 0.5) * 100;
+        symbol.style.setProperty("--offset-x", `${offset}px`);
+        
+        animationContainer.appendChild(symbol);
+        symbol.addEventListener("animationend", () => {
+          symbol.remove();
+        });
+      }
+      
+      if (animationContainer && isHomePage) {
+        setInterval(createSymbol, 1500);
+      }
+
+      // Logo Click Toggle Script
+      const logo = document.querySelector(".navbar-logo");
+      if (logo) {
+        logo.addEventListener("click", (event) => {
+          event.preventDefault();
+          logo.classList.toggle("enlarged");
+        });
+      }
+    });
+  </script>
+</head>
+<body data-home-theme="{{ homepage_theme|default('royal') }}" data-navbar-style="{{ homepage_navbar_style|default('floating') }}">
+  <!-- Top Bar -->
+  <div class="top-bar">
+    <span class="marquee-content">
+      📞 <a href="tel:+919330482697">+91 93304 82697</a> | Home Service Available |  ✨ Next Session of Our Nail Art Course is Starting Soon!
+📅 Limited Seats Available – Enroll Now to Secure Your Spot!
+📞 Contact Us Today for Details and Registration! |  <a href="https://wa.me/919330482697" target="_blank"><i class="bi bi-whatsapp"></i> Chat Now!</a>
+    </span>
+  </div>
+
+  <!-- Premium Main Navigation -->
+  <nav class="navbar navbar-expand-lg navbar-light">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="{{ url_for('index') }}" aria-label="Moupriya home">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Moupriya logo" class="navbar-logo">
+        <span>Moupriya</span>
+      </a>
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon"></span>
+      </button>
+      <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
+        <ul class="navbar-nav align-items-lg-center">
+          <li class="nav-item"><a class="nav-link active" href="{{ url_for('index') }}">Home</a></li>
+          <li class="nav-item"><a class="nav-link nav-rent" href="{{ url_for('rental_catalogue') }}">Explore Rentals</a></li>
+          <li class="nav-item"><a class="nav-link" href="#buy">Shop</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('services') }}">Beauty</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('gallery') }}">Gallery</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('book') }}">Book Makeup</a></li>
+          <li class="nav-item"><a class="nav-link nav-partner" href="https://wa.me/919330482697?text=Hello%20Moupriya%2C%20I%20am%20interested%20in%20a%20business%20partnership." target="_blank" rel="noopener">Partner with us</a></li>
+        </ul>
+      </div>
+    </div>
+  </nav>
+
+  <!-- Premium Rental-First Hero -->
+  <section class="hero container text-center" id="hero" data-home-section="hero">
+    <span class="hero-eyebrow text-uppercase fw-bold">MOUPRIYA · KOLKATA</span>
+    <h1>Make Every Occasion<br>Unforgettable.</h1>
+    <p class="fs-5">Discover beautiful sarees, lehengas, jewellery and occasion wear for your special moments — with the freedom to rent the look you love.</p>
+    <div class="mt-4">
+      <a href="{{ url_for('rental_catalogue') }}" class="btn btn-hero">Explore Rental Collection <i class="bi bi-arrow-right ms-1"></i></a>
+      <a href="https://wa.me/919330482697?text=Hello%20Moupriya%2C%20I%20would%20like%20to%20know%20more%20about%20your%20collection." class="hero-secondary" target="_blank" rel="noopener"><i class="bi bi-whatsapp me-2"></i>Enquire on WhatsApp</a>
+    </div>
+    <p class="mt-4 mb-0 small text-uppercase fw-semibold" style="letter-spacing:.13em;color:#806575">Fashion Rentals <span class="mx-2">✦</span> Boutique Finds <span class="mx-2">✦</span> Beauty Services</p>
+  </section>
+
+  <section class="container py-5 text-center" id="rent-feature" data-home-section="rent-feature">
+    <h2 class="fw-bold">Rent the Look. Love the Moment.</h2>
+    <p>Our rental collection is being curated. Browse available pieces and send us an enquiry.</p>
+    <a href="{{ url_for('rental_catalogue') }}" class="btn btn-hero">Browse RENT Collection</a>
+  </section>
+
+  <section class="container py-5 text-center bg-light" id="buy" data-home-section="buy">
+    <h2 class="fw-bold">BUY Collection</h2>
+    <p>Our selected fashion and accessory products will be introduced here soon.</p>
+    <span class="badge text-bg-secondary">Coming soon</span>
+  </section>
+
+  <section class="container py-4 text-center" id="beauty-services" data-home-section="beauty-services">
+    <h2 class="fw-bold">Beauty Services</h2>
+    <p>Our makeup and beauty services remain available as a secondary service.</p>
+    <a href="{{ url_for('services') }}" class="btn btn-outline-secondary">Explore Makeup & Beauty Services</a>
+    <a href="{{ url_for('book') }}" class="btn btn-outline-secondary">Book an Appointment</a>
+  </section>
+
+  <!-- Featured Services -->
+  <section class="py-5 bg-light" id="featured-services" data-home-section="featured-services">
+    <div class="container">
+      <div class="section-title text-center mb-5"><h2 class="fw-bold">Featured Services</h2></div>
+      <div class="row gy-4">
+        <div class="col-6 col-md-4 text-center service-item">
+          <div class="service-card p-4 shadow-sm rounded-4 h-100">
+            <div class="service-header mb-2">
+              <i class="bi bi-brush service-icon fs-1 text-primary"></i>
+              <h5 class="mt-2">Bridal Makeup</h5>
+            </div>
+            <div class="service-body">
+              <p>Professional bridal looks tailored to your wedding style.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+          <div class="service-card p-4 shadow-sm rounded-4 h-100">
+            <div class="service-header mb-2">
+              <i class="bi bi-stars service-icon fs-1 text-warning"></i>
+              <h5 class="mt-2">Reception & Party</h5>
+            </div>
+            <div class="service-body">
+              <p>Glamorous looks for birthdays, parties, and events.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+          <div class="service-card p-4 shadow-sm rounded-4 h-100">
+            <div class="service-header mb-2">
+              <i class="bi bi-droplet-half service-icon fs-1 text-info"></i>
+              <h5 class="mt-2">Waterproof Makeup</h5>
+            </div>
+            <div class="service-body">
+              <p>Smudge-proof and long-lasting finish, perfect for any weather.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+          <div class="service-card p-4 shadow-sm rounded-4 h-100">
+            <div class="service-header mb-2">
+              <i class="bi bi-hand-thumbs-up service-icon fs-1 text-success"></i>
+              <h5 class="mt-2">Nail Art</h5>
+            </div>
+            <div class="service-body">
+              <p>Trendy and classy nail designs personalized for you.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+          <div class="service-card p-4 shadow-sm rounded-4 h-100">
+            <div class="service-header mb-2">
+              <i class="bi bi-scissors service-icon fs-1 text-warning"></i>
+              <h5 class="mt-2">Classic Hairstyling</h5>
+            </div>
+            <div class="service-body">
+              <p>Elegant hairstyles perfect for any occasion or event.</p>
+            </div>
+          </div>
+        </div>
+        <div class="col-6 col-md-4 text-center service-item">
+          <div class="service-card p-4 shadow-sm rounded-4 h-100">
+            <div class="service-header mb-2">
+              <i class="bi bi-balloon-heart service-icon fs-1 text-pink"></i>
+              <h5 class="mt-2">Occasional Makeup</h5>
+            </div>
+            <div class="service-body">
+              <p>Customized makeup for anniversaries, festivals, and special events.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- Gallery Carousel -->
+  <section class="container mb-5" id="gallery-carousel" data-home-section="gallery-carousel">
+    <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+      <div class="carousel-inner">
+        {% for img in ['banner1.png.jpg','service1.png','service2.png','service3.png','nail1.jpg','nail2.jpg','nail3.jpg'] %}
+        <div class="carousel-item {% if loop.first %}active{% endif %}"><img src="{{ url_for('static',filename='images/'+img) }}" class="d-block mx-auto carousel-img" alt="" loading="lazy"></div>
+        {% endfor %}
+      </div>
+      <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
+      <button class="carousel-control-next" type="button"></button>
+    </div>
+  </section>
+
+  <!-- Gallery & Testimonials -->
+  <section class="gallery-links text-center mb-5" id="gallery-links" data-home-section="gallery-links">
+    <a href="{{ url_for('gallery') }}" class="btn btn-primary mx-2">View Gallery</a>
+    <a href="https://g.co/kgs/oA9p2gq" class="btn btn-success mx-2" target="_blank">Google Reviews</a>
+  </section>
+  <section class="testimonial-links text-center mb-5" id="testimonials-links" data-home-section="testimonials-links">
+    <a href="{{ url_for('testimonials') }}" class="btn btn-outline-secondary mx-2">Testimonials</a>
+    <a href="{{ url_for('services') }}" class="btn btn-outline-secondary mx-2">All Services</a>
+  </section>
+
+  <!-- YouTube Video Grid -->
+<section class="container my-5" id="youtube" data-home-section="youtube">
+  <h2 class="section-title text-center">@dey_moupriya_15</h2>
+  <div class="row g-4">
+    <div class="col-12 col-md-4">
+      <div class="ratio ratio-16x9">
+        <iframe src="https://www.youtube.com/embed/SmBzX39yKkE?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=SmBzX39yKkE" 
+                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="ratio ratio-16x9">
+        <iframe src="https://www.youtube.com/embed/xpKawYQoj3s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=xpKawYQoj3s" 
+                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+    <div class="col-12 col-md-4">
+      <div class="ratio ratio-16x9">
+        <iframe src="https://www.youtube.com/embed/lXZiK6c9w8s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=lXZiK6c9w8s" 
+                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      </div>
+    </div>
+  </div>
+</section>
+
+
+
+  <!-- Address -->
+  <section class="address text-center mb-5" id="address" data-home-section="address">
+    <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i>
+    <a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, JJ Road, Parnasree Pally, near B G Press Market, Kolkata–60</a>,
+</h5>
+  </section>
+
+  <!-- WhatsApp -->
+  <a href="https://wa.me/919330482697" class="whatsapp-float" target="_blank" title="Chat on WhatsApp"><i class="bi bi-whatsapp"></i></a>
+
+  <!-- Floating Animation -->
+  <div class="zodiac-animation"></div>
+
+  <!-- Footer -->
+  <footer class="footer">
+    <div class="mt-3">
+      <a href="https://www.instagram.com/glow_haven015/" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
+      <a href="https://www.facebook.com/moupriya.dey.463189/" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
+    </div>
+    <div class="container">© 2026 Moupriya. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
+  </footer>
+
+  <!-- Bootstrap JS -->
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<button id="moupriyaGoTop" type="button" aria-label="Go to top" title="Go to top"><i class="bi bi-arrow-up"></i></button>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const configuredSections = {{ homepage_sections|default([], true)|tojson }};
+    const sectionMap = new Map(Array.from(document.querySelectorAll('[data-home-section]')).map(el => [el.dataset.homeSection, el]));
+    configuredSections.forEach(item => {
+      const el = sectionMap.get(item.id);
+      if (!el) return;
+      el.hidden = item.visible === false;
+    });
+    const footer = document.querySelector('footer');
+    configuredSections.forEach(item => {
+      const el = sectionMap.get(item.id);
+      if (el && footer && el.parentElement === document.body) document.body.insertBefore(el, footer);
+    });
+
+    const navbar = document.querySelector('.navbar');
+    const topBar = document.querySelector('.top-bar');
+    let previousY = window.scrollY;
+    let ticking = false;
+    function handleScroll() {
+      const currentY = window.scrollY;
+      if (navbar && !document.querySelector('.navbar-collapse.show')) {
+        if (currentY < 90 || currentY < previousY - 5) navbar.classList.remove('mou-nav-hidden');
+        else if (currentY > previousY + 5) navbar.classList.add('mou-nav-hidden');
+      }
+      previousY = currentY;
+      const goTop = document.getElementById('moupriyaGoTop');
+      if (goTop) goTop.classList.toggle('is-visible', currentY > 320);
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { window.requestAnimationFrame(handleScroll); ticking = true; } }, {passive:true});
+
+    document.querySelectorAll('#navbarNav .nav-link').forEach(link => link.addEventListener('click', () => {
+      const menu = document.getElementById('navbarNav');
+      if (menu && menu.classList.contains('show') && window.bootstrap) bootstrap.Collapse.getOrCreateInstance(menu).hide();
+    }));
+
+    const goTop = document.getElementById('moupriyaGoTop');
+    goTop?.addEventListener('click', () => window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}));
+  });
+  </script>
+
+</body>
+</html>

@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Mou's Makeup & Nails</title>
+  <title>Moupriya | Fashion Rental & Beauty Services</title>
 
   <!-- Bootstrap & Icons -->
   <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet" />
@@ -12,9 +12,9 @@
 
   <!-- Favicon & SEO -->
   <link rel="icon" href="{{ url_for('static', filename='favicon.ico') }}">
-  <meta name="description" content="Mou's Makeup & Nails - Professional makeup, nail art, and bridal beauty services.">
-  <meta name="keywords" content="makeup, nail art, bridal makeup, salon, beauty, Mou's makeup, Kolkata">
-  <meta name="author" content="Mou's Makeup & Nails">
+  <meta name="description" content="Moupriya - Fashion rentals, occasion wear and beauty services in Kolkata.">
+  <meta name="keywords" content="fashion rental, saree rental, lehenga rental, occasion wear, makeup, beauty services, Kolkata">
+  <meta name="author" content="Moupriya">
 
   <style>
 
@@ -376,6 +376,205 @@
       from { opacity: 0; }
       to { opacity: 1; }
     }
+
+
+    /* =====================================================
+       MOUPRIYA PREMIUM BOUTIQUE THEME - ADDITIVE OVERRIDES
+       Existing component styles and behaviour are retained.
+       ===================================================== */
+    :root {
+      --mou-plum: #54243f;
+      --mou-berry: #873c62;
+      --mou-rose: #b76e83;
+      --mou-gold: #bd9860;
+      --mou-ivory: #fffaf4;
+      --mou-ink: #30252b;
+    }
+    body {
+      background: var(--mou-ivory);
+      color: var(--mou-ink);
+    }
+    .top-bar {
+      background: linear-gradient(90deg, #3d1d32, #70405b, #3d1d32);
+      font-size: .82rem;
+      letter-spacing: .025em;
+      padding: .42rem 0;
+    }
+    .top-bar a { text-decoration: none; font-weight: 700; }
+    .navbar {
+      top: 34px;
+      min-height: 76px;
+      padding: .65rem clamp(.75rem, 3vw, 2.5rem);
+      background: rgba(255, 250, 244, .97);
+      border-bottom: 1px solid rgba(189, 152, 96, .28);
+      box-shadow: 0 8px 28px rgba(58, 32, 47, .09);
+      backdrop-filter: blur(14px);
+    }
+    .navbar-brand {
+      color: var(--mou-plum) !important;
+      font-size: clamp(1.15rem, 2vw, 1.65rem);
+      letter-spacing: -.035em;
+      gap: .25rem;
+    }
+    .navbar-logo { border-radius: 50%; object-fit: cover; }
+    .nav-link {
+      color: #51414a !important;
+      font-size: .88rem;
+      letter-spacing: .035em;
+      font-weight: 600;
+      padding: .7rem .85rem !important;
+      border-radius: 999px;
+    }
+    .nav-link:hover, .nav-link.active {
+      color: var(--mou-berry) !important;
+      background: #f5e9ed;
+    }
+    .nav-link.nav-rent {
+      color: #fff !important;
+      background: linear-gradient(135deg, #6d3454, #a85e79);
+      padding: .68rem 1.35rem !important;
+      box-shadow: 0 5px 14px rgba(109, 52, 84, .2);
+    }
+    .nav-link.nav-rent:hover { color: #fff !important; background: #54243f; }
+    .nav-link.nav-partner {
+      color: var(--mou-plum) !important;
+      border: 1px solid rgba(189, 152, 96, .65);
+    }
+    .navbar-toggler { border-color: rgba(84, 36, 63, .25); }
+    .navbar-toggler:focus { box-shadow: 0 0 0 .2rem rgba(135, 60, 98, .16); }
+    .hero {
+      position: relative;
+      isolation: isolate;
+      overflow: hidden;
+      margin-top: 1.1rem;
+      padding: clamp(3.2rem, 7vw, 6.2rem) 1.25rem;
+      border: 1px solid rgba(189, 152, 96, .28);
+      border-radius: 28px;
+      background:
+        radial-gradient(circle at 12% 15%, rgba(255,255,255,.9), transparent 32%),
+        radial-gradient(circle at 88% 80%, rgba(219,174,184,.28), transparent 30%),
+        linear-gradient(125deg, #fffaf4 0%, #f8edf0 52%, #f2e5e9 100%);
+      box-shadow: 0 20px 55px rgba(69, 38, 55, .08);
+    }
+    .hero::before, .hero::after {
+      content: "";
+      position: absolute;
+      z-index: -1;
+      border: 1px solid rgba(189, 152, 96, .32);
+      border-radius: 50%;
+      pointer-events: none;
+    }
+    .hero::before { width: 280px; height: 280px; right: -105px; top: -115px; }
+    .hero::after { width: 190px; height: 190px; left: -95px; bottom: -95px; }
+    .hero h1 {
+      max-width: 850px;
+      margin: .6rem auto 1rem;
+      color: var(--mou-plum);
+      font-size: clamp(2.25rem, 5vw, 4.1rem);
+      line-height: 1.12;
+      letter-spacing: -.04em;
+    }
+    .hero p { max-width: 720px; margin-left: auto; margin-right: auto; line-height: 1.75; }
+    .hero .hero-eyebrow {
+      display: inline-block;
+      padding: .45rem .9rem;
+      border: 1px solid rgba(189, 152, 96, .55);
+      border-radius: 999px;
+      background: rgba(255,255,255,.58);
+      color: var(--mou-berry);
+      font-size: .76rem;
+    }
+    .btn-hero {
+      border-radius: 999px;
+      background: linear-gradient(135deg, #54243f, #9b5874);
+      padding: .9rem 1.65rem;
+      font-weight: 700;
+      box-shadow: 0 9px 22px rgba(84, 36, 63, .2);
+    }
+    .btn-hero:hover { background: #3d1d32; transform: translateY(-2px); }
+    .hero-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      padding: .82rem 1.35rem;
+      margin: .35rem;
+      border: 1px solid rgba(84,36,63,.28);
+      border-radius: 999px;
+      color: var(--mou-plum);
+      text-decoration: none;
+      font-weight: 700;
+      background: rgba(255,255,255,.58);
+    }
+    .hero-secondary:hover { color: var(--mou-berry); background: #fff; }
+    .section-title, .hero + section h2, #rent-feature h2 {
+      color: var(--mou-plum);
+    }
+    @media (max-width: 991.98px) {
+      body { padding-top: 112px; }
+      .navbar { top: 34px; }
+      .navbar-collapse {
+        margin-top: .65rem;
+        padding: .7rem;
+        border: 1px solid rgba(189,152,96,.25);
+        border-radius: 16px;
+        background: var(--mou-ivory);
+      }
+      .navbar-nav { gap: .15rem; }
+      .nav-link { text-align: center; }
+    }
+    @media (max-width: 576px) {
+      body { padding-top: 105px; }
+      .top-bar { font-size: .72rem; }
+      .hero { border-radius: 20px; margin-left: .35rem; margin-right: .35rem; }
+      .hero h1 { font-size: 2.25rem; }
+    }
+
+
+    /* Admin-selectable whole-homepage themes */
+    body[data-home-theme="royal"] { --page-bg:#fffaf4; --surface:#fffdf9; --surface-soft:#f5e9ed; --ink:#30252b; --muted:#705e68; --accent:#54243f; --accent-2:#873c62; --highlight:#bd9860; --line:rgba(189,152,96,.35); --shadow:0 14px 38px rgba(58,32,47,.10); }
+    body[data-home-theme="glass"] { --page-bg:#f8f3f8; --surface:rgba(255,255,255,.78); --surface-soft:rgba(246,226,239,.72); --ink:#34283a; --muted:#756678; --accent:#8b4779; --accent-2:#c078a4; --highlight:#d9a8c7; --line:rgba(255,255,255,.78); --shadow:0 16px 42px rgba(102,65,104,.13); }
+    body[data-home-theme="emerald"] { --page-bg:#f5f7ef; --surface:#fffef8; --surface-soft:#e8efe4; --ink:#24372f; --muted:#5e7165; --accent:#145b46; --accent-2:#28785b; --highlight:#c6a45e; --line:rgba(198,164,94,.42); --shadow:0 14px 38px rgba(22,75,57,.12); }
+    body[data-home-theme] { background:var(--page-bg); color:var(--ink); transition:background .25s ease,color .25s ease; }
+    body[data-home-theme] .top-bar { background:linear-gradient(90deg,var(--accent),var(--accent-2),var(--accent)); }
+    body[data-home-theme] .navbar { background:var(--surface); border-bottom:1px solid var(--line); box-shadow:var(--shadow); }
+    body[data-home-theme] .navbar-brand, body[data-home-theme] .hero h1, body[data-home-theme] .section-title, body[data-home-theme] .section-title h2, body[data-home-theme] #rent-feature h2, body[data-home-theme] #buy h2, body[data-home-theme] #beauty-services h2 { color:var(--accent)!important; }
+    body[data-home-theme] .nav-link { color:var(--ink)!important; }
+    body[data-home-theme] .nav-link:hover, body[data-home-theme] .nav-link.active { color:var(--accent-2)!important; background:var(--surface-soft); }
+    body[data-home-theme] .nav-link.nav-rent, body[data-home-theme] .btn-hero { color:#fff!important; background:linear-gradient(135deg,var(--accent),var(--accent-2)); box-shadow:var(--shadow); }
+    body[data-home-theme] .nav-link.nav-partner, body[data-home-theme] .hero-secondary { color:var(--accent)!important; border-color:var(--highlight); }
+    body[data-home-theme] .hero { background:radial-gradient(circle at 12% 15%,rgba(255,255,255,.85),transparent 32%),linear-gradient(125deg,var(--surface),var(--surface-soft)); border-color:var(--line); box-shadow:var(--shadow); }
+    body[data-home-theme] .hero p, body[data-home-theme] section p { color:var(--muted); }
+    body[data-home-theme] .hero-eyebrow { color:var(--accent); border-color:var(--highlight); }
+    body[data-home-theme] .service-item, body[data-home-theme] .service-card, body[data-home-theme] #buy, body[data-home-theme] #featured-services { background:var(--surface)!important; color:var(--ink); border:1px solid var(--line); box-shadow:var(--shadow); border-radius:20px; }
+    body[data-home-theme] .service-header { background:linear-gradient(125deg,var(--accent),var(--accent-2)); border-radius:14px; }
+    body[data-home-theme] .service-icon { color:#fff!important; }
+    body[data-home-theme] .btn-primary { background:var(--accent); border-color:var(--accent); }
+    body[data-home-theme] .btn-success { background:#21865c; border-color:#21865c; }
+    body[data-home-theme] .footer { color:var(--muted); }
+    body[data-home-theme] .footer a, body[data-home-theme] .address a { color:var(--accent); }
+    body[data-home-theme="glass"] .hero, body[data-home-theme="glass"] .service-card, body[data-home-theme="glass"] .service-item, body[data-home-theme="glass"] #buy, body[data-home-theme="glass"] #featured-services { backdrop-filter:blur(16px); -webkit-backdrop-filter:blur(16px); border:1px solid rgba(255,255,255,.8); box-shadow:0 18px 45px rgba(118,75,126,.13),inset 0 1px 0 rgba(255,255,255,.8); }
+    body[data-home-theme="emerald"] .hero { background:radial-gradient(circle at 85% 20%,rgba(198,164,94,.20),transparent 30%),linear-gradient(125deg,#fffef8,#e8efe4); }
+    body[data-home-theme="emerald"] .service-card, body[data-home-theme="emerald"] .service-item { box-shadow:8px 8px 18px rgba(31,70,54,.09),-7px -7px 18px rgba(255,255,255,.9); }
+
+    /* Three independent navigation treatments */
+    body[data-navbar-style="floating"] .nav-link { border-radius:999px; transition:transform .22s,background .22s,box-shadow .22s; }
+    body[data-navbar-style="floating"] .nav-link:hover { transform:translateY(-2px); box-shadow:0 7px 16px rgba(84,36,63,.14); }
+    body[data-navbar-style="glass"] .navbar { backdrop-filter:blur(18px); -webkit-backdrop-filter:blur(18px); }
+    body[data-navbar-style="glass"] .nav-link:hover { box-shadow:inset 0 0 0 1px var(--highlight),0 0 16px rgba(189,152,96,.25); }
+    body[data-navbar-style="clay"] .nav-link { box-shadow:5px 5px 10px rgba(40,25,35,.08),-4px -4px 10px rgba(255,255,255,.8); margin:.2rem .35rem; }
+    body[data-navbar-style="clay"] .nav-link:active { box-shadow:inset 3px 3px 7px rgba(40,25,35,.14),inset -3px -3px 7px rgba(255,255,255,.7); }
+
+    /* Global scroll controls */
+    #moupriyaGoTop { position:fixed; right:22px; bottom:94px; z-index:1001; width:52px; height:52px; border:1px solid rgba(190,255,220,.8); border-radius:50%; display:grid; place-items:center; color:#fff; background:linear-gradient(145deg,#36d58a,#087746 72%); box-shadow:7px 7px 16px rgba(0,55,34,.25),inset 2px 2px 5px rgba(255,255,255,.38),inset -3px -3px 7px rgba(0,45,25,.22); opacity:0; visibility:hidden; transform:translateY(12px); transition:opacity .25s,transform .25s,visibility .25s; }
+    #moupriyaGoTop.is-visible { opacity:1; visibility:visible; transform:translateY(0); animation:mouTopPulse 2.8s ease-in-out infinite; }
+    #moupriyaGoTop:hover { transform:translateY(-4px); }
+    #moupriyaGoTop i { font-size:1.35rem; }
+    @keyframes mouTopPulse { 0%,100% { box-shadow:7px 7px 16px rgba(0,55,34,.25),inset 2px 2px 5px rgba(255,255,255,.38); } 50% { box-shadow:0 0 0 7px rgba(35,190,115,.12),7px 7px 18px rgba(0,55,34,.28); } }
+    .navbar.mou-nav-hidden { transform:translateY(-150%); transition:transform .28s ease; }
+    .navbar { transition:transform .28s ease; }
+    @media(max-width:991.98px) { .navbar-collapse { max-height:calc(100vh - 125px); overflow-y:auto; } #moupriyaGoTop { right:16px; bottom:88px; width:48px; height:48px; } }
+    @media(prefers-reduced-motion:reduce) { #moupriyaGoTop.is-visible { animation:none; } .navbar,.nav-link { transition:none!important; } }
+
   </style>
 
   <script>
@@ -430,6 +629,8 @@
 
       // Floating Animation Script
       const animationContainer = document.querySelector(".zodiac-animation");
+      const isHomePage = window.location.pathname === "/" ||
+                         window.location.pathname === "/index";
       const symbols = [
   "💄", // Lipstick
   "💋", // Kiss mark
@@ -453,6 +654,7 @@
 ];
       
       function createSymbol() {
+        if (!animationContainer || !isHomePage) return;
         const symbol = document.createElement("span");
         symbol.className = "symbol";
         symbol.textContent = symbols[Math.floor(Math.random() * symbols.length)];
@@ -469,18 +671,21 @@
         });
       }
       
-      setInterval(createSymbol, 500 + Math.random() * 500);
+
 
       // Logo Click Toggle Script
       const logo = document.querySelector(".navbar-logo");
-      logo.addEventListener("click", (event) => {
-        event.preventDefault(); // Prevent navigation
-        logo.classList.toggle("enlarged");
-      });
+      if (logo) {
+        logo.addEventListener("click", (event) => {
+          event.preventDefault();
+          logo.classList.toggle("enlarged");
+        });
+      }
     });
   </script>
+  <link rel="stylesheet" href="{{ url_for('static', filename='css/global-loader.css') }}">
 </head>
-<body>
+<body data-home-theme="{{ homepage_theme|default('royal') }}" data-navbar-style="{{ homepage_navbar_style|default('floating') }}">
   <!-- Top Bar -->
   <div class="top-bar">
     <span class="marquee-content">
@@ -490,38 +695,65 @@
     </span>
   </div>
 
-  <!-- Navbar -->
+  <!-- Premium Main Navigation -->
   <nav class="navbar navbar-expand-lg navbar-light">
     <div class="container-fluid">
-      <a class="navbar-brand" href="{{ url_for('index') }}">
-        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Moupriya Dey - Certified MakeUp Artist" class="navbar-logo">
-        Mou's Makeup & Nails
+      <a class="navbar-brand" href="{{ url_for('index') }}" aria-label="Moupriya home">
+        <img src="{{ url_for('static', filename='images/logo.jpg') }}" alt="Moupriya logo" class="navbar-logo">
+        <span>Moupriya</span>
       </a>
-      <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav">
+      <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+              data-bs-target="#navbarNav" aria-controls="navbarNav"
+              aria-expanded="false" aria-label="Toggle navigation">
         <span class="navbar-toggler-icon"></span>
       </button>
       <div class="collapse navbar-collapse justify-content-end" id="navbarNav">
-        <ul class="navbar-nav">
+        <ul class="navbar-nav align-items-lg-center">
           <li class="nav-item"><a class="nav-link active" href="{{ url_for('index') }}">Home</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('services') }}">Services</a></li>
+          <li class="nav-item"><a class="nav-link nav-rent" href="{{ url_for('rental_catalogue') }}">Explore Rentals</a></li>
+          <li class="nav-item"><a class="nav-link" href="#buy">Shop</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('services') }}">Beauty</a></li>
           <li class="nav-item"><a class="nav-link" href="{{ url_for('gallery') }}">Gallery</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('testimonials') }}">Testimonials</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('book') }}">Book Now</a></li>
-          <li class="nav-item"><a class="nav-link" href="{{ url_for('login') }}">Admin Login</a></li>
+          <li class="nav-item"><a class="nav-link" href="{{ url_for('book') }}">Book Makeup</a></li>
+          <li class="nav-item"><a class="nav-link nav-partner" href="https://wa.me/919330482697?text=Hello%20Moupriya%2C%20I%20am%20interested%20in%20a%20business%20partnership." target="_blank" rel="noopener">Partner with us</a></li>
         </ul>
       </div>
     </div>
   </nav>
 
-  <!-- Hero -->
-  <section class="hero container">
-    <h1>Welcome to Your Beauty Haven</h1>
-    <p>Flawless bridal & party makeup, nail art, hairstyling, HD sessions & more—book your glam experience today!</p>
-    <a href="{{ url_for('book') }}" class="btn btn-hero">Book Now</a>
+  <!-- Premium Rental-First Hero -->
+  <section class="hero container text-center" id="hero" data-home-section="hero">
+    <span class="hero-eyebrow text-uppercase fw-bold">MOUPRIYA · KOLKATA</span>
+    <h1>Make Every Occasion<br>Unforgettable.</h1>
+    <p class="fs-5">Discover beautiful sarees, lehengas, jewellery and occasion wear for your special moments — with the freedom to rent the look you love.</p>
+    <div class="mt-4">
+      <a href="{{ url_for('rental_catalogue') }}" class="btn btn-hero">Explore Rental Collection <i class="bi bi-arrow-right ms-1"></i></a>
+      <a href="https://wa.me/919330482697?text=Hello%20Moupriya%2C%20I%20would%20like%20to%20know%20more%20about%20your%20collection." class="hero-secondary" target="_blank" rel="noopener"><i class="bi bi-whatsapp me-2"></i>Enquire on WhatsApp</a>
+    </div>
+    <p class="mt-4 mb-0 small text-uppercase fw-semibold" style="letter-spacing:.13em;color:#806575">Fashion Rentals <span class="mx-2">✦</span> Boutique Finds <span class="mx-2">✦</span> Beauty Services</p>
+  </section>
+
+  <section class="container py-5 text-center" id="rent-feature" data-home-section="rent-feature">
+    <h2 class="fw-bold">Rent the Look. Love the Moment.</h2>
+    <p>Our rental collection is being curated. Browse available pieces and send us an enquiry.</p>
+    <a href="{{ url_for('rental_catalogue') }}" class="btn btn-hero">Browse RENT Collection</a>
+  </section>
+
+  <section class="container py-5 text-center bg-light" id="buy" data-home-section="buy">
+    <h2 class="fw-bold">BUY Collection</h2>
+    <p>Our selected fashion and accessory products will be introduced here soon.</p>
+    <span class="badge text-bg-secondary">Coming soon</span>
+  </section>
+
+  <section class="container py-4 text-center" id="beauty-services" data-home-section="beauty-services">
+    <h2 class="fw-bold">Beauty Services</h2>
+    <p>Our makeup and beauty services remain available as a secondary service.</p>
+    <a href="{{ url_for('services') }}" class="btn btn-outline-secondary">Explore Makeup & Beauty Services</a>
+    <a href="{{ url_for('book') }}" class="btn btn-outline-secondary">Book an Appointment</a>
   </section>
 
   <!-- Featured Services -->
-  <section class="py-5 bg-light">
+  <section class="py-5 bg-light" id="featured-services" data-home-section="featured-services">
     <div class="container">
       <div class="section-title text-center mb-5"><h2 class="fw-bold">Featured Services</h2></div>
       <div class="row gy-4">
@@ -596,11 +828,18 @@
   </section>
 
   <!-- Gallery Carousel -->
-  <section class="container mb-5">
-    <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="2000">
+  <section class="container mb-5" id="gallery-carousel" data-home-section="gallery-carousel">
+    <div id="serviceCarousel" class="carousel slide" data-bs-ride="carousel" data-bs-interval="4500">
       <div class="carousel-inner">
         {% for img in ['banner1.png.jpg','service1.png','service2.png','service3.png','nail1.jpg','nail2.jpg','nail3.jpg'] %}
-        <div class="carousel-item {% if loop.first %}active{% endif %}"><img src="{{ url_for('static',filename='images/'+img) }}" class="d-block mx-auto carousel-img" alt="" loading="lazy"></div>
+        <div class="carousel-item {% if loop.first %}active{% endif %}">
+          <img src="{{ url_for('static',filename='images/'+img) }}"
+               class="d-block mx-auto carousel-img"
+               alt="Moupriya beauty and fashion collection"
+               width="302" height="378"
+               {% if loop.first %}loading="eager" fetchpriority="high"{% else %}loading="lazy"{% endif %}
+               decoding="async">
+        </div>
         {% endfor %}
       </div>
       <button class="carousel-control-prev" type="button" data-bs-target="#serviceCarousel" data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button>
@@ -609,44 +848,45 @@
   </section>
 
   <!-- Gallery & Testimonials -->
-  <section class="gallery-links text-center mb-5">
+  <section class="gallery-links text-center mb-5" id="gallery-links" data-home-section="gallery-links">
     <a href="{{ url_for('gallery') }}" class="btn btn-primary mx-2">View Gallery</a>
     <a href="https://g.co/kgs/oA9p2gq" class="btn btn-success mx-2" target="_blank">Google Reviews</a>
   </section>
-  <section class="testimonial-links text-center mb-5">
+  <section class="testimonial-links text-center mb-5" id="testimonials-links" data-home-section="testimonials-links">
     <a href="{{ url_for('testimonials') }}" class="btn btn-outline-secondary mx-2">Testimonials</a>
     <a href="{{ url_for('services') }}" class="btn btn-outline-secondary mx-2">All Services</a>
   </section>
 
   <!-- YouTube Video Grid -->
-<section class="container my-5">
+<section class="container my-5" id="youtube" data-home-section="youtube">
   <h2 class="section-title text-center">@dey_moupriya_15</h2>
   <div class="row g-4">
     <div class="col-12 col-md-4">
-      <div class="ratio ratio-16x9">
-        <iframe src="https://www.youtube.com/embed/SmBzX39yKkE?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=SmBzX39yKkE" 
-                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      <div class="mou-video-shell ratio ratio-16x9">
+        <iframe data-src="https://www.youtube.com/embed/SmBzX39yKkE?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=SmBzX39yKkE"
+                title="YouTube video" allow="autoplay; fullscreen"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
     </div>
     <div class="col-12 col-md-4">
-      <div class="ratio ratio-16x9">
-        <iframe src="https://www.youtube.com/embed/xpKawYQoj3s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=xpKawYQoj3s" 
-                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      <div class="mou-video-shell ratio ratio-16x9">
+        <iframe data-src="https://www.youtube.com/embed/xpKawYQoj3s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=xpKawYQoj3s"
+                title="YouTube video" allow="autoplay; fullscreen"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
     </div>
     <div class="col-12 col-md-4">
-      <div class="ratio ratio-16x9">
-        <iframe src="https://www.youtube.com/embed/lXZiK6c9w8s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=lXZiK6c9w8s" 
-                title="YouTube video" allow="autoplay; fullscreen" loading="lazy"></iframe>
+      <div class="mou-video-shell ratio ratio-16x9">
+        <iframe data-src="https://www.youtube.com/embed/lXZiK6c9w8s?rel=0&autoplay=1&mute=1&controls=0&loop=1&playlist=lXZiK6c9w8s"
+                title="YouTube video" allow="autoplay; fullscreen"
+                loading="lazy" referrerpolicy="strict-origin-when-cross-origin"></iframe>
       </div>
     </div>
   </div>
 </section>
 
-
-
-  <!-- Address -->
-  <section class="address text-center mb-5">
+<!-- Address -->
+  <section class="address text-center mb-5" id="address" data-home-section="address">
     <h5 style="color:#d63384;"><i class="bi bi-geo-alt-fill"></i>
     <a href="https://www.google.com/maps?q=22.4972718,88.303543" target="_blank"> 226/M, JJ Road, Parnasree Pally, near B G Press Market, Kolkata–60</a>,
 </h5>
@@ -664,10 +904,187 @@
       <a href="https://www.instagram.com/glow_haven015/" target="_blank"><i class="bi bi-instagram"></i> Instagram</a>
       <a href="https://www.facebook.com/moupriya.dey.463189/" target="_blank"><i class="bi bi-facebook"></i> Facebook</a>
     </div>
-    <div class="container">© 2025 Mou’s Makeup & Nails. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
+    <div class="container">© 2026 Moupriya. All rights reserved. | <a href="{{ url_for('terms_of_sale') }}">Terms of Service</a></div>
   </footer>
 
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+<button id="moupriyaGoTop" type="button" aria-label="Go to top" title="Go to top"><i class="bi bi-arrow-up"></i></button>
+
+  <script>
+  document.addEventListener('DOMContentLoaded', function () {
+    const configuredSections = {{ homepage_sections|default([], true)|tojson }};
+    const sectionMap = new Map(Array.from(document.querySelectorAll('[data-home-section]')).map(el => [el.dataset.homeSection, el]));
+    configuredSections.forEach(item => {
+      const el = sectionMap.get(item.id);
+      if (!el) return;
+      el.hidden = item.visible === false;
+    });
+    const footer = document.querySelector('footer');
+    configuredSections.forEach(item => {
+      const el = sectionMap.get(item.id);
+      if (el && footer && el.parentElement === document.body) document.body.insertBefore(el, footer);
+    });
+
+
+    /* =========================================================
+       MOUPRIYA PERFORMANCE POLISH - ADDITIVE ONLY
+       Keeps existing layout, theme palettes and interactions.
+       ========================================================= */
+
+    /* Scroll reveal: activated by JS only after it is ready,
+       so content remains visible if JavaScript is unavailable. */
+    .mou-scroll-reveal {
+      opacity: 0;
+      transform: translate3d(0, 24px, 0);
+      transition: opacity .75s ease, transform .75s cubic-bezier(.2,.65,.3,1);
+      will-change: opacity, transform;
+    }
+    .mou-scroll-reveal.mou-revealed {
+      opacity: 1;
+      transform: translate3d(0, 0, 0);
+      will-change: auto;
+    }
+
+    /* Lightweight shimmer placeholders for images and video embeds. */
+    .carousel-item {
+      background: linear-gradient(100deg, var(--surface-soft, #f5e9ed) 25%,
+        rgba(255,255,255,.82) 38%, var(--surface-soft, #f5e9ed) 62%);
+      background-size: 300% 100%;
+      animation: mouSkeleton 1.5s ease-in-out infinite;
+      border-radius: .5rem;
+    }
+    .carousel-img {
+      opacity: 0;
+      transition: opacity .45s ease;
+    }
+    .carousel-img.mou-image-loaded { opacity: 1; }
+    .carousel-item.mou-carousel-loaded { animation: none; background: transparent; }
+
+    .mou-video-shell {
+      position: relative;
+      overflow: hidden;
+      border-radius: 12px;
+      background: linear-gradient(100deg, #eee8ee 25%, #fff 38%, #eee8ee 62%);
+      background-size: 300% 100%;
+      animation: mouSkeleton 1.5s ease-in-out infinite;
+    }
+    .mou-video-shell iframe {
+      display: block;
+      position: relative;
+      z-index: 1;
+      background: transparent;
+    }
+    .mou-video-shell.mou-video-loaded {
+      animation: none;
+      background: #111;
+    }
+
+    @keyframes mouSkeleton {
+      0% { background-position: 100% 0; }
+      100% { background-position: 0 0; }
+    }
+
+    @media (prefers-reduced-motion: reduce) {
+      .mou-scroll-reveal,
+      .mou-scroll-reveal.mou-revealed,
+      .carousel-img,
+      .carousel-item,
+      .mou-video-shell {
+        animation: none !important;
+        transition: none !important;
+        transform: none !important;
+      }
+      .mou-scroll-reveal { opacity: 1 !important; }
+      .carousel-img { opacity: 1 !important; }
+    }
+
+
+    // Smooth section reveal without changing section content or order.
+    // Apply the class only after JS is ready to avoid invisible content on failure.
+    const reduceMotion = window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+    const revealTargets = Array.from(document.querySelectorAll(
+      '[data-home-section], .gallery-links, .testimonial-links, .address, .footer'
+    ));
+    if (!reduceMotion && 'IntersectionObserver' in window) {
+      revealTargets.forEach(el => el.classList.add('mou-scroll-reveal'));
+      const revealObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            entry.target.classList.add('mou-revealed');
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { threshold: 0.12, rootMargin: '0px 0px -45px 0px' });
+      revealTargets.forEach(el => revealObserver.observe(el));
+    }
+
+    // Mark carousel images ready when decoded; preserve the existing carousel.
+    document.querySelectorAll('.carousel-img').forEach(img => {
+      const markLoaded = () => {
+        img.classList.add('mou-image-loaded');
+        img.closest('.carousel-item')?.classList.add('mou-carousel-loaded');
+      };
+      if (img.complete && img.naturalWidth > 0) markLoaded();
+      else {
+        img.addEventListener('load', markLoaded, { once: true });
+        img.addEventListener('error', markLoaded, { once: true });
+      }
+    });
+
+    // Load the original YouTube embeds only as their section approaches view.
+    // Their existing video IDs, autoplay, mute, controls and loop parameters remain unchanged.
+    const videoFrames = document.querySelectorAll('.mou-video-shell iframe[data-src]');
+    const loadVideo = frame => {
+      if (!frame.dataset.src || frame.dataset.loaded === 'true') return;
+      frame.dataset.loaded = 'true';
+      frame.addEventListener('load', () => {
+        frame.closest('.mou-video-shell')?.classList.add('mou-video-loaded');
+      }, { once: true });
+      frame.src = frame.dataset.src;
+      frame.removeAttribute('data-src');
+    };
+    if ('IntersectionObserver' in window) {
+      const videoObserver = new IntersectionObserver((entries, observer) => {
+        entries.forEach(entry => {
+          if (entry.isIntersecting) {
+            loadVideo(entry.target);
+            observer.unobserve(entry.target);
+          }
+        });
+      }, { rootMargin: '350px 0px' });
+      videoFrames.forEach(frame => videoObserver.observe(frame));
+    } else {
+      videoFrames.forEach(loadVideo);
+    }
+
+    const navbar = document.querySelector('.navbar');
+    const topBar = document.querySelector('.top-bar');
+    let previousY = window.scrollY;
+    let ticking = false;
+    function handleScroll() {
+      const currentY = window.scrollY;
+      if (navbar && !document.querySelector('.navbar-collapse.show')) {
+        if (currentY < 90 || currentY < previousY - 5) navbar.classList.remove('mou-nav-hidden');
+        else if (currentY > previousY + 5) navbar.classList.add('mou-nav-hidden');
+      }
+      previousY = currentY;
+      const goTop = document.getElementById('moupriyaGoTop');
+      if (goTop) goTop.classList.toggle('is-visible', currentY > 320);
+      ticking = false;
+    }
+    window.addEventListener('scroll', function () { if (!ticking) { window.requestAnimationFrame(handleScroll); ticking = true; } }, {passive:true});
+
+    document.querySelectorAll('#navbarNav .nav-link').forEach(link => link.addEventListener('click', () => {
+      const menu = document.getElementById('navbarNav');
+      if (menu && menu.classList.contains('show') && window.bootstrap) bootstrap.Collapse.getOrCreateInstance(menu).hide();
+    }));
+
+    const goTop = document.getElementById('moupriyaGoTop');
+    goTop?.addEventListener('click', () => window.scrollTo({top:0,behavior:window.matchMedia('(prefers-reduced-motion: reduce)').matches ? 'auto' : 'smooth'}));
+  });
+  </script>
+
+  <script src="{{ url_for('static', filename='js/global-loader.js') }}" defer></script>
 </body>
 </html>

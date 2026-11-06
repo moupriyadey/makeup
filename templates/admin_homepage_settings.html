@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Homepage Appearance | Moupriya Admin</title>
+<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
+<link href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.5/font/bootstrap-icons.css" rel="stylesheet">
+</head>
+<body class="bg-light">
+<nav class="navbar navbar-dark" style="background:linear-gradient(100deg,#54243f,#873c62)"><div class="container"><a class="navbar-brand fw-bold" href="{{ url_for('admin_dashboard') }}">MOUPRIYA · ADMIN</a><a class="btn btn-sm btn-light" href="{{ url_for('logout') }}">Logout</a></div></nav>
+<main>
+<div class="container py-4" style="max-width:1100px">
+  <div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-4">
+    <div><p class="text-uppercase small fw-bold text-muted mb-1">MOUPRIYA CONTROL</p><h1 class="h3 mb-1">Homepage appearance</h1><p class="text-muted mb-0">Choose the complete homepage theme, navigation style and section order.</p></div>
+    <a class="btn btn-outline-secondary" href="{{ url_for('admin_dashboard') }}"><i class="bi bi-arrow-left"></i> Admin dashboard</a>
+  </div>
+  {% with messages = get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="alert alert-{{ category }} alert-dismissible fade show">{{ message }}<button type="button" class="btn-close" data-bs-dismiss="alert"></button></div>{% endfor %}{% endwith %}
+  <form method="POST" action="{{ url_for('save_admin_homepage_settings') }}" id="homepageSettingsForm">
+    <section class="card border-0 shadow-sm rounded-4 mb-4"><div class="card-body p-4"><h2 class="h5 mb-3">1. Choose the complete homepage colour theme</h2><div class="row g-3">
+      <div class="col-md-4"><label class="theme-choice w-100 h-100"><input class="form-check-input" type="radio" name="theme" value="royal" {% if settings.theme=='royal' %}checked{% endif %}><span class="theme-preview royal-preview"><b>Royal Boutique</b><small>Plum · Champagne · Ivory</small><span class="swatches"><i></i><i></i><i></i></span></span></label></div>
+      <div class="col-md-4"><label class="theme-choice w-100 h-100"><input class="form-check-input" type="radio" name="theme" value="glass" {% if settings.theme=='glass' %}checked{% endif %}><span class="theme-preview glass-preview"><b>Glass Elegance</b><small>Rose · Pearl · Glass</small><span class="swatches"><i></i><i></i><i></i></span></span></label></div>
+      <div class="col-md-4"><label class="theme-choice w-100 h-100"><input class="form-check-input" type="radio" name="theme" value="emerald" {% if settings.theme=='emerald' %}checked{% endif %}><span class="theme-preview emerald-preview"><b>Emerald Luxe</b><small>Emerald · Antique Gold · Cream</small><span class="swatches"><i></i><i></i><i></i></span></span></label></div>
+    </div><div class="form-text mt-3">The selected theme affects the page background, headings, cards, buttons, sections, footer and navigation colours.</div></div></section>
+    <section class="card border-0 shadow-sm rounded-4 mb-4"><div class="card-body p-4"><h2 class="h5 mb-3">2. Navigation interaction style</h2><div class="row g-3">
+      <div class="col-md-4"><label class="border rounded-3 p-3 d-block h-100"><input type="radio" name="navbar_style" value="floating" {% if settings.navbar_style=='floating' %}checked{% endif %}> <b>Floating pill</b><p class="small text-muted mb-0">Soft active pill and lift-on-hover.</p></label></div>
+      <div class="col-md-4"><label class="border rounded-3 p-3 d-block h-100"><input type="radio" name="navbar_style" value="glass" {% if settings.navbar_style=='glass' %}checked{% endif %}> <b>Glassmorphism</b><p class="small text-muted mb-0">Translucent surface and luminous hover.</p></label></div>
+      <div class="col-md-4"><label class="border rounded-3 p-3 d-block h-100"><input type="radio" name="navbar_style" value="clay" {% if settings.navbar_style=='clay' %}checked{% endif %}> <b>Clay / embossed</b><p class="small text-muted mb-0">Soft raised and pressed button effects.</p></label></div>
+    </div></div></section>
+    <section class="card border-0 shadow-sm rounded-4 mb-4"><div class="card-body p-4"><h2 class="h5 mb-2">3. Homepage sections</h2><p class="text-muted small">Use the arrows to reorder. Uncheck a section to hide it; its content is not deleted.</p><div id="sectionList" class="list-group">
+      {% for item in sections %}<div class="list-group-item d-flex align-items-center gap-3" draggable="true"><i class="bi bi-grip-vertical text-muted" title="Drag to reorder"></i><div class="flex-grow-1"><strong>{{ item.label }}</strong><input type="hidden" name="section_order" value="{{ item.id }}"></div><label class="form-check form-switch mb-0"><input class="form-check-input" type="checkbox" name="show_{{ item.id }}" {% if item.visible %}checked{% endif %}><span class="form-check-label small">Show</span></label><div class="btn-group btn-group-sm"><button type="button" class="btn btn-outline-secondary move-up" aria-label="Move up">↑</button><button type="button" class="btn btn-outline-secondary move-down" aria-label="Move down">↓</button></div></div>{% endfor %}
+    </div></div></section>
+    <div class="d-flex flex-wrap gap-2"><button class="btn btn-dark btn-lg" type="submit"><i class="bi bi-check2-circle me-1"></i> Save homepage settings</button><a class="btn btn-outline-primary btn-lg" href="{{ url_for('index') }}" target="_blank" rel="noopener">Preview homepage</a></div>
+  </form>
+</div>
+<style>
+.theme-choice{cursor:pointer;border:2px solid transparent;border-radius:16px;padding:8px;display:block}.theme-choice:has(input:checked){border-color:#198754;background:#f1faf5}.theme-choice input{margin:0 0 8px}.theme-preview{display:flex;min-height:145px;border-radius:12px;padding:20px;flex-direction:column;justify-content:center;gap:8px;color:white}.theme-preview b{font:700 1.15rem Georgia}.theme-preview small{opacity:.9}.royal-preview{background:linear-gradient(135deg,#54243f,#bd9860)}.glass-preview{background:linear-gradient(135deg,#c078a4,#f5dce9 55%,#8b4779)}.emerald-preview{background:linear-gradient(135deg,#145b46,#c6a45e)}.swatches{display:flex;gap:7px;margin-top:8px}.swatches i{width:23px;height:23px;border-radius:50%;background:#fff8}.list-group-item[draggable=true]{cursor:grab}.list-group-item.dragging{opacity:.45}.list-group-item.drag-over{border-top:3px solid #198754}
+</style>
+<script>
+(() => {const list=document.getElementById('sectionList');if(!list)return;let dragged=null;list.querySelectorAll('[draggable=true]').forEach(row=>{row.addEventListener('dragstart',()=>{dragged=row;row.classList.add('dragging')});row.addEventListener('dragend',()=>{row.classList.remove('dragging');list.querySelectorAll('.drag-over').forEach(x=>x.classList.remove('drag-over'))});row.addEventListener('dragover',e=>{e.preventDefault();if(dragged&&dragged!==row)row.classList.add('drag-over')});row.addEventListener('dragleave',()=>row.classList.remove('drag-over'));row.addEventListener('drop',e=>{e.preventDefault();row.classList.remove('drag-over');if(!dragged||dragged===row)return;const r=row.getBoundingClientRect();list.insertBefore(dragged,e.clientY<r.top+r.height/2?row:row.nextSibling)})});list.addEventListener('click',e=>{const row=e.target.closest('.list-group-item');if(!row)return;if(e.target.closest('.move-up')&&row.previousElementSibling)list.insertBefore(row,row.previousElementSibling);if(e.target.closest('.move-down')&&row.nextElementSibling)list.insertBefore(row.nextElementSibling,row)});})();
+</script>
+</main>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+</body></html>

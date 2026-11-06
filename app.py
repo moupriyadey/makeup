@@ -2,6 +2,7 @@ import os
 import json
 import uuid
 import random
+from io import BytesIO
 from datetime import datetime, timedelta
 
 import cloudinary
@@ -12,7 +13,7 @@ import qrcode
 from dotenv import load_dotenv
 from flask import (
     Flask, render_template, request, redirect, url_for,
-    session, flash, make_response, send_from_directory, send_file
+    session, flash, make_response, send_from_directory, send_file, jsonify
 )
 from flask_mail import Mail, Message
 from flask_login import (
@@ -21,6 +22,7 @@ from flask_login import (
 )
 from werkzeug.utils import secure_filename
 from flask_sqlalchemy import SQLAlchemy
+from sqlalchemy import text
 
 # Load environment variables
 load_dotenv()
@@ -59,7 +61,7 @@ os.makedirs(QR_FOLDER, exist_ok=True)
 
 # Image Upload Configuration (REINTRODUCED for local storage)
 UPLOAD_FOLDER = os.path.join('static', 'gallery_uploads')
-ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'gif'} # Reintroduced for local file type validation
+ALLOWED_EXTENSIONS = {'png', 'jpg', 'jpeg', 'webp'} # Reintroduced for local file type validation
 
 app.config['UPLOAD_FOLDER'] = UPLOAD_FOLDER
 os.makedirs(UPLOAD_FOLDER, exist_ok=True) # Ensure the upload folder exists
@@ -99,6 +101,16 @@ class Booking(db.Model):
     def __repr__(self):
         return f"<Booking {self.id}>"
     
+
+# Additive homepage appearance settings; existing business tables are unchanged.
+class HomepageSettings(db.Model):
+    __tablename__ = 'homepage_settings'
+    id = db.Column(db.Integer, primary_key=True)
+    theme = db.Column(db.String(30), nullable=False, default='royal')
+    navbar_style = db.Column(db.String(30), nullable=False, default='floating')
+    section_settings = db.Column(db.JSON, nullable=False, default=dict)
+    updated_at = db.Column(db.DateTime, default=datetime.utcnow, onupdate=datetime.utcnow)
+
 
 # REMOVED: GalleryImage Model (since images are local, not in DB metadata)
 class GalleryImage(db.Model):
@@ -238,10 +250,99 @@ def inject_enumerate():
 def inject_datetime():
     return {'datetime': datetime}
 
+# Homepage appearance defaults. Admin selections are stored in one additive table.
+HOMEPAGE_DEFAULT_SECTIONS = [
+    {'id': 'hero', 'label': 'Hero banner', 'visible': True},
+    {'id': 'rent-feature', 'label': 'Rental collection', 'visible': True},
+    {'id': 'buy', 'label': 'BUY collection', 'visible': True},
+    {'id': 'beauty-services', 'label': 'Beauty services', 'visible': True},
+    {'id': 'featured-services', 'label': 'Featured services', 'visible': True},
+    {'id': 'gallery-carousel', 'label': 'Gallery carousel', 'visible': True},
+    {'id': 'gallery-links', 'label': 'Gallery and reviews links', 'visible': True},
+    {'id': 'testimonials-links', 'label': 'Testimonials links', 'visible': True},
+    {'id': 'youtube', 'label': 'YouTube videos', 'visible': True},
+    {'id': 'address', 'label': 'Address and location', 'visible': True}
+]
+
+def get_homepage_settings():
+    # Create only this new settings table if absent; do not run create_all()
+    # across the application's other business tables on public page requests.
+    HomepageSettings.__table__.create(bind=db.engine, checkfirst=True)
+    settings = HomepageSettings.query.first()
+    if settings is None:
+        settings = HomepageSettings(
+            theme='royal',
+            navbar_style='floating',
+            section_settings={'sections': HOMEPAGE_DEFAULT_SECTIONS}
+        )
+        db.session.add(settings)
+        db.session.commit()
+    return settings
+
 # Home route
 @app.route('/')
 def index():
-    return render_template('index.html', datetime=datetime)
+    settings = get_homepage_settings()
+    section_data = settings.section_settings or {'sections': HOMEPAGE_DEFAULT_SECTIONS}
+    return render_template(
+        'index.html', datetime=datetime,
+        homepage_theme=settings.theme,
+        homepage_navbar_style=settings.navbar_style,
+        homepage_sections=section_data.get('sections', HOMEPAGE_DEFAULT_SECTIONS)
+    )
+
+@app.route('/admin/homepage-settings', methods=['GET'])
+@login_required
+def admin_homepage_settings():
+    if session.get('role') != 'admin':
+        flash('Administrator access required.', 'danger')
+        return redirect(url_for('login'))
+    settings = get_homepage_settings()
+    section_data = settings.section_settings or {'sections': HOMEPAGE_DEFAULT_SECTIONS}
+    return render_template(
+        'admin_homepage_settings.html', settings=settings,
+        sections=section_data.get('sections', HOMEPAGE_DEFAULT_SECTIONS),
+        datetime=datetime
+    )
+
+@app.route('/admin/homepage-settings/save', methods=['POST'])
+@login_required
+def save_admin_homepage_settings():
+    if session.get('role') != 'admin':
+        flash('Administrator access required.', 'danger')
+        return redirect(url_for('login'))
+
+    allowed_themes = {'royal', 'glass', 'emerald'}
+    allowed_navbars = {'floating', 'glass', 'clay'}
+    theme = request.form.get('theme', 'royal')
+    navbar_style = request.form.get('navbar_style', 'floating')
+    if theme not in allowed_themes or navbar_style not in allowed_navbars:
+        flash('Invalid appearance selection.', 'danger')
+        return redirect(url_for('admin_homepage_settings'))
+
+    # Preserve only known section IDs and the admin-selected order.
+    known = {item['id']: item for item in HOMEPAGE_DEFAULT_SECTIONS}
+    submitted_ids = request.form.getlist('section_order')
+    ordered = []
+    for section_id in submitted_ids:
+        if section_id in known and section_id not in [x['id'] for x in ordered]:
+            ordered.append({
+                'id': section_id,
+                'label': known[section_id]['label'],
+                'visible': request.form.get(f'show_{section_id}') == 'on'
+            })
+    for item in HOMEPAGE_DEFAULT_SECTIONS:
+        if item['id'] not in [x['id'] for x in ordered]:
+            ordered.append(dict(item))
+
+    settings = get_homepage_settings()
+    settings.theme = theme
+    settings.navbar_style = navbar_style
+    settings.section_settings = {'sections': ordered}
+    settings.updated_at = datetime.utcnow()
+    db.session.commit()
+    flash('Homepage appearance and section settings saved.', 'success')
+    return redirect(url_for('admin_homepage_settings'))
 
 
 
@@ -477,7 +578,7 @@ def payment_success(appointment_id):
     return render_template('payment_success.html', booking=booking_details, datetime=datetime)
 
 # Admin dashboard - UPDATED FOR DB & REVERTED FOR LOCAL IMAGES
-# Admin dashboard - UPDATED FOR DB & REVERTED FOR LOCAL IMAGES
+
 @app.route('/admin/dashboard')
 @login_required
 def admin_dashboard():
@@ -485,6 +586,9 @@ def admin_dashboard():
     date_filter = request.args.get('date')
     search_filter = request.args.get('search')
 
+    # --------------------------------------------------
+    # EXISTING MAKEUP BOOKING LOGIC - PRESERVED
+    # --------------------------------------------------
     query = Booking.query
 
     if status_filter:
@@ -492,52 +596,191 @@ def admin_dashboard():
 
     if date_filter:
         try:
-            # Convert date_filter to the same format as stored in DB (DD/MM/YYYY)
-            filter_date_obj = datetime.strptime(date_filter, "%Y-%m-%d").strftime("%d/%m/%Y")
+            filter_date_obj = datetime.strptime(
+                date_filter, "%Y-%m-%d"
+            ).strftime("%d/%m/%Y")
             query = query.filter_by(date=filter_date_obj)
         except ValueError:
-            flash("Invalid date format for filter. Please use YYYY-MM-DD.", "warning")
+            flash(
+                "Invalid date format for filter. Please use YYYY-MM-DD.",
+                "warning"
+            )
 
     if search_filter:
-        search_pattern = f"%{search_filter}%" # For LIKE queries
+        search_pattern = f"%{search_filter}%"
         query = query.filter(
-            (Booking.name.ilike(search_pattern)) | # Case-insensitive LIKE for name
-            (Booking.id.ilike(search_pattern))    # Case-insensitive LIKE for id
+            (Booking.name.ilike(search_pattern)) |
+            (Booking.id.ilike(search_pattern))
         )
 
     query = query.order_by(Booking.created_at.desc())
 
     page = request.args.get('page', 1, type=int)
     per_page = 10
-    paginated_bookings = query.paginate(page=page, per_page=per_page, error_out=False)
 
-    # **CRITICAL FIX: CONVERT DATE STRINGS TO DATETIME OBJECTS**
-    # The 'date' column is stored as a string in the DB, so we must convert it
-    # to a datetime object before passing it to the template for strftime().
+    paginated_bookings = query.paginate(
+        page=page,
+        per_page=per_page,
+        error_out=False
+    )
+
+    # Existing date conversion - preserved
     for booking in paginated_bookings.items:
         try:
-            # The date is stored as "DD/MM/YYYY", so we parse it with that format.
-            booking.date = datetime.strptime(booking.date, "%d/%m/%Y").date()
+            booking.date = datetime.strptime(
+                booking.date, "%d/%m/%Y"
+            ).date()
         except (ValueError, TypeError) as e:
-            # Handle cases where the date string is malformed or None
             print(f"Error converting date for booking {booking.id}: {e}")
             booking.date = None
-    # End of critical fix
 
-    # REVERTED: Get gallery images from local UPLOAD_FOLDER
+    # Existing gallery logic - preserved
     gallery_images = []
+
     if os.path.exists(app.config['UPLOAD_FOLDER']):
         for filename in os.listdir(app.config['UPLOAD_FOLDER']):
             if allowed_file(filename):
                 gallery_images.append(filename)
+
     gallery_images.sort(reverse=True)
 
-    return render_template('admin_dashboard.html',
-                           bookings=paginated_bookings.items,
-                           current_page=paginated_bookings.page,
-                           total_pages=paginated_bookings.pages,
-                           datetime=datetime,
-                           gallery_images=gallery_images)
+    # --------------------------------------------------
+    # NEW RENTAL DASHBOARD DATA
+    # --------------------------------------------------
+    ensure_rental_tables()
+
+    rental_products = RentalProduct.query.order_by(
+        RentalProduct.created_at.desc()
+    ).all()
+
+    rental_orders = RentalOrder.query.order_by(
+        RentalOrder.created_at.desc()
+    ).all()
+
+    # Rental order status counts
+    rental_status_counts = {}
+
+    for item in rental_orders:
+        rental_status_counts[item.status] = (
+            rental_status_counts.get(item.status, 0) + 1
+        )
+
+    today = datetime.utcnow().date()
+
+    # Upcoming rental events
+    upcoming_rental_events = sorted(
+        [
+            order for order in rental_orders
+            if order.return_date >= today
+            and order.status not in ('Returned', 'Cancelled')
+        ],
+        key=lambda order: (order.pickup_date, order.return_date)
+    )[:12]
+
+    # Calendar events: event, pickup and return dates
+    rental_calendar_events = []
+
+    for order in rental_orders:
+        if order.status == 'Cancelled':
+            continue
+
+        product_name = (
+            order.product.name
+            if order.product else 'Rental item'
+        )
+
+        event_title = (
+            f"{order.order_code} · {product_name} · "
+            f"{order.customer_name}"
+        )
+
+        for event_date, event_kind in (
+            (order.event_date, 'Event'),
+            (order.pickup_date, 'Pickup'),
+            (order.return_date, 'Return')
+        ):
+            if event_date:
+                rental_calendar_events.append({
+                    'date': event_date.isoformat(),
+                    'kind': event_kind,
+                    'title': event_title
+                })
+
+    # Inventory category counts
+    rental_category_counts = {}
+
+    for product in rental_products:
+        rental_category_counts[product.category] = (
+            rental_category_counts.get(product.category, 0) + 1
+        )
+
+    # Six-month committed rental value
+    # This is NOT actual money collected.
+    rental_monthly_value = {}
+
+    for offset in range(5, -1, -1):
+        month_date = today.replace(day=1)
+        month_index = month_date.month - 1 - offset
+
+        year = month_date.year + (month_index // 12)
+        month = (month_index % 12) + 1
+
+        month_key = f"{year:04d}-{month:02d}"
+        rental_monthly_value[month_key] = 0.0
+
+    for order in rental_orders:
+        if (
+            order.status in (
+                'Confirmed',
+                'Ready for pickup',
+                'Rented',
+                'Returned'
+            )
+            and order.event_date
+        ):
+            month_key = order.event_date.strftime('%Y-%m')
+
+            if month_key in rental_monthly_value:
+                rental_monthly_value[month_key] += float(
+                    order.rental_price or 0
+                )
+
+    # Total committed rental value
+    rental_active_value = sum(
+        float(order.rental_price or 0)
+        for order in rental_orders
+        if order.status in (
+            'Confirmed',
+            'Ready for pickup',
+            'Rented',
+            'Returned'
+        )
+    )
+
+    # --------------------------------------------------
+    # SEND EXISTING + NEW DATA TO DASHBOARD TEMPLATE
+    # --------------------------------------------------
+    return render_template(
+        'admin_dashboard.html',
+
+        # Existing makeup dashboard data
+        bookings=paginated_bookings.items,
+        current_page=paginated_bookings.page,
+        total_pages=paginated_bookings.pages,
+        datetime=datetime,
+        gallery_images=gallery_images,
+
+        # New rental dashboard data
+        rental_products=rental_products,
+        rental_orders=rental_orders,
+        rental_status_counts=rental_status_counts,
+        rental_category_counts=rental_category_counts,
+        rental_monthly_value=rental_monthly_value,
+        upcoming_rental_events=upcoming_rental_events,
+        rental_calendar_events=rental_calendar_events,
+        rental_active_value=rental_active_value
+    )
+
 @app.route('/admin/invoices', methods=['GET', 'POST'])
 @login_required
 def manage_invoices():
@@ -1007,6 +1250,436 @@ def no_cache(response):
     response.headers['Pragma'] = 'no-cache'
     response.headers['Expires'] = '0'
     return response
+
+
+# -----------------------------------------------------------------------------
+# MOUPRIYA RENTAL BUSINESS MODULE
+# Separate rental tables and workspace; existing makeup bookings/invoices remain.
+# -----------------------------------------------------------------------------
+class RentalProduct(db.Model):
+    __tablename__ = 'rental_products'
+    id = db.Column(db.Integer, primary_key=True)
+    code = db.Column(db.String(40), unique=True, nullable=False)
+    name = db.Column(db.String(160), nullable=False)
+    category = db.Column(db.String(80), nullable=False)
+    description = db.Column(db.Text)
+    size_details = db.Column(db.String(160))
+    rental_price = db.Column(db.Numeric(10, 2), nullable=False, default=0)
+    refundable_deposit = db.Column(db.Numeric(10, 2), nullable=False, default=0)
+    rental_days = db.Column(db.Integer, nullable=False, default=3)
+    image_url = db.Column(db.String(700))  # legacy primary image; retained for existing products
+    badge = db.Column(db.String(60))
+    status = db.Column(db.String(20), nullable=False, default='Active')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class RentalProductImage(db.Model):
+    __tablename__ = 'rental_product_images'
+    id = db.Column(db.Integer, primary_key=True)
+    product_id = db.Column(db.Integer, db.ForeignKey('rental_products.id', ondelete='CASCADE'), nullable=False, index=True)
+    image_url = db.Column(db.String(900), nullable=False)
+    public_id = db.Column(db.String(300))
+    sort_order = db.Column(db.Integer, nullable=False, default=0)
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+
+class RentalOrder(db.Model):
+    __tablename__ = 'rental_orders'
+    id = db.Column(db.Integer, primary_key=True)
+    order_code = db.Column(db.String(40), unique=True, nullable=False)
+    product_id = db.Column(db.Integer, db.ForeignKey('rental_products.id'), nullable=False)
+    customer_name = db.Column(db.String(120), nullable=False)
+    phone = db.Column(db.String(30), nullable=False)
+    email = db.Column(db.String(120))
+    event_date = db.Column(db.Date, nullable=False)
+    pickup_date = db.Column(db.Date, nullable=False)
+    return_date = db.Column(db.Date, nullable=False)
+    message = db.Column(db.Text)
+    rental_price = db.Column(db.Numeric(10, 2), nullable=False)
+    refundable_deposit = db.Column(db.Numeric(10, 2), nullable=False)
+    status = db.Column(db.String(24), nullable=False, default='Enquiry')
+    deposit_status = db.Column(db.String(24), nullable=False, default='Not received')
+    return_condition = db.Column(db.String(30), default='Not returned')
+    created_at = db.Column(db.DateTime, default=datetime.utcnow)
+    product = db.relationship('RentalProduct', backref=db.backref('orders', lazy=True))
+
+
+RentalProduct.gallery_images = db.relationship('RentalProductImage', backref='product', lazy=True, cascade='all, delete-orphan', order_by='RentalProductImage.sort_order')
+
+def ensure_rental_tables():
+    # Additive rental-only schema setup; existing makeup tables and records are untouched.
+    db.create_all()
+    db.session.execute(text("ALTER TABLE rental_products ADD COLUMN IF NOT EXISTS badge VARCHAR(60)"))
+    db.session.commit()
+
+@app.route('/rent')
+def rental_catalogue():
+    ensure_rental_tables()
+    category = request.args.get('category', '').strip()
+    query = RentalProduct.query.filter_by(status='Active')
+    if category:
+        query = query.filter_by(category=category)
+    products = query.order_by(RentalProduct.created_at.desc()).all()
+    for item in products:
+        item.gallery_urls = [x.image_url for x in sorted(item.gallery_images, key=lambda x: x.sort_order)]
+        if item.image_url and item.image_url not in item.gallery_urls: item.gallery_urls.insert(0, item.image_url)
+    categories = [r[0] for r in db.session.query(RentalProduct.category).filter_by(status='Active').distinct().order_by(RentalProduct.category).all()]
+    return render_template('rental_catalogue.html', products=products, categories=categories, selected_category=category)
+
+
+@app.route('/rent/product/<int:product_id>')
+def rental_product_detail(product_id):
+    ensure_rental_tables()
+
+    product = RentalProduct.query.filter_by(
+        id=product_id,
+        status='Active'
+    ).first_or_404()
+
+    product.gallery_urls = [
+        x.image_url
+        for x in sorted(product.gallery_images, key=lambda x: x.sort_order)
+    ]
+
+    if product.image_url and product.image_url not in product.gallery_urls:
+        product.gallery_urls.insert(0, product.image_url)
+
+    # Open the photograph selected by the customer on the catalogue.
+    selected_image_index = request.args.get('image', default=0, type=int)
+
+    if not product.gallery_urls:
+        selected_image_index = 0
+    else:
+        selected_image_index = max(
+            0,
+            min(selected_image_index, len(product.gallery_urls) - 1)
+        )
+
+    return render_template(
+        'rental_product.html',
+        product=product,
+        selected_image_index=selected_image_index
+    )
+
+@app.route('/rent/enquire/<int:product_id>', methods=['POST'])
+def rental_enquiry(product_id):
+    ensure_rental_tables()
+    product = RentalProduct.query.filter_by(id=product_id, status='Active').first_or_404()
+    try:
+        name = request.form.get('customer_name', '').strip()
+        phone = request.form.get('phone', '').strip()
+        event_date = datetime.strptime(request.form.get('event_date', ''), '%Y-%m-%d').date()
+        pickup_date = datetime.strptime(request.form.get('pickup_date', ''), '%Y-%m-%d').date()
+        return_date = datetime.strptime(request.form.get('return_date', ''), '%Y-%m-%d').date()
+        if not name or not phone or pickup_date > return_date or event_date < pickup_date:
+            raise ValueError('Please check your name, phone and dates.')
+        # Enquiry is not a confirmed booking. Admin confirms availability manually.
+        order = RentalOrder(
+            order_code='MR-' + uuid.uuid4().hex[:8].upper(), product_id=product.id,
+            customer_name=name, phone=phone, email=request.form.get('email','').strip() or None,
+            event_date=event_date, pickup_date=pickup_date, return_date=return_date,
+            message=request.form.get('message','').strip(), rental_price=product.rental_price,
+            refundable_deposit=product.refundable_deposit, status='Enquiry')
+        db.session.add(order); db.session.commit()
+        flash('Your rental enquiry has been received. Our team will contact you to confirm availability. Reference: ' + order.order_code, 'success')
+        return redirect(url_for('rental_product_detail', product_id=product.id))
+    except ValueError as exc:
+        flash(str(exc), 'danger')
+    except Exception:
+        db.session.rollback()
+        app.logger.exception('Rental enquiry could not be saved')
+        flash('We could not save the enquiry. Please try again or contact us on WhatsApp.', 'danger')
+    return redirect(url_for('rental_product_detail', product_id=product.id))
+
+@app.route('/admin/rentals')
+@login_required
+def rental_admin_dashboard():
+    if session.get('role') != 'admin':
+        flash('Please sign in as administrator.', 'warning'); return redirect(url_for('login'))
+    ensure_rental_tables()
+    products = RentalProduct.query.order_by(RentalProduct.created_at.desc()).all()
+    orders = RentalOrder.query.order_by(RentalOrder.created_at.desc()).limit(100).all()
+    return render_template('rental_admin.html', products=products, orders=orders)
+
+@app.route('/admin/rentals/backup')
+@login_required
+def rental_data_backup():
+
+    if session.get('role') != 'admin':
+        flash('Administrator access required.', 'danger')
+        return redirect(url_for('login'))
+
+    ensure_rental_tables()
+
+    products = RentalProduct.query.order_by(
+        RentalProduct.id.asc()
+    ).all()
+
+    orders = RentalOrder.query.order_by(
+        RentalOrder.id.asc()
+    ).all()
+
+    payload = {
+        'backup_type': 'Moupriya rental data',
+        'created_at_utc': datetime.utcnow().isoformat(),
+
+        'products': [
+            {
+                'id': p.id,
+                'code': p.code,
+                'name': p.name,
+                'category': p.category,
+                'description': p.description,
+                'size_details': p.size_details,
+                'rental_price': float(p.rental_price or 0),
+                'refundable_deposit': float(
+                    p.refundable_deposit or 0
+                ),
+                'rental_days': p.rental_days,
+                'image_url': p.image_url,
+                'badge': p.badge,
+                'status': p.status,
+                'created_at': (
+                    p.created_at.isoformat()
+                    if p.created_at else None
+                )
+            }
+            for p in products
+        ],
+
+        'orders': [
+            {
+                'id': o.id,
+                'order_code': o.order_code,
+                'product_id': o.product_id,
+                'product_name': (
+                    o.product.name if o.product else None
+                ),
+                'customer_name': o.customer_name,
+                'phone': o.phone,
+                'email': o.email,
+                'event_date': o.event_date.isoformat(),
+                'pickup_date': o.pickup_date.isoformat(),
+                'return_date': o.return_date.isoformat(),
+                'message': o.message,
+                'rental_price': float(o.rental_price or 0),
+                'refundable_deposit': float(
+                    o.refundable_deposit or 0
+                ),
+                'status': o.status,
+                'deposit_status': o.deposit_status,
+                'return_condition': o.return_condition,
+                'created_at': (
+                    o.created_at.isoformat()
+                    if o.created_at else None
+                )
+            }
+            for o in orders
+        ]
+    }
+
+    filename = (
+        'moupriya_rental_backup_'
+        + datetime.utcnow().strftime('%Y%m%d_%H%M%S')
+        + '.json'
+    )
+
+    data = json.dumps(
+        payload,
+        ensure_ascii=False,
+        indent=2
+    ).encode('utf-8')
+
+    return send_file(
+        BytesIO(data),
+        mimetype='application/json',
+        as_attachment=True,
+        download_name=filename
+    )
+
+@app.route('/admin/rentals/product/save', methods=['POST'])
+@login_required
+def rental_product_save():
+    if session.get('role') != 'admin': return redirect(url_for('login'))
+    ensure_rental_tables()
+    try:
+        product_id = request.form.get('product_id', type=int)
+        product = RentalProduct.query.get(product_id) if product_id else RentalProduct()
+        if not product:
+            flash('Product not found.', 'danger'); return redirect(url_for('rental_admin_dashboard'))
+        code = request.form.get('code','').strip().upper()
+        name = request.form.get('name','').strip()
+        category = request.form.get('category','').strip()
+        if not code or not name or not category: raise ValueError('Product code, name and category are required.')
+        product.code=code; product.name=name; product.category=category
+        product.description=request.form.get('description','').strip()
+        product.size_details=request.form.get('size_details','').strip()
+        product.rental_price=float(request.form.get('rental_price') or 0)
+        product.refundable_deposit=float(request.form.get('refundable_deposit') or 0)
+        product.rental_days=max(1, int(request.form.get('rental_days') or 3))
+        product.status=request.form.get('status','Active')
+        product.badge=request.form.get('badge','').strip()[:60] or None
+        photos=request.files.getlist('images')
+        photos=[f for f in photos if f and f.filename]
+        if photos:
+            if not all(allowed_file(f.filename) for f in photos):
+                raise ValueError('Please upload only JPG, PNG or WEBP image files.')
+            if not all(os.getenv(k) for k in ('CLOUDINARY_CLOUD_NAME','CLOUDINARY_API_KEY','CLOUDINARY_API_SECRET')):
+                raise ValueError('Cloudinary is not configured. Check the existing Cloudinary environment variables.')
+            if not product_id: db.session.add(product); db.session.flush()
+            from PIL import Image, ImageOps
+            for index, photo in enumerate(photos):
+                image = Image.open(photo.stream)
+                image = ImageOps.exif_transpose(image).convert('RGB')
+                image.thumbnail((1800, 1800), Image.Resampling.LANCZOS)
+                buffer = BytesIO(); image.save(buffer, format='WEBP', quality=82, method=6)
+                buffer.seek(0)
+                result=cloudinary.uploader.upload(buffer, folder='moupriya/rentals', resource_type='image',
+                    format='webp', quality='auto:good',
+                    transformation=[{'width': 1600, 'height': 1600, 'crop': 'limit'}])
+                gallery=RentalProductImage(product_id=product.id, image_url=result.get('secure_url'),
+                    public_id=result.get('public_id'), sort_order=RentalProductImage.query.filter_by(product_id=product.id).count())
+                db.session.add(gallery)
+                if not product.image_url: product.image_url=result.get('secure_url')
+        if not product_id: db.session.add(product)
+        db.session.commit(); flash('Rental product saved successfully.', 'success')
+    except ValueError as exc:
+        db.session.rollback(); flash(str(exc), 'danger')
+    except Exception as exc:
+        db.session.rollback(); app.logger.exception('Rental product save failed')
+        flash('Could not save product. Check that the product code is unique and Cloudinary is configured.', 'danger')
+    return redirect(url_for('rental_admin_dashboard'))
+
+@app.route('/admin/rentals/product/<int:product_id>/edit')
+@login_required
+def rental_product_edit(product_id):
+    if session.get('role') != 'admin': return redirect(url_for('login'))
+    ensure_rental_tables()
+    product = RentalProduct.query.get_or_404(product_id)
+    product.gallery_urls = [x.image_url for x in sorted(product.gallery_images, key=lambda x: x.sort_order)]
+    if product.image_url and product.image_url not in product.gallery_urls: product.gallery_urls.insert(0, product.image_url)
+    return render_template('rental_product_edit.html', product=product)
+
+
+@app.route('/admin/rentals/product/<int:product_id>/image/<int:image_id>/delete', methods=['POST'])
+@login_required
+def rental_product_image_delete(product_id, image_id):
+    if session.get('role') != 'admin':
+        flash('Administrator access required.', 'danger')
+        return redirect(url_for('login'))
+
+    ensure_rental_tables()
+
+    product = RentalProduct.query.get_or_404(product_id)
+
+    # image_id = 0 means the old/legacy primary image.
+    if image_id == 0:
+        if not product.image_url:
+            flash('No primary image found.', 'warning')
+            return redirect(url_for('rental_product_edit', product_id=product.id))
+
+        # Remove the image reference from this product.
+        # Legacy images may not have a Cloudinary public_id.
+        product.image_url = None
+        db.session.commit()
+
+        flash('Primary image removed from this product.', 'success')
+        return redirect(url_for('rental_product_edit', product_id=product.id))
+
+    # Find the selected gallery image and ensure it belongs to this product.
+    image = RentalProductImage.query.filter_by(
+        id=image_id,
+        product_id=product.id
+    ).first_or_404()
+
+    old_image_url = image.image_url
+    public_id = image.public_id
+
+    # Delete the Cloudinary asset when its public_id is available.
+    cloudinary_deleted = False
+
+    if public_id:
+        try:
+            result = cloudinary.uploader.destroy(
+                public_id,
+                resource_type='image',
+                invalidate=True
+            )
+            cloudinary_deleted = result.get('result') == 'ok'
+        except Exception:
+            app.logger.exception(
+                'Cloudinary image deletion failed for %s', public_id
+            )
+
+    # Remove the image record from the database.
+    db.session.delete(image)
+
+    # If this was the primary image, select another gallery image.
+    if product.image_url == old_image_url:
+        next_image = RentalProductImage.query.filter_by(
+            product_id=product.id
+        ).filter(
+            RentalProductImage.id != image.id
+        ).order_by(
+            RentalProductImage.sort_order
+        ).first()
+
+        product.image_url = next_image.image_url if next_image else None
+
+    db.session.commit()
+
+    if public_id and cloudinary_deleted:
+        flash('Image removed from the product and Cloudinary.', 'success')
+    elif public_id:
+        flash(
+            'Image removed from the product, but Cloudinary deletion '
+            'could not be confirmed. Please check Cloudinary.',
+            'warning'
+        )
+    else:
+        flash(
+            'Image removed from the product. No Cloudinary public ID '
+            'was available, so the stored Cloudinary file may remain.',
+            'warning'
+        )
+
+    return redirect(url_for('rental_product_edit', product_id=product.id))
+
+@app.route('/admin/rentals/product/<int:product_id>/status', methods=['POST'])
+@login_required
+def rental_product_status(product_id):
+    if session.get('role') != 'admin': return redirect(url_for('login'))
+    ensure_rental_tables()
+    product=RentalProduct.query.get_or_404(product_id)
+    product.status='Archived' if product.status == 'Active' else 'Active'
+    db.session.commit(); flash('Product status updated.', 'success')
+    return redirect(url_for('rental_admin_dashboard'))
+
+@app.route('/admin/rentals/order/<int:order_id>/update', methods=['POST'])
+@login_required
+def rental_order_update(order_id):
+    if session.get('role') != 'admin': return redirect(url_for('login'))
+    ensure_rental_tables()
+    order=RentalOrder.query.get_or_404(order_id)
+    allowed_status={'Enquiry','Confirmed','Ready for pickup','Rented','Returned','Cancelled'}
+    allowed_deposit={'Not received','Received','Refunded','Partially retained'}
+    status=request.form.get('status'); deposit=request.form.get('deposit_status')
+    if status in allowed_status:
+        if status in {'Confirmed','Ready for pickup','Rented'}:
+            conflict = RentalOrder.query.filter(
+                RentalOrder.product_id == order.product_id,
+                RentalOrder.id != order.id,
+                RentalOrder.status.in_(['Confirmed','Ready for pickup','Rented']),
+                RentalOrder.pickup_date <= order.return_date,
+                RentalOrder.return_date >= order.pickup_date
+            ).first()
+            if conflict:
+                flash('Cannot confirm: this product overlaps with ' + conflict.order_code + '.', 'danger')
+                return redirect(url_for('rental_admin_dashboard'))
+        order.status=status
+    if deposit in allowed_deposit: order.deposit_status=deposit
+    order.return_condition=request.form.get('return_condition','Not returned')[:30]
+    db.session.commit(); flash('Rental order updated.', 'success')
+    return redirect(url_for('rental_admin_dashboard'))
+
 
 if __name__ == '__main__':
     if os.environ.get("FLASK_ENV") == "development":

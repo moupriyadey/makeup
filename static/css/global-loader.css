@@ -1,0 +1,60 @@
+/* Moupriya shared navigation and form loading feedback.
+   Additive UI only: does not change routes, form fields, or business logic. */
+#mouGlobalProgress {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 3px;
+  z-index: 2147483000;
+  pointer-events: none;
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity .18s ease, visibility .18s ease;
+}
+#mouGlobalProgress.is-active {
+  opacity: 1;
+  visibility: visible;
+}
+#mouGlobalProgress .mou-progress-bar {
+  width: 0;
+  height: 100%;
+  background: linear-gradient(90deg, #b8865b, #d63384, #b8865b);
+  box-shadow: 0 0 8px rgba(214, 51, 132, .35);
+  transition: width .35s ease;
+}
+.mou-loader-active {
+  cursor: progress !important;
+  pointer-events: none;
+}
+button.mou-loader-active,
+.btn.mou-loader-active {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: .55rem;
+}
+button.mou-loader-active::after,
+.btn.mou-loader-active::after {
+  content: "";
+  display: inline-block;
+  width:  .95em;
+  height: .95em;
+  flex: 0 0 .95em;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: mouLoaderSpin .7s linear infinite;
+}
+input[type="submit"].mou-loader-active,
+input[type="button"].mou-loader-active {
+  opacity: .75;
+}
+@keyframes mouLoaderSpin {
+  to { transform: rotate(360deg); }
+}
+@media (prefers-reduced-motion: reduce) {
+  #mouGlobalProgress .mou-progress-bar { transition: none; }
+  button.mou-loader-active::after,
+  .btn.mou-loader-active::after { animation-duration: 1.8s; }
+}

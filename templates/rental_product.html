@@ -1,0 +1,381 @@
+<!DOCTYPE html><html lang="en"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>{{ product.name }} | Moupriya</title><link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css"
+                                                                                                                                                                                rel="stylesheet"><style>body{background:#fff9f8;color:#38232b}.brand{color:#762d46;font-family:Georgia,serif}.product-img{width:100%;height:560px;object-fit:cover;border-radius:18px}.detail-thumbs{display:flex;gap:9px;overflow-x:auto;padding:12px 2px}.detail-thumb{width:72px;height:72px;flex:0 0 72px;border:2px solid transparent;border-radius:12px;overflow:hidden;padding:0}.detail-thumb.active{border-color:#762d46}.detail-thumb img{width:100%;height:100%;object-fit:cover}.detail-badge{display:inline-block;background:#762d46;color:white;border-radius:30px;padding:6px 12px;font-size:.78rem}
+/* Full-screen product image viewer */
+#productImageLightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 24px;
+    background: rgba(12, 8, 10, 0.96);
+}
+#productImageLightbox.is-open {
+    display: flex;
+}
+#productImageLightbox img {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+}
+#productImageLightbox .lightbox-close {
+    position: absolute;
+    top: 18px;
+    right: 22px;
+    z-index: 2;
+    width: 46px;
+    height: 46px;
+    border: 1px solid rgba(255,255,255,.65);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(255,255,255,.16);
+    font-size: 30px;
+    line-height: 1;
+    cursor: pointer;
+}
+#productImageLightbox .lightbox-close:hover {
+    background: rgba(118,45,70,.9);
+}
+#detailGallery .product-img {
+    cursor: zoom-in;
+}
+
+
+/* Premium glass navigation arrows on the product page */
+#detailGallery .carousel-control-prev,
+#detailGallery .carousel-control-next {
+    width: 54px;
+    height: 54px;
+    top: 50%;
+    transform: translateY(-50%);
+    opacity: 1;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.20);
+    border: 1px solid rgba(255, 255, 255, 0.65);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 0 12px rgba(255,255,255,.35),
+                0 0 22px rgba(184,109,131,.35),
+                inset 0 1px 5px rgba(255,255,255,.65);
+    transition: all .35s ease;
+}
+#detailGallery .carousel-control-prev { left: 15px; }
+#detailGallery .carousel-control-next { right: 15px; }
+#detailGallery .carousel-control-prev:hover,
+#detailGallery .carousel-control-next:hover {
+    background: rgba(118,45,70,.85);
+    box-shadow: 0 0 12px rgba(255,255,255,.65),
+                0 0 28px rgba(184,109,131,.8),
+                inset 0 1px 7px rgba(255,255,255,.7);
+    transform: translateY(-50%) scale(1.12);
+}
+#detailGallery .carousel-control-prev-icon,
+#detailGallery .carousel-control-next-icon {
+    width: 20px;
+    height: 20px;
+    filter: brightness(0) invert(1);
+}
+
+/* Full-screen, swipeable product gallery */
+#productImageLightbox {
+    position: fixed;
+    inset: 0;
+    z-index: 2000;
+    display: none;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 76px 74px 104px;
+    background: rgba(12, 8, 10, .97);
+    touch-action: pan-y;
+}
+#productImageLightbox.is-open { display: flex; }
+#productImageLightbox .lightbox-main-image {
+    display: block;
+    max-width: 100%;
+    max-height: 100%;
+    width: auto;
+    height: auto;
+    object-fit: contain;
+    user-select: none;
+    -webkit-user-drag: none;
+}
+#productImageLightbox .lightbox-close,
+#productImageLightbox .lightbox-nav {
+    position: absolute;
+    z-index: 3;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 48px;
+    height: 48px;
+    border: 1px solid rgba(255,255,255,.65);
+    border-radius: 50%;
+    color: #fff;
+    background: rgba(255,255,255,.16);
+    backdrop-filter: blur(14px);
+    -webkit-backdrop-filter: blur(14px);
+    box-shadow: 0 0 18px rgba(184,109,131,.3),
+                inset 0 1px 5px rgba(255,255,255,.35);
+    cursor: pointer;
+}
+#productImageLightbox .lightbox-close {
+    top: 18px;
+    right: 20px;
+    font-size: 30px;
+    line-height: 1;
+}
+#productImageLightbox .lightbox-prev {
+    left: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#productImageLightbox .lightbox-next {
+    right: 18px;
+    top: 50%;
+    transform: translateY(-50%);
+}
+#productImageLightbox .lightbox-nav:hover,
+#productImageLightbox .lightbox-close:hover {
+    background: rgba(118,45,70,.9);
+}
+#productImageLightbox .lightbox-counter {
+    position: absolute;
+    top: 29px;
+    left: 50%;
+    transform: translateX(-50%);
+    color: #fff;
+    font-size: 14px;
+    letter-spacing: .08em;
+}
+#productImageLightbox .lightbox-thumbnails {
+    position: absolute;
+    left: 50%;
+    bottom: 16px;
+    transform: translateX(-50%);
+    display: flex;
+    gap: 8px;
+    width: min(90vw, 760px);
+    overflow-x: auto;
+    padding: 8px;
+    justify-content: center;
+}
+#productImageLightbox .lightbox-thumb {
+    flex: 0 0 58px;
+    width: 58px;
+    height: 58px;
+    padding: 0;
+    overflow: hidden;
+    border: 2px solid rgba(255,255,255,.35);
+    border-radius: 9px;
+    background: transparent;
+    opacity: .65;
+    cursor: pointer;
+}
+#productImageLightbox .lightbox-thumb.active {
+    border-color: #f2c7d5;
+    opacity: 1;
+    box-shadow: 0 0 12px rgba(242,199,213,.55);
+}
+#productImageLightbox .lightbox-thumb img {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+}
+@media (max-width: 600px) {
+    #productImageLightbox { padding: 72px 12px 100px; }
+    #productImageLightbox .lightbox-nav {
+        width: 40px;
+        height: 40px;
+    }
+    #productImageLightbox .lightbox-prev { left: 8px; }
+    #productImageLightbox .lightbox-next { right: 8px; }
+    #productImageLightbox .lightbox-thumbnails { justify-content: flex-start; }
+}
+
+</style>  <link rel="stylesheet" href="{{ url_for('static', filename='css/global-loader.css') }}">
+</head><body><nav class="navbar bg-white shadow-sm"><div class="container"><a class="navbar-brand brand fw-bold" href="{{ url_for('index') }}">MOUPRIYA</a><a href="{{ url_for('rental_catalogue') }}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                         class="btn btn-outline-dark btn-sm">All rentals</a></div></nav><main class="container py-5">{% with messages=get_flashed_messages(with_categories=true) %}{% for category,message in messages %}<div class="alert alert-{{ category }}">{{ message }}</div>{% endfor %}{% endwith %}<div class="row g-5"><div class="col-lg-6">{% if product.badge %}<span class="detail-badge mb-3">{{ product.badge }}</span>{% endif %}{% if product.gallery_urls %}<div id="detailGallery"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     class="carousel slide"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     data-bs-ride="carousel"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     data-bs-interval="4000"><div class="carousel-inner">{% for image in product.gallery_urls %}<div class="carousel-item {% if loop.first %}active{% endif %}"><img class="product-img"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     src="{{ image }}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                     alt="{{ product.name }} photo {{ loop.index }}"></div>{% endfor %}</div>{% if product.gallery_urls|length>1 %}<button class="carousel-control-prev"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           type="button"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           data-bs-target="#detailGallery"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                           data-bs-slide="prev"><span class="carousel-control-prev-icon"></span></button><button class="carousel-control-next"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 type="button"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 data-bs-target="#detailGallery"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                 data-bs-slide="next"><span class="carousel-control-next-icon"></span></button>{% endif %}</div>{% for image in product.gallery_urls %}{% if loop.first %}<div class="detail-thumbs">{% endif %}<button class="detail-thumb {% if loop.first %}active{% endif %}"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        data-bs-target="#detailGallery"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        data-bs-slide-to="{{ loop.index0 }}"><img src="{{ image }}" alt="Thumbnail {{ loop.index }}"></button>{% if loop.last %}</div>{% endif %}{% endfor %}{% else %}<div class="bg-light rounded-4 d-flex align-items-center justify-content-center"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            style="height:400px">Photograph coming soon</div>{% endif %}</div><div class="col-lg-6"><div class="text-uppercase small text-secondary">{{ product.category }} · {{ product.code }}</div><h1 class="brand mt-2">{{ product.name }}</h1><p>{{ product.description or 'A special piece from the Moupriya rental collection.' }}</p><p><strong>Size:</strong> {{ product.size_details or 'Please enquire' }}</p><h4>₹{{ '%.2f'|format(product.rental_price|float) }} <small class="text-secondary fs-6">rental charge</small></h4><p>Refundable security deposit: <strong>₹{{ '%.2f'|format(product.refundable_deposit|float) }}</strong></p><p class="small text-secondary">Indicative rental duration: {{ product.rental_days }} days. Final availability, collection and return dates will be confirmed by our team.</p><hr><h3 class="h5">Send a rental enquiry</h3><form method="post"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                        action="{{ url_for('rental_enquiry',product_id=product.id) }}"><div class="mb-3"><label class="form-label">Your name *</label><input class="form-control" name="customer_name" required maxlength="120"></div><div class="mb-3"><label class="form-label">Mobile number *</label><input class="form-control"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                name="phone"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                required
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                maxlength="30"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                inputmode="tel"></div><div class="mb-3"><label class="form-label">Email (optional)</label><input class="form-control" type="email" name="email"></div><div class="row"><div class="col-md-4 mb-3"><label class="form-label">Event date *</label><input class="form-control" type="date" name="event_date" required></div><div class="col-md-4 mb-3"><label class="form-label">Pickup date *</label><input class="form-control" type="date" name="pickup_date" required></div><div class="col-md-4 mb-3"><label class="form-label">Return date *</label><input class="form-control" type="date" name="return_date" required></div></div><div class="mb-3"><label class="form-label">Message</label><textarea class="form-control"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            rows="3"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            name="message"
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                            placeholder="Any size or styling details?"></textarea></div><div class="alert alert-light small">Submitting this form sends an enquiry only. Your rental is not confirmed until Moupriya contacts you and confirms availability, price and terms.</div><button class="btn btn-dark btn-lg">Send enquiry</button></form></div></div></main>
+
+
+<div id="productImageLightbox" role="dialog" aria-modal="true" aria-label="Full-screen product gallery">
+    <button type="button" class="lightbox-close" aria-label="Close full-screen gallery">&times;</button>
+    <div class="lightbox-counter" aria-live="polite">1 / 1</div>
+    <button type="button" class="lightbox-nav lightbox-prev" aria-label="Previous image">&#10094;</button>
+    <img class="lightbox-main-image" src="" alt="Full-screen product photograph">
+    <button type="button" class="lightbox-nav lightbox-next" aria-label="Next image">&#10095;</button>
+    <div class="lightbox-thumbnails" aria-label="Product photographs"></div>
+</div>
+
+
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const gallery = document.getElementById('detailGallery');
+    const lightbox = document.getElementById('productImageLightbox');
+
+    // Keep the existing Bootstrap product carousel and thumbnail behaviour working.
+    if (gallery && window.bootstrap) {
+        const slides = gallery.querySelectorAll('.carousel-item');
+        if (slides.length > 1) {
+            bootstrap.Carousel.getOrCreateInstance(gallery, {
+                interval: 4000,
+                ride: 'carousel',
+                pause: 'hover',
+                touch: true,
+                wrap: true
+            });
+        }
+
+        gallery.addEventListener('slid.bs.carousel', function (event) {
+            document.querySelectorAll('.detail-thumb').forEach(function (thumb, index) {
+                thumb.classList.toggle('active', index === event.to);
+            });
+        });
+    }
+
+    if (!gallery || !lightbox) return;
+
+    const images = Array.from(gallery.querySelectorAll('.carousel-item .product-img'));
+    if (!images.length) return;
+
+    const mainImage = lightbox.querySelector('.lightbox-main-image');
+    const counter = lightbox.querySelector('.lightbox-counter');
+    const thumbnails = lightbox.querySelector('.lightbox-thumbnails');
+    const closeButton = lightbox.querySelector('.lightbox-close');
+    const previousButton = lightbox.querySelector('.lightbox-prev');
+    const nextButton = lightbox.querySelector('.lightbox-next');
+
+    let currentIndex = 0;
+    let touchStartX = 0;
+    let touchStartY = 0;
+
+    // Build thumbnails only from this product's own gallery images.
+    images.forEach(function (image, index) {
+        const button = document.createElement('button');
+        button.type = 'button';
+        button.className = 'lightbox-thumb';
+        button.setAttribute('aria-label', 'Show photograph ' + (index + 1));
+
+        const thumbImage = document.createElement('img');
+        thumbImage.src = image.currentSrc || image.src;
+        thumbImage.alt = image.alt || ('Product photograph ' + (index + 1));
+
+        button.appendChild(thumbImage);
+        button.addEventListener('click', function () {
+            showImage(index);
+        });
+        thumbnails.appendChild(button);
+    });
+
+    function showImage(index) {
+        currentIndex = (index + images.length) % images.length;
+        const sourceImage = images[currentIndex];
+
+        mainImage.src = sourceImage.currentSrc || sourceImage.src;
+        mainImage.alt = sourceImage.alt || 'Product photograph ' + (currentIndex + 1);
+        counter.textContent = (currentIndex + 1) + ' / ' + images.length;
+
+        thumbnails.querySelectorAll('.lightbox-thumb').forEach(function (thumb, thumbIndex) {
+            thumb.classList.toggle('active', thumbIndex === currentIndex);
+        });
+
+        const activeThumb = thumbnails.children[currentIndex];
+        if (activeThumb) {
+            activeThumb.scrollIntoView({ block: 'nearest', inline: 'nearest', behavior: 'smooth' });
+        }
+
+        const multiple = images.length > 1;
+        previousButton.hidden = !multiple;
+        nextButton.hidden = !multiple;
+        thumbnails.hidden = !multiple;
+    }
+
+    function openLightbox(index) {
+        showImage(index);
+        lightbox.classList.add('is-open');
+        document.body.style.overflow = 'hidden';
+        closeButton.focus();
+    }
+
+    function closeLightbox() {
+        lightbox.classList.remove('is-open');
+        mainImage.removeAttribute('src');
+        document.body.style.overflow = '';
+    }
+
+    function showPrevious() { showImage(currentIndex - 1); }
+    function showNext() { showImage(currentIndex + 1); }
+
+    images.forEach(function (image, index) {
+        image.addEventListener('click', function () {
+            openLightbox(index);
+        });
+    });
+
+    previousButton.addEventListener('click', showPrevious);
+    nextButton.addEventListener('click', showNext);
+    closeButton.addEventListener('click', closeLightbox);
+
+    lightbox.addEventListener('click', function (event) {
+        if (event.target === lightbox) closeLightbox();
+    });
+
+    document.addEventListener('keydown', function (event) {
+        if (!lightbox.classList.contains('is-open')) return;
+        if (event.key === 'Escape') closeLightbox();
+        if (event.key === 'ArrowLeft') showPrevious();
+        if (event.key === 'ArrowRight') showNext();
+    });
+
+    // Touch swipe support for phones and tablets.
+    lightbox.addEventListener('touchstart', function (event) {
+        if (event.touches.length !== 1) return;
+        touchStartX = event.touches[0].clientX;
+        touchStartY = event.touches[0].clientY;
+    }, { passive: true });
+
+    lightbox.addEventListener('touchend', function (event) {
+        if (!lightbox.classList.contains('is-open') || !event.changedTouches.length) return;
+
+        const deltaX = event.changedTouches[0].clientX - touchStartX;
+        const deltaY = event.changedTouches[0].clientY - touchStartY;
+
+        if (Math.abs(deltaX) > 45 && Math.abs(deltaX) > Math.abs(deltaY)) {
+            if (deltaX < 0) showNext();
+            else showPrevious();
+        }
+    }, { passive: true });
+});
+</script>
+
+
+  <script src="{{ url_for('static', filename='js/global-loader.js') }}" defer></script>
+</body></html>
